@@ -17,3 +17,7 @@ obj/
 *.user
 *.userosscache
 *.sln.docstates
+
+# artefects
+
+.artefacts/
