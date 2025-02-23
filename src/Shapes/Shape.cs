@@ -3,11 +3,14 @@ using System.Runtime.InteropServices;
 
 namespace Box2D;
 
-[StructLayout(LayoutKind.Sequential, Pack = 4)]
+[StructLayout(LayoutKind.Explicit)]
 public struct Shape : IEquatable<Shape>
 {
+    [FieldOffset(0)]
     private int index1;
+    [FieldOffset(4)]
     private ushort world0;
+    [FieldOffset(6)]
     private ushort generation;
     
     public bool Equals(Shape other) => index1 == other.index1 && world0 == other.world0 && generation == other.generation;

@@ -4,7 +4,7 @@ namespace Box2D;
 /// The body simulation type.
 /// Each body is one of these three types. The type determines how the body behaves in the simulation.
 /// </summary>
-public enum BodyType
+public enum BodyType : int
 {
     /// <summary>
     /// zero mass, zero velocity, may be manually moved

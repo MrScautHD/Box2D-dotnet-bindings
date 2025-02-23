@@ -8,16 +8,18 @@ namespace Box2D;
 /// <remarks>
 /// <b>Warning: Do not modify these values directly, instead use ComputeHull()</b>
 /// </remarks>
-[StructLayout(LayoutKind.Sequential, Pack = 4)]
+[StructLayout(LayoutKind.Explicit)]
 public struct Hull
 {
     /// <summary>
     /// The final points of the hull
     /// </summary>
+    [FieldOffset(0)]
     public Vec2 Points;
 
     /// <summary>
     /// The number of points
     /// </summary>
+    [FieldOffset(8)]
     public int Count;
 }

@@ -7,31 +7,36 @@ namespace Box2D;
 /// which may not coincide with the center of mass. However, to support dynamics we must interpolate the center of mass
 /// position.
 /// </summary>
-[StructLayout(LayoutKind.Sequential, Pack = 4)]
+[StructLayout(LayoutKind.Explicit)]
 public struct Sweep
 {
     /// <summary>
     /// Local center of mass position
     /// </summary>
+    [FieldOffset(0)]
     public Vec2 LocalCenter;
 
     /// <summary>
     /// Starting center of mass world position
     /// </summary>
+    [FieldOffset(8)]
     public Vec2 C1;
 
     /// <summary>
     /// Ending center of mass world position
     /// </summary>
+    [FieldOffset(16)]
     public Vec2 C2;
 
     /// <summary>
     /// Starting world rotation
     /// </summary>
+    [FieldOffset(24)]
     public Rotation Q1;
 
     /// <summary>
     /// Ending world rotation
     /// </summary>
+    [FieldOffset(32)]
     public Rotation Q2;
 }

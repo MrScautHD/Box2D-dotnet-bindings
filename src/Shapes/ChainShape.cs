@@ -2,11 +2,14 @@ using System.Runtime.InteropServices;
 
 namespace Box2D;
 
-[StructLayout(LayoutKind.Sequential, Pack = 4)]
+[StructLayout(LayoutKind.Explicit)]
 public struct ChainShape
 {
+    [FieldOffset(0)]
     private int index1;
+    [FieldOffset(4)]
     private ushort world0;
+    [FieldOffset(6)]
     private ushort generation;
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DestroyChain")]

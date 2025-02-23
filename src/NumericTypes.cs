@@ -1,10 +1,12 @@
 using System;
 using System.Runtime.InteropServices;
 
-[StructLayout(LayoutKind.Sequential, Pack = 4)]
+[StructLayout(LayoutKind.Explicit)]
 public struct Vec2
 {
+    [FieldOffset(0)]
     public float X;
+    [FieldOffset(4)]
     public float Y;
     
     public static implicit operator Vec2((float X, float Y) tuple) => new() { X = tuple.X, Y = tuple.Y };
@@ -22,10 +24,12 @@ public struct Vec2
     public float Angle => MathF.Atan2(Y, X);
 }
 
-[StructLayout(LayoutKind.Sequential, Pack = 4)]
+[StructLayout(LayoutKind.Explicit)]
 public struct Rotation
 {
+    [FieldOffset(0)]
     public float Cos = 1;
+    [FieldOffset(4)]
     public float Sin = 0;
     public Rotation()
     { }
@@ -53,10 +57,12 @@ public struct Rotation
     }
 }
 
-[StructLayout(LayoutKind.Sequential, Pack = 4)]
+[StructLayout(LayoutKind.Explicit)]
 public struct Transform
 {
+    [FieldOffset(0)]
     public Vec2 Position;
+    [FieldOffset(8)]
     public Rotation Rotation;
     
     public override string ToString()
@@ -65,10 +71,12 @@ public struct Transform
     }
 }
 
-[StructLayout(LayoutKind.Sequential, Pack = 4)]
+[StructLayout(LayoutKind.Explicit)]
 public struct AABB
 {
+    [FieldOffset(0)]
     public Vec2 LowerBound;
+    [FieldOffset(8)]
     public Vec2 UpperBound;
     
     public float Width => UpperBound.X - LowerBound.X;

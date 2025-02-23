@@ -2,10 +2,12 @@ using System.Runtime.InteropServices;
 
 namespace Box2D;
 
-[StructLayout(LayoutKind.Sequential, Pack = 4)]
+[StructLayout(LayoutKind.Explicit)]
 public struct World
 {
+    [FieldOffset(0)]
     private ushort index1;
+    [FieldOffset(2)]
     private ushort generation;
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateWorld")]

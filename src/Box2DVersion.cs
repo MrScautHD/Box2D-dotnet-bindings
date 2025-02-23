@@ -1,14 +1,23 @@
 using System.Runtime.InteropServices;
 
-[StructLayout(LayoutKind.Sequential, Pack = 4)]
+[StructLayout(LayoutKind.Explicit)]
 public struct Box2DVersion
 {
+    /// <summary>
     /// Significant changes
-    int major;
+    /// </summary>
+    [FieldOffset(0)]
+    public int Major;
 
+    /// <summary>
     /// Incremental changes
-    int minor;
+    /// </summary>
+    [FieldOffset(4)]
+    public int Minor;
 
+    /// <summary>
     /// Bug fixes
-    int revision;
+    /// </summary>
+    [FieldOffset(8)]
+    public int Revision;
 }

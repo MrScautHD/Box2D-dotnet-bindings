@@ -3,7 +3,7 @@ namespace Box2D;
 /// <summary>
 /// Describes the TOI output
 /// </summary>
-public enum TOIState
+public enum TOIState : int
 {
     /// <summary>
     /// Unknown state

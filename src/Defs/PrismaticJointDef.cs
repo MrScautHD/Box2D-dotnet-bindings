@@ -10,7 +10,7 @@ namespace Box2D;
 /// configuration can violate the constraint slightly. The joint translation is zero
 /// when the local anchor points coincide in world space.
 /// </summary>
-[StructLayout(LayoutKind.Explicit, Pack = 4)]
+[StructLayout(LayoutKind.Explicit)]
 public struct PrismaticJointDef
 {
     [FieldOffset(0)]
