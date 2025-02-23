@@ -10,7 +10,7 @@ While it's not impossible to implement in C# - intrinsics have been available si
 
 ## Getting things working
 1. Clone this repo, then either build it or add a DLL reference, or copy it into your solution and add a project reference, or configure it as a submodule.
-  - (If this is too cryptic, you should probably use the NuGet package (if one exists))
+  - (If this is too cryptic, you should probably just use the NuGet package - which *should* include the native libraries - if this doesn't work, please raies an Issue)
 2. Clone the main branch of Erin Catto's incredible Box2D project from https://github.com/erincatto/box2d
 3. Build Box2D shared library:
   - CD into the box2d repo
