@@ -1,12 +1,36 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
+        <PackageId>HughPH.Box2D</PackageId>
+        <Authors>HughPH BlueSky:@hph.pw</Authors>
+        <Description>C# bindings for Box2D 3.1</Description>
+        <PackageTags>Box2D, Physics, GameDev</PackageTags>
+        <RepositoryUrl>https://github.com/HughPH/Box2D-dotnet-bindings</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <License>MIT</License>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+        
         <TargetFramework>netstandard2.1</TargetFramework>
         <ImplicitUsings>disable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <RootNamespace>Box2D</RootNamespace>
         <LangVersion>latest</LangVersion>
+
+
+        <Year>$([System.DateTime]::UtcNow.ToString("yyyy"))</Year>
+        <Month>$([System.DateTime]::UtcNow.ToString("MM"))</Month>
+        <Day>$([System.DateTime]::UtcNow.ToString("dd"))</Day>
+        <Hour>$([System.DateTime]::UtcNow.ToString("HH"))</Hour>
+        <Minute>$([System.DateTime]::UtcNow.ToString("mm"))</Minute>
+        
+        <Version>$(Year).$(Month).$(Day).$(Hour)$(Minute)</Version>
+        <AssemblyVersion>$(Year).$(Month).$(Day).$(Hour)$(Minute)</AssemblyVersion>
+        
+
     </PropertyGroup>
 
 </Project>
+
+
