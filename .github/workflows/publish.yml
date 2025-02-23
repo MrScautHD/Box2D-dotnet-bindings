@@ -8,12 +8,85 @@ on:
       - "v*"
 
 jobs:
-  deploy:
+  build-box2d-windows:
+    runs-on: windows-latest
+    steps:      
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Clone Box2D
+        run: git clone --depth 1 https://github.com/erincatto/box2d.git box2d-src
+      
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1.1
+      
+      - name: Build Box2D (Windows)
+        run: |
+          cd box2d-src
+          mkdir build
+          cd build
+          cmake -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF ..
+          cmake --build .
+          
+      - name: Copy artefacts
+        run: cp box2d-src/build/src/box2d*.dll artefacts/
+        
+      - name: Upload to artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: box2d-windows
+          path: 'artefacts/*'
+  
+  build-box2d-linux:
     runs-on: ubuntu-latest
     steps:      
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Clone Box2D
+        run: git clone --depth 1 https://github.com/erincatto/box2d.git box2d-src
+        
+      - name: Setup CMake
+        uses: jwlawson/actions-setup-cmake@v2
+        with:
+          cmake-version: 3.21.3
+          
+      - name: Build Box2D (Linux)
+        run: |
+          cd box2d-src
+          mkdir build
+          cd build
+          cmake -DBUILD_SHARED_LIBS=ON -DBOX2D_SAMPLES=OFF ..
+          cmake --build .
+      
+      - name: Copy artefacts
+        run: cp box2d-src/build/src/libbox2d.so.* artefacts/
+        
+      - name: Upload to artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: box2d-linux
+          path: 'artefacts/*'
+          
+  build-and-deploy-bindings:
+    needs: [build-box2d-windows, build-box2d-linux]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Get Windows artefacts
+        uses: actions/download-artifact@v4
+        with:
+          name: box2d-windows
+          path: src/native/win-x64
+          
+      - name: Get Linux artefacts
+        uses: actions/download-artifact@v4
+        with:
+          name: box2d-linux
+          path: src/native/linux-x64
+  
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
