@@ -10,7 +10,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    steps:
+    steps:      
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -18,7 +18,7 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 9.0.x
-
+    
       - name: Build and pack
         run: dotnet pack src --configuration Release --output ./artefacts
 
