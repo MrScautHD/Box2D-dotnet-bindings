@@ -26,16 +26,14 @@ jobs:
           mkdir build
           cd build
           cmake -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF ..
-          cmake --build .
+          cmake --build . --config Release
+          ren bin\Release\shared.dll bin\Release\box2d.dll
       
-      - name: List outputs
-        run: dir box2d-src\build\src\
-        
       - name: Upload to artifacts
         uses: actions/upload-artifact@v4
         with:
           name: box2d-windows
-          path: 'box2d-src/build/src/box2d*.dll'
+          path: 'box2d-src/build/bin/Release/box2d.dll'
           if-no-files-found: error
   
   build-box2d-linux:
@@ -57,7 +55,7 @@ jobs:
           cd box2d-src
           mkdir build
           cd build
-          cmake -DBUILD_SHARED_LIBS=ON -DBOX2D_SAMPLES=OFF ..
+          cmake -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF ..
           cmake --build .
         
       - name: Upload to artifacts
