@@ -46,13 +46,13 @@ public struct World
     public void Step(float timeStep, int subStepCount) => b2World_Step(this, timeStep, subStepCount);
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_Draw")]
-    private static extern void b2World_Draw(World worldId, ref DebugDraw draw);
+    private static extern void b2World_Draw(World worldId, in DebugDraw draw);
 
     /// <summary>
     /// Call this to draw shapes and other debug draw data
     /// </summary>
     /// <param name="draw">The debug draw implementation</param>
-    public void Draw(ref DebugDraw draw) => b2World_Draw(this, ref draw);
+    public void Draw(in DebugDraw draw) => b2World_Draw(this, draw);
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetBodyEvents")]
     private static extern BodyEvents b2World_GetBodyEvents(World worldId);
