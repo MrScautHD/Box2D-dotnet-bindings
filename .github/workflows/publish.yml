@@ -29,7 +29,7 @@ jobs:
           cmake --build .
       
       - name: List outputs
-        run: ls -al box2d-src/build/src/
+        run: dir box2d-src\build\src\
         
       - name: Upload to artifacts
         uses: actions/upload-artifact@v4
@@ -64,7 +64,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: box2d-linux
-          path: 'box2d-src/build/src/libbox2d.so.*'
+          path: 'box2d-src/build/src/libbox2d.so*'
           if-no-files-found: error
           
   build-and-deploy-bindings:
