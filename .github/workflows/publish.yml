@@ -28,14 +28,11 @@ jobs:
           cmake -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF ..
           cmake --build .
           
-      - name: Copy artefacts
-        run: cp box2d-src/build/src/box2d*.dll artefacts/
-        
       - name: Upload to artifacts
         uses: actions/upload-artifact@v4
         with:
           name: box2d-windows
-          path: 'artefacts/*'
+          path: 'box2d-src/build/src/box2d*.dll'
   
   build-box2d-linux:
     runs-on: ubuntu-latest
@@ -58,15 +55,12 @@ jobs:
           cd build
           cmake -DBUILD_SHARED_LIBS=ON -DBOX2D_SAMPLES=OFF ..
           cmake --build .
-      
-      - name: Copy artefacts
-        run: cp box2d-src/build/src/libbox2d.so.* artefacts/
         
       - name: Upload to artifacts
         uses: actions/upload-artifact@v4
         with:
           name: box2d-linux
-          path: 'artefacts/*'
+          path: 'box2d-src/build/src/libbox2d.so.*'
           
   build-and-deploy-bindings:
     needs: [build-box2d-windows, build-box2d-linux]
