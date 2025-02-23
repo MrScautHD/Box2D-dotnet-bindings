@@ -20,8 +20,8 @@ jobs:
           dotnet-version: 9.0.x
 
       - name: Build and pack
-        run: dotnet pack --configuration Release
+        run: dotnet pack src --configuration Release --output ./artefacts
 
       - name: Publish to NuGet
-        run: dotnet nuget push bin/Release/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+        run: dotnet nuget push artefacts/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
         
