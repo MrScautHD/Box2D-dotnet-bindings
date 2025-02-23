@@ -9,6 +9,9 @@ namespace Box2D;
 /// </summary>
 public class MouseJoint:Joint
 {
+    internal MouseJoint(JointId id) : base(id)
+    { }
+    
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MouseJoint_SetTarget")]
     private static extern void b2MouseJoint_SetTarget(JointId jointId, Vec2 target);
     

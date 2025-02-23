@@ -4,6 +4,9 @@ namespace Box2D;
 
 public class DistanceJoint : Joint
 {
+    internal DistanceJoint(JointId id) : base(id)
+    { }
+    
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_SetLength")]
     private static extern void b2DistanceJoint_SetLength(JointId jointId, float length);
     

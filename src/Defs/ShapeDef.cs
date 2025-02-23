@@ -7,7 +7,7 @@ namespace Box2D;
 /// This is a temporary object used to bundle shape creation parameters. You may use
 /// the same shape definition to create multiple shapes.
 /// </summary>
-[StructLayout(LayoutKind.Explicit, Pack = 4)]
+[StructLayout(LayoutKind.Explicit)]
 public struct ShapeDef
 {
     /// <summary>

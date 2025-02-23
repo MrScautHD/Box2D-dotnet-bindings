@@ -5,34 +5,39 @@ namespace Box2D;
 /// <summary>
 /// World definition used to create a simulation world.
 /// </summary>
-[StructLayout(LayoutKind.Sequential, Pack = 4)]
+[StructLayout(LayoutKind.Explicit)]
 public struct WorldDef
 {
     /// <summary>
     /// Gravity vector. Box2D has no up-vector defined.
     /// </summary>
+    [FieldOffset(0)]
     public Vec2 Gravity;
 
     /// <summary>
     /// Restitution speed threshold, usually in m/s. Collisions above this
     /// speed have restitution applied (will bounce).
     /// </summary>
+    [FieldOffset(8)]
     public float RestitutionThreshold;
 
     /// <summary>
     /// Threshold speed for hit events. Usually meters per second.
     /// </summary>
+    [FieldOffset(12)]
     public float HitEventThreshold;
 
     /// <summary>
     /// Contact stiffness. Cycles per second. Increasing this increases the speed of overlap recovery, but can introduce jitter.
     /// </summary>
+    [FieldOffset(16)]
     public float ContactHertz;
 
     /// <summary>
     /// Contact bounciness. Non-dimensional. You can speed up overlap recovery by decreasing this with
     /// the trade-off that overlap resolution becomes more energetic.
     /// </summary>
+    [FieldOffset(20)]
     public float ContactDampingRatio;
 
     /// <summary>
@@ -40,23 +45,28 @@ public struct WorldDef
     /// puts a cap on the resolution speed. The resolution speed is increased by increasing the hertz and/or
     /// decreasing the damping ratio.
     /// </summary>
+    [FieldOffset(24)]
     public float ContactPushMaxSpeed;
 
     /// <summary>
     /// Joint stiffness. Cycles per second.
     /// </summary>
+    [FieldOffset(28)]
     public float JointHertz;
 
     /// <summary>
     /// Joint bounciness. Non-dimensional.
     /// </summary>
+    [FieldOffset(32)]
     public float JointDampingRatio;
 
     /// <summary>
     /// Maximum linear speed. Usually meters per second.
     /// </summary>
+    [FieldOffset(36)]
     public float MaximumLinearSpeed;
 
+    [FieldOffset(40)]
     private nint frictionCallback;
 
     /// <summary>
@@ -68,6 +78,7 @@ public struct WorldDef
         set => frictionCallback = Marshal.GetFunctionPointerForDelegate(value);
     }
 
+    [FieldOffset(48)]
     private nint restitutionCallback;
 	
     /// <summary>
@@ -83,12 +94,14 @@ public struct WorldDef
     /// Can bodies go to sleep to improve performance
     /// </summary>
     [MarshalAs(UnmanagedType.U1)]
+    [FieldOffset(56)]
     public bool EnableSleep;
 
     /// <summary>
     /// Enable continuous collision
     /// </summary>
     [MarshalAs(UnmanagedType.U1)]
+    [FieldOffset(57)]
     public bool EnableContinuous;
 
     /// <summary>
@@ -100,8 +113,10 @@ public struct WorldDef
     /// <b>Warning: Do not modify the default value unless you are also providing a task system and providing
     /// task callbacks (enqueueTask and finishTask).</b>
     /// </summary>
+    [FieldOffset(60)]
     public int WorkerCount;
 
+    [FieldOffset(64)]
     private nint enqueueTask;
 	
     /// <summary>
@@ -113,6 +128,7 @@ public struct WorldDef
         set => enqueueTask = Marshal.GetFunctionPointerForDelegate(value);
     }
 
+    [FieldOffset(72)]
     private nint finishTask;
 	
     /// <summary>
@@ -127,17 +143,20 @@ public struct WorldDef
     /// <summary>
     /// User context that is provided to enqueueTask and finishTask
     /// </summary>
+    [FieldOffset(80)]
     public nint UserTaskContext;
 
     /// <summary>
     /// User data
     /// </summary>
+    [FieldOffset(88)]
     public nint UserData;
 
     /// <summary>
     /// Used internally to detect a valid definition. DO NOT SET.
     /// </summary>
-    private readonly int InternalValue = Box2D.B2_SECRET_COOKIE;
+    [FieldOffset(96)]
+    private readonly int internalValue = Box2D.B2_SECRET_COOKIE;
     
     public WorldDef()
     {

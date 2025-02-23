@@ -7,9 +7,10 @@ namespace Box2D;
 /// as event arrays after the time step is complete.
 /// <i>Note: this data becomes invalid if bodies are destroyed</i>
 /// </summary>
-[StructLayout(LayoutKind.Sequential, Pack = 4)]
+[StructLayout(LayoutKind.Explicit)]
 public struct BodyEvents
 {
+    [FieldOffset(0)]
     private nint moveEvents;
 
     /// <summary>
@@ -27,5 +28,6 @@ public struct BodyEvents
     }
 
     /// Number of move events
+    [FieldOffset(8)]
     private int moveCount;
 }

@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace Box2D;
@@ -11,6 +10,9 @@ namespace Box2D;
 /// </summary>
 public class WheelJoint : Joint
 {
+    internal WheelJoint(JointId id) : base(id)
+    { }
+    
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WheelJoint_EnableSpring")]
     private static extern void b2WheelJoint_EnableSpring(JointId jointId, bool enableSpring);
     

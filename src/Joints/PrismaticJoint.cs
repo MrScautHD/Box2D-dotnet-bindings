@@ -9,8 +9,11 @@ namespace Box2D;
 /// The prismatic joint is useful for things like pistons and moving platforms, where you want a body to translate
 /// along an axis and have no rotation. Also called a <i>slider</i> joint.
 /// </summary>
-public class PrismaticJoint:Joint
+public class PrismaticJoint : Joint
 {
+    internal PrismaticJoint(JointId id) : base(id)
+    { }
+    
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_EnableSpring")]
     private static extern void b2PrismaticJoint_EnableSpring(JointId jointId, bool enableSpring);
     

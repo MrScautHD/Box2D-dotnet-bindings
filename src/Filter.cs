@@ -6,7 +6,7 @@ namespace Box2D;
 /// This is used to filter collision on shapes. It affects shape-vs-shape collision
 /// and shape-versus-query collision (such as World.CastRay).
 /// </summary>
-[StructLayout(LayoutKind.Sequential, Pack = 4)]
+[StructLayout(LayoutKind.Explicit)]
 public struct Filter
 {
     /// <summary>
@@ -23,6 +23,7 @@ public struct Filter
     /// };
     /// </code>
     /// </summary>
+    [FieldOffset(0)]
     public ulong CategoryBits = 0x00000001;
 
     /// <summary>
@@ -34,6 +35,7 @@ public struct Filter
     /// maskBits = Static | Player;
     /// </code>
     /// </summary>
+    [FieldOffset(8)]
     public ulong MaskBits = 0x00000001;
 
     /// <summary>
@@ -44,6 +46,7 @@ public struct Filter
     /// ragdoll self-collision. In this case you would give each ragdoll a unique negative group index
     /// and apply that group index to all shapes on the ragdoll.
     /// </summary>
+    [FieldOffset(16)]
     public int GroupIndex = 0;
     public Filter()
     { }

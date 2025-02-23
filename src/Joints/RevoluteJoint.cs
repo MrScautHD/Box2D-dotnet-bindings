@@ -9,8 +9,11 @@ namespace Box2D;
 /// The revolute joint is probably the most common joint. It can be used for ragdolls and chains.
 /// Also called a <i>hinge</i> or <i>pin</i> joint.
 /// </summary>
-public class RevoluteJoint:Joint
+public class RevoluteJoint : Joint
 {
+    internal RevoluteJoint(JointId id) : base(id)
+    { }
+    
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2RevoluteJoint_EnableSpring")]
     private static extern void b2RevoluteJoint_EnableSpring(JointId jointId, bool enableSpring);
     

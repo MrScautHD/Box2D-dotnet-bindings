@@ -7,21 +7,25 @@ namespace Box2D;
 /// as begin/end overlap event arrays after the time step is complete.
 /// Note: these may become invalid if bodies and/or shapes are destroyed
 /// </summary>
-[StructLayout(LayoutKind.Sequential, Pack = 4)]
+[StructLayout(LayoutKind.Explicit)]
 public struct SensorEvents
 {
     /// <summary>
     /// Array of sensor begin touch events
     /// </summary>
+    [FieldOffset(0)]
     private nint beginEvents;
 
     /// <summary>
     /// Array of sensor end touch events
     /// </summary>
+    [FieldOffset(8)]
     private nint endEvents;
 
+    [FieldOffset(16)]
     private int beginCount;
 	
+    [FieldOffset(20)]
     private int endCount;
 	
     public ReadOnlySpan<SensorBeginTouchEvent> BeginEvents
@@ -33,18 +37,6 @@ public struct SensorEvents
                 return new ReadOnlySpan<SensorBeginTouchEvent>((SensorBeginTouchEvent*)beginEvents, beginCount);
             }
         }
-        set
-        {
-            unsafe
-            {
-                beginEvents = Marshal.AllocHGlobal(value.Length * sizeof(SensorBeginTouchEvent));
-                beginCount = value.Length;
-                for (int i = 0; i < value.Length; i++)
-                {
-                    ((SensorBeginTouchEvent*)beginEvents)[i] = value[i];
-                }
-            }
-        }
     }
 	
     public ReadOnlySpan<SensorEndTouchEvent> EndEvents
@@ -54,18 +46,6 @@ public struct SensorEvents
             unsafe
             {
                 return new ReadOnlySpan<SensorEndTouchEvent>((SensorEndTouchEvent*)endEvents, endCount);
-            }
-        }
-        set
-        {
-            unsafe
-            {
-                endEvents = Marshal.AllocHGlobal(value.Length * sizeof(SensorEndTouchEvent));
-                endCount = value.Length;
-                for (int i = 0; i < value.Length; i++)
-                {
-                    ((SensorEndTouchEvent*)endEvents)[i] = value[i];
-                }
             }
         }
     }

@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace Box2D;
@@ -539,92 +538,92 @@ public struct World
     public void DumpMemoryStats() => b2World_DumpMemoryStats(this);
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateBody")]
-    private static extern Body b2CreateBody(World worldId, in BodyDef def);
+    private static extern BodyId b2CreateBody(World worldId, in BodyDef def);
     
     /// <summary>
     /// Creates a rigid body given a definition.
     /// </summary>
     /// <param name="def">The body definition</param>
     /// <returns>The body</returns>
-    public Body CreateBody(BodyDef def) => b2CreateBody(this, def);
+    public Body? CreateBody(BodyDef def) => Body.GetBody(b2CreateBody(this, def));
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateDistanceJoint")]
-    private static extern DistanceJoint b2CreateDistanceJoint(World worldId, in DistanceJointDef def);
+    private static extern JointId b2CreateDistanceJoint(World worldId, in DistanceJointDef def);
     
     /// <summary>
     /// Creates a distance joint
     /// </summary>
     /// <param name="def">The distance joint definition</param>
     /// <returns>The distance joint</returns>
-    public DistanceJoint CreateDistanceJoint(DistanceJointDef def) => b2CreateDistanceJoint(this, def);
+    public DistanceJoint CreateDistanceJoint(DistanceJointDef def) => (DistanceJoint)new Joint(b2CreateDistanceJoint(this, def));
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateMotorJoint")]
-    private static extern MotorJoint b2CreateMotorJoint(World worldId, in MotorJointDef def);
+    private static extern JointId b2CreateMotorJoint(World worldId, in MotorJointDef def);
     
     /// <summary>
     /// Creates a motor joint
     /// </summary>
     /// <param name="def">The motor joint definition</param>
     /// <returns>The motor joint</returns>
-    public MotorJoint CreateMotorJoint(MotorJointDef def) => b2CreateMotorJoint(this, def);
+    public MotorJoint CreateMotorJoint(MotorJointDef def) => (MotorJoint)new Joint(b2CreateMotorJoint(this, def));
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateMouseJoint")]
-    private static extern MouseJoint b2CreateMouseJoint(World worldId, in MouseJointDef def);
+    private static extern JointId b2CreateMouseJoint(World worldId, in MouseJointDef def);
     
     /// <summary>
     /// Creates a mouse joint
     /// </summary>
     /// <param name="def">The mouse joint definition</param>
     /// <returns>The mouse joint</returns>
-    public MouseJoint CreateMouseJoint(MouseJointDef def) => b2CreateMouseJoint(this, def);
+    public MouseJoint CreateMouseJoint(MouseJointDef def) => (MouseJoint)new Joint(b2CreateMouseJoint(this, def));
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateNullJoint")]
-    private static extern Joint b2CreateNullJoint(World worldId, in NullJointDef def);
+    private static extern JointId b2CreateNullJoint(World worldId, in NullJointDef def);
     
     /// <summary>
     /// Creates a null joint
     /// </summary>
     /// <param name="def">The null joint definition</param>
     /// <returns>The null joint</returns>
-    public Joint CreateNullJoint(NullJointDef def) => b2CreateNullJoint(this, def);
+    public Joint CreateNullJoint(NullJointDef def) => new Joint(b2CreateNullJoint(this, def));
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreatePrismaticJoint")]
-    private static extern PrismaticJoint b2CreatePrismaticJoint(World worldId, in PrismaticJointDef def);
+    private static extern JointId b2CreatePrismaticJoint(World worldId, in PrismaticJointDef def);
     
     /// <summary>
     /// Creates a prismatic (slider) joint
     /// </summary>
     /// <param name="def">The prismatic joint definition</param>
     /// <returns>The prismatic joint</returns>
-    public PrismaticJoint CreatePrismaticJoint(PrismaticJointDef def) => b2CreatePrismaticJoint(this, def);
+    public PrismaticJoint CreatePrismaticJoint(PrismaticJointDef def) => new(b2CreatePrismaticJoint(this, def));
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateRevoluteJoint")]
-    private static extern RevoluteJoint b2CreateRevoluteJoint(World worldId, in RevoluteJointDef def);
+    private static extern JointId b2CreateRevoluteJoint(World worldId, in RevoluteJointDef def);
     
     /// <summary>
     /// Creates a revolute joint
     /// </summary>
     /// <param name="def">The revolute joint definition</param>
     /// <returns>The revolute joint</returns>
-    public RevoluteJoint CreateRevoluteJoint(RevoluteJointDef def) => b2CreateRevoluteJoint(this, def);
+    public RevoluteJoint CreateRevoluteJoint(RevoluteJointDef def) => new (b2CreateRevoluteJoint(this, def));
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateWeldJoint")]
-    private static extern WeldJoint b2CreateWeldJoint(World worldId, in WeldJointDef def);
+    private static extern JointId b2CreateWeldJoint(World worldId, in WeldJointDef def);
     
     /// <summary>
     /// Creates a weld joint
     /// </summary>
     /// <param name="def">The weld joint definition</param>
     /// <returns>The weld joint</returns>
-    public WeldJoint CreateWeldJoint(WeldJointDef def) => b2CreateWeldJoint(this, def);
+    public WeldJoint CreateWeldJoint(WeldJointDef def) => new (b2CreateWeldJoint(this, def));
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateWheelJoint")]
-    private static extern WheelJoint b2CreateWheelJoint(World worldId, in WheelJointDef def);
+    private static extern JointId b2CreateWheelJoint(World worldId, in WheelJointDef def);
     
     /// <summary>
     /// Creates a wheel joint
     /// </summary>
     /// <param name="def">The wheel joint definition</param>
     /// <returns>The wheel joint</returns>
-    public WheelJoint CreateWheelJoint(WheelJointDef def) => b2CreateWheelJoint(this, def);
+    public WheelJoint CreateWheelJoint(WheelJointDef def) => new (b2CreateWheelJoint(this, def));
 }

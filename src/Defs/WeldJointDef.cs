@@ -9,74 +9,90 @@ namespace Box2D;
 /// soft-body simulation.
 /// <i>Note: The approximate solver in Box2D cannot hold many bodies together rigidly</i>.
 /// </summary>
-[StructLayout(LayoutKind.Sequential, Pack = 4)]
+[StructLayout(LayoutKind.Explicit)]
 public struct WeldJointDef
 {
+    [FieldOffset(0)]
+    private BodyId bodyA;
+    
     /// <summary>
     /// The first attached body
     /// </summary>
-    public Body BodyA;
+    public Body? BodyA => Body.GetBody(bodyA);
 
+    [FieldOffset(8)]
+    private BodyId bodyB;
+    
     /// <summary>
     /// The second attached body
     /// </summary>
-    public Body BodyB;
+    public Body? BodyB => Body.GetBody(bodyB);
 
     /// <summary>
     /// The local anchor point relative to bodyA's origin
     /// </summary>
+    [FieldOffset(16)]
     public Vec2 LocalAnchorA;
 
     /// <summary>
     /// The local anchor point relative to bodyB's origin
     /// </summary>
+    [FieldOffset(24)]
     public Vec2 LocalAnchorB;
 
     /// <summary>
     /// The bodyB angle minus bodyA angle in the reference state (radians)
     /// </summary>
+    [FieldOffset(32)]
     public float ReferenceAngle;
 
     /// <summary>
     /// Linear stiffness expressed as Hertz (cycles per second). Use zero for maximum stiffness.
     /// </summary>
+    [FieldOffset(36)]
     public float LinearHertz;
 
     /// <summary>
     /// Angular stiffness as Hertz (cycles per second). Use zero for maximum stiffness.
     /// </summary>
+    [FieldOffset(40)]
     public float AngularHertz;
 
     /// <summary>
     /// Linear damping ratio, non-dimensional. Use 1 for critical damping.
     /// </summary>
+    [FieldOffset(44)]
     public float LinearDampingRatio;
 
     /// <summary>
     /// Linear damping ratio, non-dimensional. Use 1 for critical damping.
     /// </summary>
+    [FieldOffset(48)]
     public float AngularDampingRatio;
 
     /// <summary>
     /// Set this flag to true if the attached bodies should collide
     /// </summary>
     [MarshalAs(UnmanagedType.U1)]
+    [FieldOffset(52)]
     public bool CollideConnected;
 
     /// <summary>
     /// User data pointer
     /// </summary>
+    [FieldOffset(56)]
     public nint UserData;
 
     /// <summary>
     /// Used internally to detect a valid definition. DO NOT SET.
     /// </summary>
-    private readonly int InternalValue = Box2D.B2_SECRET_COOKIE;
+    [FieldOffset(64)]
+    private readonly int internalValue = Box2D.B2_SECRET_COOKIE;
     
     public WeldJointDef()
     {
-        BodyA = default;
-        BodyB = default;
+        bodyA = default;
+        bodyB = default;
         LocalAnchorA = default;
         LocalAnchorB = default;
         ReferenceAngle = 0;

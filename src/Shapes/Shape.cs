@@ -1,13 +1,18 @@
+using System.Collections.Concurrent;
 using System.Runtime.InteropServices;
 
 namespace Box2D;
 
 [StructLayout(LayoutKind.Sequential, Pack = 4)]
-public struct Shape
+public struct Shape : IEquatable<Shape>
 {
     private int index1;
     private ushort world0;
     private ushort generation;
+    
+    public bool Equals(Shape other) => index1 == other.index1 && world0 == other.world0 && generation == other.generation;
+    public override bool Equals(object? obj) => obj is Shape other && Equals(other);
+    public override int GetHashCode() => HashCode.Combine(index1, world0, generation);
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DestroyShape")]
     private static extern void b2DestroyShape(Shape shapeId, bool updateBodyMass);
@@ -41,15 +46,15 @@ public struct Shape
     public ShapeType Type => GetType();
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetBody")]
-    private static extern Body b2Shape_GetBody(Shape shapeId);
+    private static extern BodyId b2Shape_GetBody(Shape shapeId);
     
     /// <summary>
     /// Gets the body that this shape is attached to
     /// </summary>
     /// <returns>The body that this shape is attached to</returns>
-    public Body GetBody() => b2Shape_GetBody(this);
+    public Body? GetBody() => Body.GetBody(b2Shape_GetBody(this));
 
-    public Body Body => GetBody();
+    public Body? Body => GetBody();
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetWorld")]
     private static extern World b2Shape_GetWorld(Shape shapeId);

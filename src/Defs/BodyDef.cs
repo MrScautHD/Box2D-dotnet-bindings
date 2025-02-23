@@ -7,12 +7,13 @@ namespace Box2D;
 /// You can safely re-use body definitions. Shapes are added to a body after construction.
 /// Body definitions are temporary objects used to bundle creation parameters.
 /// </summary>
-[StructLayout(LayoutKind.Sequential, Pack = 4)]
+[StructLayout(LayoutKind.Explicit)]
 public struct BodyDef
 {
     /// <summary>
     /// The body type: static, kinematic, or dynamic.
     /// </summary>
+    [FieldOffset(0)]
     public BodyType Type;
 
     /// <summary>
@@ -20,21 +21,25 @@ public struct BodyDef
     /// <i>Note: Creating bodies at the origin and then moving them nearly doubles the cost of body creation, especially
     /// if the body is moved after shapes have been added.</i>
     /// </summary>
+    [FieldOffset(4)]
     public Vec2 Position;
 
     /// <summary>
     /// The initial world rotation of the body.
     /// </summary>
+    [FieldOffset(12)]
     public Rot Rotation;
 
     /// <summary>
     /// The initial linear velocity of the body's origin. Usually in meters per second.
     /// </summary>
+    [FieldOffset(20)]
     public Vec2 LinearVelocity;
 
     /// <summary>
     /// The initial angular velocity of the body. Radians per second.
     /// </summary>
+    [FieldOffset(28)]
     public float AngularVelocity;
 
     /// <summary>
@@ -44,6 +49,7 @@ public struct BodyDef
     /// Generally linear damping is undesirable because it makes objects move slowly
     /// as if they are floating.
     /// </summary>
+    [FieldOffset(32)]
     public float LinearDamping;
 
     /// <summary>
@@ -52,18 +58,22 @@ public struct BodyDef
     /// time step when the damping parameter is large.
     /// Angular damping can be use slow down rotating bodies.
     /// </summary>
+    [FieldOffset(36)]
     public float AngularDamping;
 
     /// <summary>
     /// Scale the gravity applied to this body. Non-dimensional.
     /// </summary>
+    [FieldOffset(40)]
     public float GravityScale;
 
     /// <summary>
     /// Sleep speed threshold, default is 0.05 meters per second
     /// </summary>
+    [FieldOffset(44)]
     public float SleepThreshold;
 
+    [FieldOffset(48)]
     private nint name;
 	
     /// <summary>
@@ -88,24 +98,28 @@ public struct BodyDef
     /// <summary>
     /// Use this to store application specific body data.
     /// </summary>
+    [FieldOffset(56)]
     public nint UserData;
 
     /// <summary>
     /// Set this flag to false if this body should never fall asleep.
     /// </summary>
     [MarshalAs(UnmanagedType.U1)]
+    [FieldOffset(64)]
     public bool EnableSleep;
 
     /// <summary>
     /// Is this body initially awake or sleeping?
     /// </summary>
     [MarshalAs(UnmanagedType.U1)]
+    [FieldOffset(65)]
     public bool IsAwake;
 
     /// <summary>
     /// Should this body be prevented from rotating? Useful for characters.
     /// </summary>
     [MarshalAs(UnmanagedType.U1)]
+    [FieldOffset(66)]
     public bool FixedRotation;
 
     /// <summary>
@@ -115,12 +129,14 @@ public struct BodyDef
     /// continuous collision. They may interfere with joint constraints.
     /// </summary>
     [MarshalAs(UnmanagedType.U1)]
+    [FieldOffset(67)]
     public bool IsBullet;
 
     /// <summary>
     /// Used to disable a body. A disabled body does not move or collide.
     /// </summary>
     [MarshalAs(UnmanagedType.U1)]
+    [FieldOffset(68)]
     public bool IsEnabled;
 
     /// <summary>
@@ -128,12 +144,14 @@ public struct BodyDef
     /// for circular objects, like wheels.
     /// </summary>
     [MarshalAs(UnmanagedType.U1)]
+    [FieldOffset(69)]
     public bool AllowFastRotation;
 
     /// <summary>
     /// Used internally to detect a valid definition. DO NOT SET.
     /// </summary>
-    private readonly int InternalValue = Box2D.B2_SECRET_COOKIE;
+    [FieldOffset(72)]
+    private readonly int internalValue = Box2D.B2_SECRET_COOKIE;
     
     public BodyDef()
     {

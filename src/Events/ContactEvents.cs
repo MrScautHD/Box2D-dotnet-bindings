@@ -7,9 +7,10 @@ namespace Box2D;
 /// as event arrays after the time step is complete.
 /// <i>Note: these may become invalid if bodies and/or shapes are destroyed</i>
 /// </summary>
-[StructLayout(LayoutKind.Sequential, Pack = 4)]
+[StructLayout(LayoutKind.Explicit)]
 public struct ContactEvents
 {
+    [FieldOffset(0)]
     private nint beginEvents;
 	
     /// <summary>
@@ -26,7 +27,7 @@ public struct ContactEvents
         }
     }
 
-	
+    [FieldOffset(8)]
     private nint endEvents;
 	
     /// <summary>
@@ -43,6 +44,7 @@ public struct ContactEvents
         }
     }
 
+    [FieldOffset(16)]
     private nint hitEvents;
 	
     /// <summary>
@@ -60,11 +62,14 @@ public struct ContactEvents
     }
 
     /// Number of begin touch events
+    [FieldOffset(24)]
     private int beginCount;
 
     /// Number of end touch events
+    [FieldOffset(28)]
     private int endCount;
 
     /// Number of hit events
+    [FieldOffset(32)]
     private int hitCount;
 }

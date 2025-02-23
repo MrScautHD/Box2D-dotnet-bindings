@@ -7,64 +7,78 @@ namespace Box2D;
 ///
 /// A typical usage is to control the movement of a dynamic body with respect to the ground.
 /// </summary>
-[StructLayout(LayoutKind.Sequential, Pack = 4)]
+[StructLayout(LayoutKind.Explicit)]
 public struct MotorJointDef
 {
+    [FieldOffset(0)]
+    private BodyId bodyA;
+    
     /// <summary>
     /// The first attached body
     /// </summary>
-    public Body BodyA;
+    public Body? BodyA => Body.GetBody(bodyA);
 
+    [FieldOffset(8)]
+    private BodyId bodyB;
+    
     /// <summary>
     /// The second attached body
     /// </summary>
-    public Body BodyB;
+    public Body? BodyB => Body.GetBody(bodyB);
 
     /// <summary>
     /// Position of bodyB minus the position of bodyA, in bodyA's frame
     /// </summary>
+    [FieldOffset(16)]
     public Vec2 LinearOffset;
 
     /// <summary>
     /// The bodyB angle minus bodyA angle in radians
     /// </summary>
+    [FieldOffset(24)]
     public float AngularOffset;
 
     /// <summary>
     /// The maximum motor force in newtons
     /// </summary>
+    [FieldOffset(28)]
     public float MaxForce;
 
     /// <summary>
     /// The maximum motor torque in newton-meters
     /// </summary>
+    [FieldOffset(32)]
     public float MaxTorque;
 
     /// <summary>
     /// Position correction factor in the range [0,1]
     /// </summary>
+    [FieldOffset(36)]
     public float CorrectionFactor;
 
     /// <summary>
     /// Set this flag to true if the attached bodies should collide
     /// </summary>
     [MarshalAs(UnmanagedType.U1)]
+    [FieldOffset(40)]
     public bool CollideConnected;
 
     /// <summary>
     /// User data pointer
     /// </summary>
+    [FieldOffset(44)]
     public nint UserData;
 
     /// <summary>
     /// Used internally to detect a valid definition. DO NOT SET.
     /// </summary>
-    private readonly int InternalValue = Box2D.B2_SECRET_COOKIE;
+    [FieldOffset(52)]
+    private readonly int internalValue = Box2D.B2_SECRET_COOKIE;
     
     public MotorJointDef()
     {
-        BodyA = default;
-        BodyB = default;
+        bodyA = default;
+        bodyB = default;
         LinearOffset = default;
         AngularOffset = 0;
         MaxForce = 0;

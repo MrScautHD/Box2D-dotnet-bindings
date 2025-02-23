@@ -8,8 +8,11 @@ namespace Box2D;
 /// a relative position and rotation and applies the forces and torques needed to achieve
 /// that relative transform over time.
 /// </summary>
-public class MotorJoint:Joint
+public class MotorJoint : Joint
 {
+    internal MotorJoint(JointId id) : base(id)
+    { }
+    
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MotorJoint_SetLinearOffset")]
     private static extern void b2MotorJoint_SetLinearOffset(JointId jointId, Vec2 linearOffset);
     

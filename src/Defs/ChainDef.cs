@@ -19,14 +19,16 @@ namespace Box2D;
 /// https://en.wikipedia.org/wiki/Polygonal_chain<br/>
 /// <b>Warning: Do not use chain shapes unless you understand the limitations. This is an advanced feature.</b>
 /// </summary>
-[StructLayout(LayoutKind.Sequential, Pack = 4)]
+[StructLayout(LayoutKind.Explicit)]
 public struct ChainDef
 {
     /// <summary>
     /// Use this to store application specific shape data.
     /// </summary>
+    [FieldOffset(0)]
     public nint UserData;
 
+    [FieldOffset(8)]
     private nint points;
 	
     /// <summary>
@@ -60,8 +62,10 @@ public struct ChainDef
     /// <summary>
     /// The point count, must be 4 or more.
     /// </summary>
+    [FieldOffset(16)]
     private int Count;
 
+    [FieldOffset(20)]
     private nint materials;
 	
     /// <summary>
@@ -89,23 +93,27 @@ public struct ChainDef
     /// The material count. Must be 1 or count. This allows you to provide one
     /// material for all segments or a unique material per segment.
     /// </summary>
+    [FieldOffset(28)]
     private int MaterialCount;
 
     /// <summary>
     /// Contact filtering data.
     /// </summary>
-    public Filter Filter;
+    [FieldOffset(32)]
+    public Filter Filter; // 20 bytes
 
     /// <summary>
     /// Indicates a closed chain formed by connecting the first and last points
     /// </summary>
     [MarshalAs(UnmanagedType.U1)]
+    [FieldOffset(52)]
     public bool IsLoop;
 
     /// <summary>
     /// Used internally to detect a valid definition. DO NOT SET.
     /// </summary>
-    private readonly int InternalValue = Box2D.B2_SECRET_COOKIE;
+    [FieldOffset(56)]
+    private readonly int internalValue = Box2D.B2_SECRET_COOKIE;
     
     public ChainDef()
     {
