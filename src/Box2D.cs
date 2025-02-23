@@ -68,7 +68,7 @@ public static class Box2D
   /// <b>Warning: Do not manually fill in the hull data, it must come directly from b2ComputeHull</b>
   /// </remarks>
   [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakeOffsetPolygon")]
-  public static extern Polygon MakeOffsetPolygon(in Hull hull, in Vec2 position, in Rot rotation);
+  public static extern Polygon MakeOffsetPolygon(in Hull hull, in Vec2 position, in Rotation rotation);
 
   /// <summary>
   /// Make an offset convex polygon from a convex hull. This will assert if the hull is not valid.
@@ -77,7 +77,7 @@ public static class Box2D
   /// <b>Warning: Do not manually fill in the hull data, it must come directly from b2ComputeHull</b>
   /// </remarks>
   [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakeOffsetRoundedPolygon")]
-  public static extern Polygon MakeOffsetRoundedPolygon(in Hull hull, in Vec2 position, in Rot rotation, float radius);
+  public static extern Polygon MakeOffsetRoundedPolygon(in Hull hull, in Vec2 position, in Rotation rotation, float radius);
 
   /// <summary>
   /// Make a square polygon, bypassing the need for a convex hull.
@@ -111,7 +111,7 @@ public static class Box2D
   /// <param name="center">the local center of the box</param>
   /// <param name="rotation">the local rotation of the box</param>
   [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakeOffsetBox")]
-  public static extern Polygon MakeOffsetBox(float halfWidth, float halfHeight, in Vec2 center, in Rot rotation);
+  public static extern Polygon MakeOffsetBox(float halfWidth, float halfHeight, in Vec2 center, in Rotation rotation);
 
   /// <summary>
   /// Make an offset rounded box, bypassing the need for a convex hull.
@@ -122,7 +122,7 @@ public static class Box2D
   /// <param name="rotation">the local rotation of the box</param>
   /// <param name="radius">the radius of the rounded extension</param>
   [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakeOffsetRoundedBox")]
-  public static extern Polygon MakeOffsetRoundedBox(float halfWidth, float halfHeight, in Vec2 center, in Rot rotation, float radius);
+  public static extern Polygon MakeOffsetRoundedBox(float halfWidth, float halfHeight, in Vec2 center, in Rotation rotation, float radius);
 
 
 

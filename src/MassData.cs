@@ -22,4 +22,9 @@ public struct MassData
     /// The rotational inertia of the shape about the local origin.
     /// </summary>
     public float RotationalInertia;
+    
+    public override string ToString()
+    {
+        return $"MassData(Mass={Mass}, Center={Center}, RotationalInertia={RotationalInertia})";
+    }
 }

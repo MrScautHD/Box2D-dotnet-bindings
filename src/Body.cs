@@ -129,15 +129,15 @@ public class Body
     public Vec2 Position => GetPosition();
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetRotation")]
-    private static extern Rot b2Body_GetRotation(BodyId bodyId);
+    private static extern Rotation b2Body_GetRotation(BodyId bodyId);
     
     /// <summary>
     /// Get the world rotation of a body as a cosine/sine pair (complex number)
     /// </summary>
     /// <returns>The world rotation of the body as a cosine/sine pair (complex number)</returns>
-    public Rot GetRotation() => b2Body_GetRotation(_id);
+    public Rotation GetRotation() => b2Body_GetRotation(_id);
 
-    public Rot Rotation => GetRotation();
+    public Rotation Rotation => GetRotation();
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetTransform")]
     private static extern Transform b2Body_GetTransform(BodyId bodyId);
@@ -151,7 +151,7 @@ public class Body
     public Transform Transform => GetTransform();
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetTransform")]
-    private static extern void b2Body_SetTransform(BodyId bodyId, Vec2 position, Rot rotation);
+    private static extern void b2Body_SetTransform(BodyId bodyId, Vec2 position, Rotation rotation);
     
     /// <summary>
     /// Set the world transform of a body.
@@ -160,7 +160,7 @@ public class Body
     /// <param name="rotation">The rotation</param>
     /// <remarks>This acts as a teleport and is fairly expensive.<br/>
     /// <i>Note: Generally you should create a body with the intended transform.</i></remarks>
-    public void SetTransform(Vec2 position, Rot rotation) => b2Body_SetTransform(_id, position, rotation);
+    public void SetTransform(Vec2 position, Rotation rotation) => b2Body_SetTransform(_id, position, rotation);
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetLocalPoint")]
     private static extern Vec2 b2Body_GetLocalPoint(BodyId bodyId, Vec2 worldPoint);

@@ -1,4 +1,4 @@
-using System.Runtime.CompilerServices;
+using System;
 using System.Runtime.InteropServices;
 
 [StructLayout(LayoutKind.Sequential, Pack = 4)]
@@ -23,97 +23,24 @@ public struct Vec2
 }
 
 [StructLayout(LayoutKind.Sequential, Pack = 4)]
-public struct Rot
+public struct Rotation
 {
     public float Cos = 1;
     public float Sin = 0;
-    public Rot()
+    public Rotation()
     { }
     
-    public static implicit operator Rot((float Cos, float Sin) tuple) => new() { Cos = tuple.Cos, Sin = tuple.Sin };
-    public static implicit operator (float, float)(Rot rot) => (rot.Cos, rot.Sin);
+    public static implicit operator Rotation((float Cos, float Sin) tuple) => new() { Cos = tuple.Cos, Sin = tuple.Sin };
+    public static implicit operator (float, float)(Rotation rotation) => (rotation.Cos, rotation.Sin);
     
-    public static implicit operator Rot(float radians)
+    public static implicit operator Rotation(float radians)
     {
         var cos = System.MathF.Cos(radians);
         var sin = System.MathF.Sin(radians);
-        return new Rot { Cos = cos, Sin = sin };
+        return new Rotation { Cos = cos, Sin = sin };
     }
     
-    public static implicit operator float(Rot rot) => System.MathF.Atan2(rot.Sin, rot.Cos);
-    
-    public static implicit operator Rot(System.Numerics.Quaternion quaternion)
-    {
-        var (x, y, z, w) = (quaternion.X, quaternion.Y, quaternion.Z, quaternion.W);
-        var sin = 2 * (w * z - x * y);
-        var cos = 1 - 2 * (y * y + z * z);
-        return new Rot { Cos = cos, Sin = sin };
-    }
-    
-    public static implicit operator System.Numerics.Quaternion(Rot rot)
-    {
-        var (cos, sin) = (rot.Cos, rot.Sin);
-        var halfAngle = System.MathF.Atan2(sin, cos) / 2;
-        var w = System.MathF.Cos(halfAngle);
-        var z = System.MathF.Sin(halfAngle);
-        return new System.Numerics.Quaternion(0, 0, z, w);
-    }
-    
-    public static Rot operator *(Rot a, Rot b)
-    {
-        var cos = a.Cos * b.Cos - a.Sin * b.Sin;
-        var sin = a.Cos * b.Sin + a.Sin * b.Cos;
-        return new Rot { Cos = cos, Sin = sin };
-    }
-    
-    public static Rot operator +(Rot a, Rot b)
-    {
-        var cos = a.Cos * b.Cos - a.Sin * b.Sin;
-        var sin = a.Cos * b.Sin + a.Sin * b.Cos;
-        return new Rot { Cos = cos, Sin = sin };
-    }
-    
-    public static Rot operator -(Rot a, Rot b)
-    {
-        var cos = a.Cos * b.Cos + a.Sin * b.Sin;
-        var sin = a.Cos * b.Sin - a.Sin * b.Cos;
-        return new Rot { Cos = cos, Sin = sin };
-    }
-    
-    public static Rot operator -(Rot a)
-    {
-        return new Rot { Cos = a.Cos, Sin = -a.Sin };
-    }
-    
-    public static Rot operator *(Rot a, float b)
-    {
-        return new Rot { Cos = a.Cos * b, Sin = a.Sin * b };
-    }
-    
-    public static Rot operator /(Rot a, float b)
-    {
-        return new Rot { Cos = a.Cos / b, Sin = a.Sin / b };
-    }
-    
-    public static bool operator ==(Rot a, Rot b)
-    {
-        return a.Cos == b.Cos && a.Sin == b.Sin;
-    }
-    
-    public static bool operator !=(Rot a, Rot b)
-    {
-        return a.Cos != b.Cos || a.Sin != b.Sin;
-    }
-    
-    public override bool Equals(object obj)
-    {
-        return obj is Rot rot && this == rot;
-    }
-    
-    public override int GetHashCode()
-    {
-        return Cos.GetHashCode() ^ Sin.GetHashCode();
-    }
+    public static implicit operator float(Rotation rotation) => System.MathF.Atan2(rotation.Sin, rotation.Cos);
     
     public override string ToString()
     {
@@ -130,7 +57,12 @@ public struct Rot
 public struct Transform
 {
     public Vec2 Position;
-    public Rot Rotation;
+    public Rotation Rotation;
+    
+    public override string ToString()
+    {
+        return $"Transform(Position: {Position}, Rotation: {Rotation})";
+    }
 }
 
 [StructLayout(LayoutKind.Sequential, Pack = 4)]
@@ -138,4 +70,12 @@ public struct AABB
 {
     public Vec2 LowerBound;
     public Vec2 UpperBound;
+    
+    public float Width => UpperBound.X - LowerBound.X;
+    public float Height => UpperBound.Y - LowerBound.Y;
+    
+    public override string ToString()
+    {
+        return $"AABB(Lower: {LowerBound}, Upper: {UpperBound}, Width: {Width}, Height: {Height})";
+    }
 }

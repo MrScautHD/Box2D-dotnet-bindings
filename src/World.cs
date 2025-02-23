@@ -626,4 +626,6 @@ public struct World
     /// <param name="def">The wheel joint definition</param>
     /// <returns>The wheel joint</returns>
     public WheelJoint CreateWheelJoint(WheelJointDef def) => new (b2CreateWheelJoint(this, def));
+    
+    public override string ToString() => $"World: {index1}:{generation}";
 }

@@ -28,10 +28,10 @@ public struct Sweep
     /// <summary>
     /// Starting world rotation
     /// </summary>
-    public Rot Q1;
+    public Rotation Q1;
 
     /// <summary>
     /// Ending world rotation
     /// </summary>
-    public Rot Q2;
+    public Rotation Q2;
 }

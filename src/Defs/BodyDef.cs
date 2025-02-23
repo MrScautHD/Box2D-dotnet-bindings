@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.InteropServices;
 
 namespace Box2D;
@@ -28,7 +29,7 @@ public struct BodyDef
     /// The initial world rotation of the body.
     /// </summary>
     [FieldOffset(12)]
-    public Rot Rotation;
+    public Rotation Rotation;
 
     /// <summary>
     /// The initial linear velocity of the body's origin. Usually in meters per second.
