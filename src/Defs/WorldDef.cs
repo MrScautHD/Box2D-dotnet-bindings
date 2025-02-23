@@ -66,29 +66,17 @@ public struct WorldDef
     [FieldOffset(36)]
     public float MaximumLinearSpeed;
 
-    [FieldOffset(40)]
-    private nint frictionCallback;
-
     /// <summary>
     /// Optional mixing callback for friction. The default uses sqrt(frictionA * frictionB).
     /// </summary>
-    public FrictionCallback FrictionCallback
-    {
-        get => Marshal.GetDelegateForFunctionPointer<FrictionCallback>(frictionCallback);
-        set => frictionCallback = Marshal.GetFunctionPointerForDelegate(value);
-    }
+    [FieldOffset(40)]
+    public FrictionCallback FrictionCallback;
 
-    [FieldOffset(48)]
-    private nint restitutionCallback;
-	
     /// <summary>
     /// Optional mixing callback for restitution. The default uses max(restitutionA, restitutionB).
     /// </summary>
-    public RestitutionCallback RestitutionCallback
-    {
-        get => Marshal.GetDelegateForFunctionPointer<RestitutionCallback>(restitutionCallback);
-        set => restitutionCallback = Marshal.GetFunctionPointerForDelegate(value);
-    }
+    [FieldOffset(48)]
+    public RestitutionCallback RestitutionCallback;
 
     /// <summary>
     /// Can bodies go to sleep to improve performance
@@ -116,29 +104,17 @@ public struct WorldDef
     [FieldOffset(60)]
     public int WorkerCount;
 
+    /// <summary>
+    /// Callback function to spawn tasks
+    /// </summary>
     [FieldOffset(64)]
-    private nint enqueueTask;
-	
-    /// <summary>
-    /// Function to spawn tasks
-    /// </summary>
-    public EnqueueTaskCallback EnqueueTask
-    {
-        get => Marshal.GetDelegateForFunctionPointer<EnqueueTaskCallback>(enqueueTask);
-        set => enqueueTask = Marshal.GetFunctionPointerForDelegate(value);
-    }
+    public EnqueueTaskCallback EnqueueTask;
 
-    [FieldOffset(72)]
-    private nint finishTask;
-	
     /// <summary>
-    /// Function to finish a task
+    /// Callback function to finish a task
     /// </summary>
-    public FinishTaskCallback FinishTask
-    {
-        get => Marshal.GetDelegateForFunctionPointer<FinishTaskCallback>(finishTask);
-        set => finishTask = Marshal.GetFunctionPointerForDelegate(value);
-    }
+    [FieldOffset(72)]
+    public FinishTaskCallback FinishTask;
 
     /// <summary>
     /// User context that is provided to enqueueTask and finishTask
@@ -169,13 +145,9 @@ public struct WorldDef
         JointHertz = 60;
         JointDampingRatio = 2;
         MaximumLinearSpeed = 400;
-        frictionCallback = 0;
-        restitutionCallback = 0;
         EnableSleep = true;
         EnableContinuous = true;
         WorkerCount = 0;
-        enqueueTask = 0;
-        finishTask = 0;
         UserTaskContext = 0;
         UserData = 0;
     }
