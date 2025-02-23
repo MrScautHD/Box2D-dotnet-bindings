@@ -16,5 +16,5 @@ While it's not impossible to implement in C# - intrinsics have been available si
   - CD into the box2d repo
   - Execute the commands in build.sh or build.bat, but for the first `cmake` command, add `-DBOX2D_SAMPLES=OFF -DBUILD_SHARED_LIBS=ON` before the `..`
   - (If this is too cryptic, this might not be the project for you.)
-4. You fill find the shared object or DLL in ./build/src
+4. You fill find the shared object or DLL in ./build/src on Linux and .\build\bin\Debug on Windows
 5. Make sure that file gets into your output dir
