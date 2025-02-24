@@ -1,0 +1,21 @@
+name: Build on Box2D Push
+
+on:
+  repository_dispatch:
+    types: [box2d-push]
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger another pipeline
+        uses: actions/github-script@v5
+        with:
+          script: |
+            const github = require('@actions/github');
+            github.rest.actions.createWorkflowDispatch({
+              owner: 'HughPH',
+              repo: 'Box2D-dotnet-bindings',
+              workflow_id: 'publish.yml',
+              ref: 'main'
+            });

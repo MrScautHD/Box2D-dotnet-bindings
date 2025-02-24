@@ -30,7 +30,6 @@
         <Version>$(Year).$(Month).$(Day).$(Hour)$(Minute)</Version>
         <AssemblyVersion>$(Year).$(Month).$(Day).$(Hour)$(Minute)</AssemblyVersion>
         
-
     </PropertyGroup>
 
     <ItemGroup>
