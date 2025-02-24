@@ -653,5 +653,5 @@ public struct World
     /// <summary>
     /// Gets the bodies in this world
     /// </summary>
-    public IEnumerable<Body> Bodies => _bodies[index1 - 1].Values;
+    public IEnumerable<Body> Bodies => _bodies[index1].Values;
 }

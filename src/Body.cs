@@ -31,7 +31,7 @@ public struct Body
     /// <remarks>This destroys all shapes and joints attached to the body. Do not keep references to the associated shapes and joints</remarks>
     public void Destroy()
     {
-        World._bodies[world0].Remove(index1);
+        World._bodies[world0+1].Remove(index1);
         b2DestroyBody(this);
     }
 
