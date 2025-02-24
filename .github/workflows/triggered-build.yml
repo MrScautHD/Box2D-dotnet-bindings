@@ -12,7 +12,6 @@ jobs:
         uses: actions/github-script@v5
         with:
           script: |
-            const github = require('@actions/github');
             github.rest.actions.createWorkflowDispatch({
               owner: 'HughPH',
               repo: 'Box2D-dotnet-bindings',
