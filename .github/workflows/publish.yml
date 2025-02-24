@@ -5,99 +5,89 @@ on:
     types: [publish]
 
 jobs:
-  build-box2d-windows:
-    runs-on: windows-latest
-    steps:      
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-      
+  build-box2d:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            artifact_name: box2d-windows
+            artifact_path: box2d-src/build/bin/Release/box2d.dll
+            cmake_flags: "-DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF"
+            cmake_build_dir: "box2d-src/build"
+            post_build_cmd: |
+              cd box2d-src/build/bin/Release
+              ren shared.dll box2d.dll
+
+          - os: ubuntu-latest
+            artifact_name: box2d-linux
+            artifact_path: box2d-src/build/src/bin/libbox2d.so
+            cmake_flags: "-DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin"
+            cmake_build_dir: "box2d-src/build"
+            post_build_cmd: |
+              rm box2d-src/build/src/bin/libbox2d.so
+              mv box2d-src/build/src/bin/libbox2d.so.3.1.0 box2d-src/build/src/bin/libbox2d.so
+    
+    steps:
       - name: Clone Box2D
         run: git clone --depth 1 https://github.com/erincatto/box2d.git box2d-src
-      
-      - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v1.1
-      
-      - name: Build Box2D (Windows)
-        run: |
-          cd box2d-src
-          mkdir build
-          cd build
-          cmake -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF ..
-          cmake --build . --config Release
-          cd bin\Release
-          ren shared.dll box2d.dll
-      
-      - name: Upload to artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: box2d-windows
-          path: 'box2d-src/build/bin/Release/box2d.dll'
-          if-no-files-found: error
-  
-  build-box2d-linux:
-    runs-on: ubuntu-latest
-    steps:      
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-      
-      - name: Clone Box2D
-        run: git clone --depth 1 https://github.com/erincatto/box2d.git box2d-src
-        
-      - name: Setup CMake
+
+      - name: Setup MSBuild (Windows)
+        if: matrix.os == 'windows-latest'
+        uses: microsoft/setup-msbuild@v1.3
+
+      - name: Setup CMake (Linux)
+        if: matrix.os == 'ubuntu-latest'
         uses: jwlawson/actions-setup-cmake@v2
         with:
           cmake-version: 3.22.x
-          
-      - name: Build Box2D (Linux)
+
+      - name: Build Box2D
         run: |
           cd box2d-src
           mkdir build
           cd build
-          cmake -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin ..
-          cmake --build .
-          rm src/bin/libbox2d.so
-          mv src/bin/libbox2d.so.3.1.0 src/bin/libbox2d.so
-        
+          cmake ${{ matrix.cmake_flags }} ..
+          cmake --build . --config Release
+
+      - name: Post-build adjustments
+        run: ${{ matrix.post_build_cmd }}
+
       - name: Upload to artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: box2d-linux
-          path: 'box2d-src/build/src/bin/libbox2d.so'
+          name: ${{ matrix.artifact_name }}
+          path: ${{ matrix.artifact_path }}
           if-no-files-found: error
-          
+
   build-and-deploy-bindings:
-    needs: [build-box2d-windows, build-box2d-linux]
+    needs: build-box2d
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
-      
+
       - name: Get Windows artefacts
         uses: actions/download-artifact@v4
         with:
           name: box2d-windows
           path: src/native/win-x64
-          
+
       - name: Get Linux artefacts
         uses: actions/download-artifact@v4
         with:
           name: box2d-linux
           path: src/native/linux-x64
-  
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 9.0.x
-    
+
       - name: Build and pack
         run: dotnet pack src --configuration Release --output ./artefacts
 
       - name: Publish to NuGet
         run: dotnet nuget push artefacts/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
-        
