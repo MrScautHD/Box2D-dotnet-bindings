@@ -35,13 +35,12 @@
         
     </PropertyGroup>
 
-    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-      <DocumentationFile>bin\Debug\netstandard2.1\Box2DBindings.xml</DocumentationFile>
-    </PropertyGroup>
-
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-      <DebugType>pdbonly</DebugType>
-      <DocumentationFile>bin\Release\netstandard2.1\Box2DBindings.xml</DocumentationFile>
+      <DebugType>none</DebugType>
+    </PropertyGroup>
+    
+    <PropertyGroup>
+        <DocumentationFile>bin/$(Configuration)/netstandard2.1/Box2DBindings.xml</DocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>
@@ -54,7 +53,7 @@
         <None Include="native/linux-x64/libbox2d.so" Pack="true" PackagePath="runtimes/linux-x64/native/" />
             
         <!-- XMLDoc -->
-        <None Include="($OutputPath)$(AssemblyName).xml" Pack="true" PackagePath="lib/netstandard2.1/" />
+        <None Include="bin/$(Configuration)/netstandard2.1/Box2DBindings.xml" Pack="true" PackagePath="lib/netstandard2.1/" />
     </ItemGroup>
 
 
