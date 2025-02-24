@@ -1,0 +1,44 @@
+name: Check Box2D Last Push
+
+on:
+  schedule:
+    - cron: '0 * * * *' # Runs every hour
+
+jobs:
+  check_last_push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Fetch last push date/time
+        run: |
+          last_push=$(curl -s https://api.github.com/repos/erincatto/box2d | jq -r '.pushed_at')
+          echo "Last push: $last_push"
+          
+          if [ -f box2d_last_push.json ]; then
+            old_push=$(jq -r '.last_push' box2d_last_push.json)
+            if [ "$last_push" == "$old_push" ]; then
+              echo "The last push has not changed."
+              exit 0    
+            fi
+          fi
+          
+          echo "{\"last_push\": \"$last_push\"}" > box2d_last_push.json
+
+      - name: Commit changes if updated
+        run: |
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+
+          git add box2d_last_push.json
+          if git diff --staged --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+
+          git commit -m "Detected change in Box2D repository"
+          git push
