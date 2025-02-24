@@ -21,7 +21,10 @@ jobs:
           
           if [ -f box2d_last_push.json ]; then
             old_push=$(jq -r '.last_push' box2d_last_push.json)
-            if [ "$last_push" == "$old_push" ]; then
+            if [ $? -ne 0 ]; then
+              echo "Corrupt JSON detected. Deleting and resetting..."
+              rm box2d_last_push.json
+            elif [ "$last_push" == "$old_push" ]; then
               echo "The last push has not changed."
               exit 0    
             fi
