@@ -13,9 +13,13 @@ jobs:
         uses: actions/github-script@v5
         with:
           script: |
-            github.rest.actions.createWorkflowDispatch({
+            const { getOctokit, context } = require('@actions/github');
+            const octokit = getOctokit(process.env.PAT);
+            octokit.rest.actions.createWorkflowDispatch({
               owner: 'HughPH',
               repo: 'Box2D-dotnet-bindings',
               workflow_id: 'publish.yml',
               ref: 'main'
             });
+        env:
+          PAT: ${{ secrets.PAT }}
