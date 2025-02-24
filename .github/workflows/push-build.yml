@@ -10,14 +10,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Trigger another pipeline
-        uses: actions/github-script@v5
-        with:
-          github-token: ${{ secrets.PAT }}
-          script: |
-            import { Octokit } from "https://esm.sh/@octokit/rest";
-            const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
-            await octokit.repos.createDispatchEvent({
-              owner: "HughPH",
-              repo: "Box2D-dotnet-bindings",
-              event_type: "publish"
-            });
+        run: |
+            curl -X POST -H "Accept: application/vnd.github.everest-preview +json" -H "Authorization: token ${{ secrets.PAT }}" https://api.github.com/repos/HughPH/Box2D-dotnet-bindings/dispatches --data '{"event_type": "publish"}'
