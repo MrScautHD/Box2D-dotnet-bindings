@@ -12,21 +12,17 @@ namespace Box2D;
 [StructLayout(LayoutKind.Explicit)]
 public struct WeldJointDef
 {
-    [FieldOffset(0)]
-    private BodyId bodyA;
-    
     /// <summary>
     /// The first attached body
     /// </summary>
-    public Body? BodyA => World.GetBody(bodyA);
+    [FieldOffset(0)]
+    public Body BodyA;
 
-    [FieldOffset(8)]
-    private BodyId bodyB;
-    
     /// <summary>
     /// The second attached body
     /// </summary>
-    public Body? BodyB => World.GetBody(bodyB);
+    [FieldOffset(8)]
+    public Body BodyB;
 
     /// <summary>
     /// The local anchor point relative to bodyA's origin
@@ -91,8 +87,8 @@ public struct WeldJointDef
     
     public WeldJointDef()
     {
-        bodyA = default;
-        bodyB = default;
+        BodyA = default;
+        BodyB = default;
         LocalAnchorA = default;
         LocalAnchorB = default;
         ReferenceAngle = 0;

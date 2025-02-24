@@ -13,14 +13,7 @@ public struct World
     [FieldOffset(2)]
     private ushort generation;
 
-    internal static ConcurrentDictionary<BodyId, Body> _bodies = new();
-
-    internal static Body? GetBody(BodyId id)
-    {
-        if (id is { index1: 0, world0: 0, generation: 0 }) return null;
-        Body? body;
-        return _bodies.TryAdd(id, body = new Body { _id = id }) ? body : _bodies[id];
-    }
+    internal static readonly Dictionary<int, Dictionary<int, Body>> _bodies = new();
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateWorld")]
     private static extern World b2CreateWorld(in WorldDef def);
@@ -30,7 +23,12 @@ public struct World
     /// </summary>
     /// <param name="def">The world definition</param>
     /// <returns>The world</returns>
-    public static World CreateWorld(WorldDef def) => b2CreateWorld(def);
+    public static World CreateWorld(WorldDef def)
+    {
+        var world = b2CreateWorld(def);
+        _bodies.Add(world.index1, new());
+        return world;
+    }
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DestroyWorld")]
     private static extern void b2DestroyWorld(World worldId);
@@ -38,7 +36,11 @@ public struct World
     /// <summary>
     /// Destroy this world
     /// </summary>
-    public void Destroy() => b2DestroyWorld(this);
+    public void Destroy()
+    {
+        b2DestroyWorld(this);
+        _bodies.Remove(index1);
+    }
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_IsValid")]
     private static extern bool b2World_IsValid(World worldId);
@@ -552,14 +554,19 @@ public struct World
     public void DumpMemoryStats() => b2World_DumpMemoryStats(this);
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateBody")]
-    private static extern BodyId b2CreateBody(World worldId, in BodyDef def);
+    private static extern Body b2CreateBody(World worldId, in BodyDef def);
 
     /// <summary>
     /// Creates a rigid body given a definition.
     /// </summary>
     /// <param name="def">The body definition</param>
     /// <returns>The body</returns>
-    public Body? CreateBody(BodyDef def) => GetBody(b2CreateBody(this, def));
+    public Body CreateBody(BodyDef def)
+    {
+        Body body = b2CreateBody(this, def);
+        _bodies[index1].Add(body.index1, body);
+        return body;
+    }
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateDistanceJoint")]
     private static extern JointId b2CreateDistanceJoint(World worldId, in DistanceJointDef def);
@@ -645,27 +652,6 @@ public struct World
 
     /// <summary>
     /// Gets the bodies in this world
-    /// <b>Warning: This is a potentially expensive operation, you should keep track of bodies in consuming code. If you absolutely must enumerate bodies, consider World.EnumerateBodies() instead.</b>
     /// </summary>
-    public Body[] Bodies
-    {
-        get
-        {
-            int worldId = index1 - 1;
-            return _bodies.Where(kvp => kvp.Key.world0 == worldId).Select(kvp => kvp.Value).ToArray();
-        }
-    }
-    
-    /// <summary>
-    /// Enumerates the bodies in this world
-    /// </summary>
-    public IEnumerable<Body> EnumerateBodies()
-    {
-        int worldId = index1 - 1;
-        foreach(Body body in _bodies.Values)
-        {
-            if (body._id.world0 != worldId) continue;
-            yield return body;
-        }
-    }
+    public IEnumerable<Body> Bodies => _bodies[index1 - 1].Values;
 }

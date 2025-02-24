@@ -49,15 +49,15 @@ public struct Shape : IEquatable<Shape>
     public ShapeType Type => GetType();
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetBody")]
-    private static extern BodyId b2Shape_GetBody(Shape shapeId);
+    private static extern Body b2Shape_GetBody(Shape shapeId);
     
     /// <summary>
     /// Gets the body that this shape is attached to
     /// </summary>
     /// <returns>The body that this shape is attached to</returns>
-    public Body? GetBody() => World.GetBody(b2Shape_GetBody(this));
+    public Body GetBody() => b2Shape_GetBody(this);
 
-    public Body? Body => GetBody();
+    public Body Body => GetBody();
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetWorld")]
     private static extern World b2Shape_GetWorld(Shape shapeId);

@@ -11,21 +11,17 @@ namespace Box2D;
 [StructLayout(LayoutKind.Explicit)]
 public struct MouseJointDef
 {
-    [FieldOffset(0)]
-    private BodyId bodyA;
-    
     /// <summary>
     /// The first attached body. This is assumed to be static.
     /// </summary>
-    public Body? BodyA => World.GetBody(bodyA);
-
-    [FieldOffset(8)]
-    private BodyId bodyB;
+    [FieldOffset(0)]
+    public Body BodyA;
     
     /// <summary>
     /// The second attached body.
     /// </summary>
-    public Body? BodyB => World.GetBody(bodyB);
+    [FieldOffset(8)]
+    public Body BodyB;
 
     /// <summary>
     /// The initial target point in world space
@@ -72,8 +68,8 @@ public struct MouseJointDef
     
     public MouseJointDef()
     {
-        bodyA = default;
-        bodyB = default;
+        BodyA = default;
+        BodyB = default;
         Target = default;
         Hertz = 0;
         DampingRatio = 0;

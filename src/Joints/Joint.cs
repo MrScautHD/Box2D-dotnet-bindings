@@ -8,6 +8,7 @@ namespace Box2D;
 public class Joint
 {
 	internal JointId _id;
+    
     internal Joint(JointId id)
     {
         _id = id;
@@ -43,26 +44,26 @@ public class Joint
     public JointType Type => GetType();
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetBodyA")]
-    private static extern BodyId b2Joint_GetBodyA(JointId jointId);
+    private static extern Body b2Joint_GetBodyA(JointId jointId);
 
     /// <summary>
     /// Gets body A on this joint
     /// </summary>
     /// <returns>The body A on this joint</returns>
-    public Body? GetBodyA() => World.GetBody(b2Joint_GetBodyA(_id));
+    public Body GetBodyA() => b2Joint_GetBodyA(_id);
 
-    public Body? BodyA => GetBodyA();
+    public Body BodyA => GetBodyA();
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetBodyB")]
-    private static extern BodyId b2Joint_GetBodyB(JointId jointId);
+    private static extern Body b2Joint_GetBodyB(JointId jointId);
     
     /// <summary>
     /// Gets body B on this joint
     /// </summary>
     /// <returns>The body B on this joint</returns>
-    public Body? GetBodyB() => World.GetBody(b2Joint_GetBodyB(_id));
+    public Body GetBodyB() => b2Joint_GetBodyB(_id);
 
-    public Body? BodyB => GetBodyB();
+    public Body BodyB => GetBodyB();
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetWorld")]
     private static extern World b2Joint_GetWorld(JointId jointId);
