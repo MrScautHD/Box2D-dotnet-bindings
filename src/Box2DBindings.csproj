@@ -32,7 +32,6 @@
         <AssemblyVersion>$(Year).$(Month).$(Day).$(Hour)$(Minute)</AssemblyVersion>
         <Copyright>Copyright © 2025 Hugh Phoenix-Hulme</Copyright>
         <PackageProjectUrl>https://github.com/HughPH/Box2D-dotnet-bindings/</PackageProjectUrl>
-        <PackageLicenseUrl>https://github.com/HughPH/Box2D-dotnet-bindings/blob/main/LICENSE</PackageLicenseUrl>
         
     </PropertyGroup>
 
