@@ -10,9 +10,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Trigger another pipeline
-        uses: octokit/request-action@v2.x
-        id: trigger
+        uses: actions/github-script@v5
         with:
-          route: POST /repos/HughPH/Box2D-dotnet-bindings/actions/workflows/publish.yml/dispatches
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT }}
+          github-token: ${{ secrets.PAT }}
+          script: |
+            import { Octokit } from "https://esm.sh/@octokit/rest";
+            const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
+            await octokit.repos.createDispatchEvent({
+              owner: "HughPH",
+              repo: "Box2D-dotnet-bindings",
+              event_type: "publish"
+            });
