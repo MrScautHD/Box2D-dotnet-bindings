@@ -16,7 +16,7 @@ public struct MotorJointDef
     /// <summary>
     /// The first attached body
     /// </summary>
-    public Body? BodyA => Body.GetBody(bodyA);
+    public Body? BodyA => World.GetBody(bodyA);
 
     [FieldOffset(8)]
     private BodyId bodyB;
@@ -24,7 +24,7 @@ public struct MotorJointDef
     /// <summary>
     /// The second attached body
     /// </summary>
-    public Body? BodyB => Body.GetBody(bodyB);
+    public Body? BodyB => World.GetBody(bodyB);
 
     /// <summary>
     /// Position of bodyB minus the position of bodyA, in bodyA's frame

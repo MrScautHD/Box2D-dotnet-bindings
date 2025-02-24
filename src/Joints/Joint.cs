@@ -49,7 +49,7 @@ public class Joint
     /// Gets body A on this joint
     /// </summary>
     /// <returns>The body A on this joint</returns>
-    public Body? GetBodyA() => Body.GetBody(b2Joint_GetBodyA(_id));
+    public Body? GetBodyA() => World.GetBody(b2Joint_GetBodyA(_id));
 
     public Body? BodyA => GetBodyA();
     
@@ -60,7 +60,7 @@ public class Joint
     /// Gets body B on this joint
     /// </summary>
     /// <returns>The body B on this joint</returns>
-    public Body? GetBodyB() => Body.GetBody(b2Joint_GetBodyB(_id));
+    public Body? GetBodyB() => World.GetBody(b2Joint_GetBodyB(_id));
 
     public Body? BodyB => GetBodyB();
     

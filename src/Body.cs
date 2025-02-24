@@ -5,17 +5,7 @@ namespace Box2D;
 
 public class Body
 {
-    private BodyId _id;
-    
-    internal static ConcurrentDictionary<BodyId, Body> _bodies = new();
-    
-    internal static Body? GetBody(BodyId id)
-    {
-        if (id is { index1: 0, world0: 0, generation: 0 }) return null;
-        Body? body;
-        return _bodies.TryAdd(id, body = new Body {_id = id})? body : _bodies[id];
-    }
-
+    internal BodyId _id;
     // equality operator
     public static bool operator ==(Body left, Body right) => left._id.Equals(right._id);
     public static bool operator !=(Body left, Body right) => !(left == right);
@@ -30,7 +20,7 @@ public class Body
     /// <remarks>This destroys all shapes and joints attached to the body. Do not keep references to the associated shapes and joints</remarks>
     public void Destroy()
     {
-        _bodies.TryRemove(_id, out _);
+        World._bodies.TryRemove(_id, out _);
         b2DestroyBody(_id);
     }
 

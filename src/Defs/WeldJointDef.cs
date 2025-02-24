@@ -18,7 +18,7 @@ public struct WeldJointDef
     /// <summary>
     /// The first attached body
     /// </summary>
-    public Body? BodyA => Body.GetBody(bodyA);
+    public Body? BodyA => World.GetBody(bodyA);
 
     [FieldOffset(8)]
     private BodyId bodyB;
@@ -26,7 +26,7 @@ public struct WeldJointDef
     /// <summary>
     /// The second attached body
     /// </summary>
-    public Body? BodyB => Body.GetBody(bodyB);
+    public Body? BodyB => World.GetBody(bodyB);
 
     /// <summary>
     /// The local anchor point relative to bodyA's origin

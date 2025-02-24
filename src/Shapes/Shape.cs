@@ -55,7 +55,7 @@ public struct Shape : IEquatable<Shape>
     /// Gets the body that this shape is attached to
     /// </summary>
     /// <returns>The body that this shape is attached to</returns>
-    public Body? GetBody() => Body.GetBody(b2Shape_GetBody(this));
+    public Body? GetBody() => World.GetBody(b2Shape_GetBody(this));
 
     public Body? Body => GetBody();
     

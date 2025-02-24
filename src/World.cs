@@ -1,3 +1,6 @@
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace Box2D;
@@ -9,7 +12,16 @@ public struct World
     private ushort index1;
     [FieldOffset(2)]
     private ushort generation;
-    
+
+    internal static ConcurrentDictionary<BodyId, Body> _bodies = new();
+
+    internal static Body? GetBody(BodyId id)
+    {
+        if (id is { index1: 0, world0: 0, generation: 0 }) return null;
+        Body? body;
+        return _bodies.TryAdd(id, body = new Body { _id = id }) ? body : _bodies[id];
+    }
+
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateWorld")]
     private static extern World b2CreateWorld(in WorldDef def);
 
@@ -186,7 +198,7 @@ public struct World
     /// <remarks>This is less general than b2World_CastRay() and does not allow for custom filtering</remarks>
     public RayResult CastRayClosest(Vec2 origin, Vec2 translation, QueryFilter filter) =>
         b2World_CastRayClosest(this, origin, translation, filter);
-    
+
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_CastCircle")]
     private static extern TreeStats b2World_CastCircle(World worldId, in Circle circle, Transform originTransform, Vec2 translation, QueryFilter filter, CastResultCallback fcn, nint context);
 
@@ -377,10 +389,10 @@ public struct World
     /// <param name="explosionDef">The explosion definition</param>
     /// <remarks>Explosions are modeled as a force, not as a collision event</remarks>
     public void Explode(ref ExplosionDef explosionDef) => b2World_Explode(this, ref explosionDef);
-    
+
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetContactTuning")]
     private static extern void b2World_SetContactTuning(World worldId, float hertz, float dampingRatio, float pushSpeed);
-    
+
     /// <summary>
     /// Adjust contact tuning parameters
     /// </summary>
@@ -393,7 +405,7 @@ public struct World
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetJointTuning")]
     private static extern void b2World_SetJointTuning(World worldId, float hertz, float dampingRatio);
-    
+
     /// <summary>
     /// Adjust joint tuning parameters
     /// </summary>
@@ -404,7 +416,7 @@ public struct World
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetMaximumLinearSpeed")]
     private static extern void b2World_SetMaximumLinearSpeed(World worldId, float maximumLinearSpeed);
-    
+
     /// <summary>
     /// Set the maximum linear speed.
     /// </summary>
@@ -413,7 +425,7 @@ public struct World
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetMaximumLinearSpeed")]
     private static extern float b2World_GetMaximumLinearSpeed(World worldId);
-    
+
     /// <summary>
     /// Get the maximum linear speed.
     /// </summary>
@@ -428,7 +440,7 @@ public struct World
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_EnableWarmStarting")]
     private static extern void b2World_EnableWarmStarting(World worldId, bool flag);
-    
+
     /// <summary>
     /// Enable/disable constraint warm starting.
     /// </summary>
@@ -438,7 +450,7 @@ public struct World
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_IsWarmStartingEnabled")]
     private static extern bool b2World_IsWarmStartingEnabled(World worldId);
-    
+
     /// <summary>
     /// Is constraint warm starting enabled?
     /// </summary>
@@ -454,7 +466,7 @@ public struct World
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetAwakeBodyCount")]
     private static extern int b2World_GetAwakeBodyCount(World worldId);
-    
+
     /// <summary>
     /// Get the number of awake bodies.
     /// </summary>
@@ -463,7 +475,7 @@ public struct World
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetProfile")]
     private static extern Profile b2World_GetProfile(World worldId);
-    
+
     /// <summary>
     /// Get the current world performance profile
     /// </summary>
@@ -472,7 +484,7 @@ public struct World
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetCounters")]
     private static extern Counters b2World_GetCounters(World worldId);
-    
+
     /// <summary>
     /// Get world counters and sizes
     /// </summary>
@@ -481,7 +493,7 @@ public struct World
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetUserData")]
     private static extern void b2World_SetUserData(World worldId, nint userData);
-    
+
     /// <summary>
     /// Set the user data object.
     /// </summary>
@@ -492,10 +504,10 @@ public struct World
         nint userDataPtr = GCHandle.ToIntPtr(handle);
         b2World_SetUserData(this, userDataPtr);
     }
-    
+
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetUserData")]
     private static extern nint b2World_GetUserData(World worldId);
-    
+
     /// <summary>
     /// Gets the user data object.
     /// </summary>
@@ -509,10 +521,10 @@ public struct World
         T? userData = (T?)handle.Target;
         return userData;
     }
-    
+
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetFrictionCallback")]
     private static extern void b2World_SetFrictionCallback(World worldId, FrictionCallback callback);
-    
+
     /// <summary>
     /// Sets the friction callback.
     /// </summary>
@@ -522,7 +534,7 @@ public struct World
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetRestitutionCallback")]
     private static extern void b2World_SetRestitutionCallback(World worldId, RestitutionCallback callback);
-    
+
     /// <summary>
     /// Sets the restitution callback.
     /// </summary>
@@ -532,7 +544,7 @@ public struct World
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_DumpMemoryStats")]
     private static extern void b2World_DumpMemoryStats(World worldId);
-    
+
     /// <summary>
     /// Dumps memory stats to box2d_memory.txt
     /// </summary>
@@ -541,27 +553,27 @@ public struct World
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateBody")]
     private static extern BodyId b2CreateBody(World worldId, in BodyDef def);
-    
+
     /// <summary>
     /// Creates a rigid body given a definition.
     /// </summary>
     /// <param name="def">The body definition</param>
     /// <returns>The body</returns>
-    public Body? CreateBody(BodyDef def) => Body.GetBody(b2CreateBody(this, def));
-    
+    public Body? CreateBody(BodyDef def) => GetBody(b2CreateBody(this, def));
+
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateDistanceJoint")]
     private static extern JointId b2CreateDistanceJoint(World worldId, in DistanceJointDef def);
-    
+
     /// <summary>
     /// Creates a distance joint
     /// </summary>
     /// <param name="def">The distance joint definition</param>
     /// <returns>The distance joint</returns>
     public DistanceJoint CreateDistanceJoint(DistanceJointDef def) => (DistanceJoint)new Joint(b2CreateDistanceJoint(this, def));
-    
+
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateMotorJoint")]
     private static extern JointId b2CreateMotorJoint(World worldId, in MotorJointDef def);
-    
+
     /// <summary>
     /// Creates a motor joint
     /// </summary>
@@ -571,63 +583,89 @@ public struct World
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateMouseJoint")]
     private static extern JointId b2CreateMouseJoint(World worldId, in MouseJointDef def);
-    
+
     /// <summary>
     /// Creates a mouse joint
     /// </summary>
     /// <param name="def">The mouse joint definition</param>
     /// <returns>The mouse joint</returns>
     public MouseJoint CreateMouseJoint(MouseJointDef def) => (MouseJoint)new Joint(b2CreateMouseJoint(this, def));
-    
+
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateNullJoint")]
     private static extern JointId b2CreateNullJoint(World worldId, in NullJointDef def);
-    
+
     /// <summary>
     /// Creates a null joint
     /// </summary>
     /// <param name="def">The null joint definition</param>
     /// <returns>The null joint</returns>
     public Joint CreateNullJoint(NullJointDef def) => new Joint(b2CreateNullJoint(this, def));
-    
+
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreatePrismaticJoint")]
     private static extern JointId b2CreatePrismaticJoint(World worldId, in PrismaticJointDef def);
-    
+
     /// <summary>
     /// Creates a prismatic (slider) joint
     /// </summary>
     /// <param name="def">The prismatic joint definition</param>
     /// <returns>The prismatic joint</returns>
     public PrismaticJoint CreatePrismaticJoint(PrismaticJointDef def) => new(b2CreatePrismaticJoint(this, def));
-    
+
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateRevoluteJoint")]
     private static extern JointId b2CreateRevoluteJoint(World worldId, in RevoluteJointDef def);
-    
+
     /// <summary>
     /// Creates a revolute joint
     /// </summary>
     /// <param name="def">The revolute joint definition</param>
     /// <returns>The revolute joint</returns>
-    public RevoluteJoint CreateRevoluteJoint(RevoluteJointDef def) => new (b2CreateRevoluteJoint(this, def));
-    
+    public RevoluteJoint CreateRevoluteJoint(RevoluteJointDef def) => new(b2CreateRevoluteJoint(this, def));
+
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateWeldJoint")]
     private static extern JointId b2CreateWeldJoint(World worldId, in WeldJointDef def);
-    
+
     /// <summary>
     /// Creates a weld joint
     /// </summary>
     /// <param name="def">The weld joint definition</param>
     /// <returns>The weld joint</returns>
-    public WeldJoint CreateWeldJoint(WeldJointDef def) => new (b2CreateWeldJoint(this, def));
-    
+    public WeldJoint CreateWeldJoint(WeldJointDef def) => new(b2CreateWeldJoint(this, def));
+
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateWheelJoint")]
     private static extern JointId b2CreateWheelJoint(World worldId, in WheelJointDef def);
-    
+
     /// <summary>
     /// Creates a wheel joint
     /// </summary>
     /// <param name="def">The wheel joint definition</param>
     /// <returns>The wheel joint</returns>
-    public WheelJoint CreateWheelJoint(WheelJointDef def) => new (b2CreateWheelJoint(this, def));
-    
+    public WheelJoint CreateWheelJoint(WheelJointDef def) => new(b2CreateWheelJoint(this, def));
+
     public override string ToString() => $"World: {index1}:{generation}";
+
+    /// <summary>
+    /// Gets the bodies in this world
+    /// <b>Warning: This is a potentially expensive operation, you should keep track of bodies in consuming code. If you absolutely must enumerate bodies, consider World.EnumerateBodies() instead.</b>
+    /// </summary>
+    public Body[] Bodies
+    {
+        get
+        {
+            int worldId = index1;
+            return _bodies.Where(kvp => kvp.Key.world0 == worldId).Select(kvp => kvp.Value).ToArray();
+        }
+    }
+    
+    /// <summary>
+    /// Enumerates the bodies in this world
+    /// </summary>
+    public IEnumerable<Body> EnumerateBodies()
+    {
+        int worldId = index1;
+        foreach(Body body in _bodies.Values)
+        {
+            if (body._id.world0 != worldId) continue;
+            yield return body;
+        }
+    }
 }
