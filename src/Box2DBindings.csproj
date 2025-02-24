@@ -20,6 +20,7 @@
         <RootNamespace>Box2D</RootNamespace>
         <LangVersion>latest</LangVersion>
 
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
 
         <Year>$([System.DateTime]::UtcNow.ToString("yyyy"))</Year>
         <Month>$([System.DateTime]::UtcNow.ToString("MM"))</Month>
@@ -29,7 +30,19 @@
         
         <Version>$(Year).$(Month).$(Day).$(Hour)$(Minute)</Version>
         <AssemblyVersion>$(Year).$(Month).$(Day).$(Hour)$(Minute)</AssemblyVersion>
+        <Copyright>Copyright © 2025 Hugh Phoenix-Hulme</Copyright>
+        <PackageProjectUrl>https://github.com/HughPH/Box2D-dotnet-bindings/</PackageProjectUrl>
+        <PackageLicenseUrl>https://github.com/HughPH/Box2D-dotnet-bindings/blob/main/LICENSE</PackageLicenseUrl>
         
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <DocumentationFile>bin\Debug\netstandard2.1\Box2DBindings.xml</DocumentationFile>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <DebugType>pdbonly</DebugType>
+      <DocumentationFile>bin\Release\netstandard2.1\Box2DBindings.xml</DocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>
@@ -41,6 +54,8 @@
         <!-- Linux SO -->
         <None Include="native/linux-x64/libbox2d.so" Pack="true" PackagePath="runtimes/linux-x64/native/" />
             
+        <!-- XMLDoc -->
+        <None Include="($OutputPath)$(AssemblyName).xml" Pack="true" PackagePath="lib/netstandard2.1/" />
     </ItemGroup>
 
 
