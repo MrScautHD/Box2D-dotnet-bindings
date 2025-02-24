@@ -651,7 +651,7 @@ public struct World
     {
         get
         {
-            int worldId = index1;
+            int worldId = index1 - 1;
             return _bodies.Where(kvp => kvp.Key.world0 == worldId).Select(kvp => kvp.Value).ToArray();
         }
     }
@@ -661,7 +661,7 @@ public struct World
     /// </summary>
     public IEnumerable<Body> EnumerateBodies()
     {
-        int worldId = index1;
+        int worldId = index1 - 1;
         foreach(Body body in _bodies.Values)
         {
             if (body._id.world0 != worldId) continue;
