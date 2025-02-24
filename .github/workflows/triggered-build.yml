@@ -12,8 +12,6 @@ jobs:
         uses: octokit/request-action@v2.x
         id: trigger
         with:
-          route: POST /repos/{owner}/{repo}/actions/workflows/publish.yml/dispatches
-          owner: HughPH
-          repo: Box2D-dotnet-bindings
+          route: POST /repos/HughPH/Box2D-dotnet-bindings/actions/workflows/publish.yml/dispatches
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
