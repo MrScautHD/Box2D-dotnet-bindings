@@ -2,7 +2,7 @@
 Box2D 3.x Bindings for dotnet (C#, F#, VB, ...)
 
 ## What is it?
-This is a "link" from dotnet to Box2D 3.x, with an API that should be more familiar and comfortable to dotnet users. World has a Bodies property, Body has a Shapes property and a Joints property, and so on.
+This is a "link" from dotnet to Box2D 3.x, with an API that should be more familiar and comfortable to dotnet users. World has a Bodies property, Body has a Shapes property and a Joints property, and so on. Delegates are fully formed, rather than being vague IntPtrs. All methods and most properties are PascalCased and have XML documentation.
 
 ## How is this better than Box2D.NetStandard/another port of Box2D 2.x?
 Box2D 3.x contains significant efficiency improvements that make use of SIMD intrinsics.
@@ -10,6 +10,7 @@ While it's not impossible to implement in C# - intrinsics have been available si
 
 ## How is this better than Hexa.NET.Box2D or Box2D.NET?
 Hexa.NET.Box2D and Box2D.NET are auto-generated with code generators, and are direct mappings of the Box2D API. This, by contrast, is a hand-crafted API that is designed to be more idiomatic to dotnet coders.
+These bindings also have full XmlDoc comments and fully defined delegates.
 In this case "better" is probably subjective: Hexa.NET.Box2D and Box2D.NET are more likely to be API-complete with the Box2D version that they target, while this library brings quality of life improvements. 
 
 ## Getting things working
