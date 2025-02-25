@@ -21,3 +21,4 @@ obj/
 # artefects
 
 .artefacts/
+src/native/
