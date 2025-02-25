@@ -39,9 +39,9 @@ public class Joint
     /// Gets the joint type
     /// </summary>
     /// <returns>The joint type</returns>
-    public JointType GetType() => b2Joint_GetType(_id);
+    public JointType GetJointType() => b2Joint_GetType(_id);
 
-    public JointType Type => GetType();
+    public JointType Type => GetJointType();
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetBodyA")]
     private static extern Body b2Joint_GetBodyA(JointId jointId);

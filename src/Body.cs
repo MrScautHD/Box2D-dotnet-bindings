@@ -52,9 +52,9 @@ public struct Body
     /// Get the body type: static, kinematic, or dynamic
     /// </summary>
     /// <returns>The body type</returns>
-    public BodyType GetType() => b2Body_GetType(this);
+    public BodyType GetBodyType() => b2Body_GetType(this);
 
-    public BodyType Type => GetType();
+    public BodyType Type => GetBodyType();
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetType")]
     private static extern void b2Body_SetType(Body bodyId, BodyType type);

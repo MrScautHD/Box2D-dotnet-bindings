@@ -44,9 +44,9 @@ public struct Shape : IEquatable<Shape>
     /// Gets the type of this shape
     /// </summary>
     /// <returns>The type of this shape</returns>
-    public ShapeType GetType() => b2Shape_GetType(this);
+    public ShapeType GetShapeType() => b2Shape_GetType(this);
 
-    public ShapeType Type => GetType();
+    public ShapeType Type => GetShapeType();
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetBody")]
     private static extern Body b2Shape_GetBody(Shape shapeId);
