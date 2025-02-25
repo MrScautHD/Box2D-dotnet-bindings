@@ -9,6 +9,11 @@ Box2D 3.x contains significant efficiency improvements that make use of SIMD int
 While it's not impossible to implement in C# - intrinsics have been available since dotnet 6 - it's probably unlikely that Box2D 3.x will be ported into Box2D.NetStandard: one of the challenges with Box2D.NetStandard has always been keeping it up-to-date with changes to Box2D 2.x, and the performance was never on par. Since Box2D 3.x builds to shared libraries, it makes much more sense all round to simply write bindings to that library than to put time into porting it. It also means I can target .net standard 2.1 instead of dotnet 6 or above.
 
 ## Getting things working
+
+If you want to just use it, get the NuGet package HughPH.Box2D using your IDE. Package info: https://www.nuget.org/packages/HughPH.Box2D/
+
+If you want to contribute:
+
 1. Clone this repo, then either build it or add a DLL reference, or copy it into your solution and add a project reference, or configure it as a submodule.
   - (If this is too cryptic, you should probably just use the NuGet package - which *should* include the native libraries - if this doesn't work, please raies an Issue)
 2. Clone the main branch of Erin Catto's incredible Box2D project from https://github.com/erincatto/box2d
