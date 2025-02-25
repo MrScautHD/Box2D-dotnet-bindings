@@ -32,8 +32,6 @@ jobs:
           
           echo "{\"last_push\": \"$last_push\"}" > box2d_last_push.json
 
-      - name: Commit changes if updated
-        run: |
           git config --global user.name 'github-actions'
           git config --global user.email 'github-actions@github.com'
 
@@ -45,3 +43,6 @@ jobs:
 
           git commit -m "Detected change in Box2D repository"
           git push
+          
+          echo "Changes committed and pushed. Starting deployment..."
+          curl -X POST -H "Accept: application/vnd.github.everest-preview +json" -H "Authorization: token ${{ secrets.PAT }}" https://api.github.com/repos/HughPH/Box2D-dotnet-bindings/dispatches --data '{"event_type": "publish"}'
