@@ -52,20 +52,29 @@ public struct Body
     /// Get the body type: static, kinematic, or dynamic
     /// </summary>
     /// <returns>The body type</returns>
+    [Obsolete("Use the Type property instead")]
     public BodyType GetBodyType() => b2Body_GetType(this);
-
-    public BodyType Type => GetBodyType();
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetType")]
     private static extern void b2Body_SetType(Body bodyId, BodyType type);
-    
+
     /// <summary>
     /// Change the body type.
     /// </summary>
     /// <param name="type">The body type</param>
     /// <remarks>This is an expensive operation. This automatically updates the mass properties regardless of the automatic mass setting</remarks>
+    [Obsolete("Use the Type property instead")]
     public void SetType(BodyType type) => b2Body_SetType(this, type);
 
+    /// <summary>
+    /// The body type: static, kinematic, or dynamic.
+    /// </summary>
+    public BodyType Type
+    {
+        get => b2Body_GetType(this);
+        set => b2Body_SetType(this, value);
+    }
+    
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetName")]
     private static extern void b2Body_SetName(Body bodyId, string name);
     
@@ -74,8 +83,9 @@ public struct Body
     /// </summary>
     /// <param name="name">The body name</param>
     /// <remarks>Up to 31 characters</remarks>
+    [Obsolete("Use the Name property instead")]
     public void SetName(string name) => b2Body_SetName(this, name);
-
+    
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetName")]
     private static extern string b2Body_GetName(Body bodyId);
     
@@ -84,7 +94,17 @@ public struct Body
     /// </summary>
     /// <returns>The body name</returns>
     /// <remarks>May be null</remarks>
+    [Obsolete("Use the Name property instead")]
     public string GetName() => b2Body_GetName(this);
+    
+    /// <summary>
+    /// The body name.
+    /// </summary>
+    public string Name
+    {
+        get => b2Body_GetName(this);
+        set => b2Body_SetName(this, value);
+    }
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetUserData")]
     private static extern void b2Body_SetUserData(Body bodyId, nint userData);
@@ -93,11 +113,10 @@ public struct Body
     /// Set the user data object for a body
     /// </summary>
     /// <param name="userData">The user data object</param>
+    [Obsolete("Use the UserData property instead")]
     public void SetUserData<T>(ref T userData)
     {
-        GCHandle handle = GCHandle.Alloc(userData);
-        nint userDataPtr = GCHandle.ToIntPtr(handle);
-        b2Body_SetUserData(this, userDataPtr);
+        UserData = userData;
     }
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetUserData")]
@@ -107,15 +126,39 @@ public struct Body
     /// Get the user data object for a body
     /// </summary>
     /// <returns>The user data object</returns>
+    [Obsolete("Use the UserData property instead")]
     public T? GetUserData<T>()
     {
-        nint userDataPtr = b2Body_GetUserData(this);
-        if (userDataPtr == 0) return default;
-        GCHandle handle = GCHandle.FromIntPtr(userDataPtr);
-        if (!handle.IsAllocated) return default;
-        T? userData = (T?)handle.Target;
-        return userData;
+        return (T?)UserData;
     }
+    
+    /// <summary>
+    /// The user data object for a body.
+    /// </summary>
+    public object? UserData
+    {
+        get
+        {
+            nint userDataPtr = b2Body_GetUserData(this);
+            if (userDataPtr == 0) return null;
+            GCHandle handle = GCHandle.FromIntPtr(userDataPtr);
+            if (!handle.IsAllocated) return null;
+            object? userData = handle.Target;
+            return userData;
+        }
+        set
+        {
+            if (value == null)
+            {
+                b2Body_SetUserData(this, 0);
+                return;
+            }
+            GCHandle handle = GCHandle.Alloc(value);
+            nint userDataPtr = GCHandle.ToIntPtr(handle);
+            b2Body_SetUserData(this, userDataPtr);
+        }
+    }
+    
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetPosition")]
     private static extern Vec2 b2Body_GetPosition(Body bodyId);
@@ -125,9 +168,14 @@ public struct Body
     /// </summary>
     /// <returns>The world position of the body</returns>
     /// <remarks>This is the location of the body origin</remarks>
+    [Obsolete("Use the Position property instead")]
     public Vec2 GetPosition() => b2Body_GetPosition(this);
 
-    public Vec2 Position => GetPosition();
+    /// <summary>
+    /// The world position of the body.
+    /// </summary>
+    /// <remarks>This is the location of the body origin</remarks>
+    public Vec2 Position => b2Body_GetPosition(this);
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetRotation")]
     private static extern Rotation b2Body_GetRotation(Body bodyId);
@@ -136,9 +184,13 @@ public struct Body
     /// Get the world rotation of a body as a cosine/sine pair (complex number)
     /// </summary>
     /// <returns>The world rotation of the body as a cosine/sine pair (complex number)</returns>
+    [Obsolete("Use the Rotation property instead")]
     public Rotation GetRotation() => b2Body_GetRotation(this);
 
-    public Rotation Rotation => GetRotation();
+    /// <summary>
+    /// The world rotation of this body as a cosine/sine pair (complex number).
+    /// </summary>
+    public Rotation Rotation => b2Body_GetRotation(this);
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetTransform")]
     private static extern Transform b2Body_GetTransform(Body bodyId);
@@ -147,9 +199,8 @@ public struct Body
     /// Get the world transform of a body.
     /// </summary>
     /// <returns>The world transform of the body</returns>
+    [Obsolete("Use the Transform property instead")]
     public Transform GetTransform() => b2Body_GetTransform(this);
-
-    public Transform Transform => GetTransform();
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetTransform")]
     private static extern void b2Body_SetTransform(Body bodyId, Vec2 position, Rotation rotation);
@@ -161,8 +212,20 @@ public struct Body
     /// <param name="rotation">The rotation</param>
     /// <remarks>This acts as a teleport and is fairly expensive.<br/>
     /// <i>Note: Generally you should create a body with the intended transform.</i></remarks>
+    [Obsolete("Use the Transform property instead")]
     public void SetTransform(Vec2 position, Rotation rotation) => b2Body_SetTransform(this, position, rotation);
-
+    
+    /// <summary>
+    /// The world transform of this body.
+    /// </summary>
+    /// <remarks>Setting this acts as a teleport and is fairly expensive.<br/>
+    /// <i>Note: Generally you should create a body with the intended transform.</i></remarks>
+    public Transform Transform 
+    {
+        get => b2Body_GetTransform(this);
+        set => b2Body_SetTransform(this, value.Position, value.Rotation);
+    }
+    
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetLocalPoint")]
     private static extern Vec2 b2Body_GetLocalPoint(Body bodyId, Vec2 worldPoint);
 
@@ -203,27 +266,6 @@ public struct Body
     /// <returns>The world vector on the body</returns>
     public Vec2 GetWorldVector(Vec2 localVector) => b2Body_GetWorldVector(this, localVector);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetLinearVelocity")]
-    private static extern Vec2 b2Body_GetLinearVelocity(Body bodyId);
-    
-    /// <summary>
-    /// Get the linear velocity of a body's center of mass
-    /// </summary>
-    /// <returns>The linear velocity of the body's center of mass, usually in meters per second</returns>
-    /// <remarks>Usually in meters per second</remarks>
-    public Vec2 GetLinearVelocity() => b2Body_GetLinearVelocity(this);
-
-    public Vec2 LinearVelocity => GetLinearVelocity();
-    
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetAngularVelocity")]
-    private static extern float b2Body_GetAngularVelocity(Body bodyId);
-    
-    /// <summary>
-    /// Get the angular velocity of a body in radians per second
-    /// </summary>
-    /// <returns>The angular velocity of the body in radians per second</returns>
-    public float GetAngularVelocity() => b2Body_GetAngularVelocity(this);
-
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetLinearVelocity")]
     private static extern void b2Body_SetLinearVelocity(Body bodyId, Vec2 linearVelocity);
     
@@ -233,7 +275,38 @@ public struct Body
     /// <param name="linearVelocity">The linear velocity, usually in meters per second</param>
     /// <remarks>Usually in meters per second</remarks>
     public void SetLinearVelocity(Vec2 linearVelocity) => b2Body_SetLinearVelocity(this, linearVelocity);
+    
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetLinearVelocity")]
+    private static extern Vec2 b2Body_GetLinearVelocity(Body bodyId);
+    
+    /// <summary>
+    /// Get the linear velocity of a body's center of mass
+    /// </summary>
+    /// <returns>The linear velocity of the body's center of mass, usually in meters per second</returns>
+    /// <remarks>Usually in meters per second</remarks>
+    [Obsolete("Use the LinearVelocity property instead")]
+    public Vec2 GetLinearVelocity() => b2Body_GetLinearVelocity(this);
 
+    /// <summary>
+    /// The linear velocity of the body's center of mass.
+    /// </summary>
+    /// <remarks>Usually in meters per second</remarks>
+    public Vec2 LinearVelocity
+    {
+        get => b2Body_GetLinearVelocity(this);
+        set => b2Body_SetLinearVelocity(this, value);
+    }
+    
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetAngularVelocity")]
+    private static extern float b2Body_GetAngularVelocity(Body bodyId);
+    
+    /// <summary>
+    /// Get the angular velocity of a body in radians per second
+    /// </summary>
+    /// <returns>The angular velocity of the body in radians per second</returns>
+    [Obsolete("Use the AngularVelocity property instead")]
+    public float GetAngularVelocity() => b2Body_GetAngularVelocity(this);
+    
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetAngularVelocity")]
     private static extern void b2Body_SetAngularVelocity(Body bodyId, float angularVelocity);
     
@@ -242,7 +315,18 @@ public struct Body
     /// </summary>
     /// <param name="angularVelocity">The angular velocity in radians per second</param>
     /// <remarks>Usually in meters per second</remarks>
+    [Obsolete("Use the AngularVelocity property instead")]
     public void SetAngularVelocity(float angularVelocity) => b2Body_SetAngularVelocity(this, angularVelocity);
+    
+    /// <summary>
+    /// The angular velocity of the body in radians per second.
+    /// </summary>
+    /// <remarks>In radians per second</remarks>
+    public float AngularVelocity
+    {
+        get => b2Body_GetAngularVelocity(this);
+        set => b2Body_SetAngularVelocity(this, value);
+    }
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetLocalPointVelocity")]
     private static extern Vec2 b2Body_GetLocalPointVelocity(Body bodyId, Vec2 localPoint);
@@ -345,9 +429,13 @@ public struct Body
     /// Get the mass of the body
     /// </summary>
     /// <returns>The mass of the body, usually in kilograms</returns>
+    [Obsolete("Use the Mass property instead")]
     public float GetMass() => b2Body_GetMass(this);
 
-    public float Mass => GetMass();
+    /// <summary>
+    /// The mass of the body, usually in kilograms.
+    /// </summary>
+    public float Mass => b2Body_GetMass(this);
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetRotationalInertia")]
     private static extern float b2Body_GetRotationalInertia(Body bodyId);
@@ -355,10 +443,14 @@ public struct Body
     /// <summary>
     /// Get the rotational inertia of the body
     /// </summary>
-    /// <returns>The rotational inertia of the body, usually in kg*m^2</returns>
+    /// <returns>The rotational inertia of the body, usually in kg*m²</returns>
+    [Obsolete("Use the RotationalInertia property instead")]
     public float GetRotationalInertia() => b2Body_GetRotationalInertia(this);
 
-    public float RotationalInertia => GetRotationalInertia();
+    /// <summary>
+    /// The rotational inertia of the body, usually in kg*m².
+    /// </summary>
+    public float RotationalInertia => b2Body_GetRotationalInertia(this);
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetLocalCenterOfMass")]
     private static extern Vec2 b2Body_GetLocalCenterOfMass(Body bodyId);
@@ -367,9 +459,13 @@ public struct Body
     /// Get the center of mass position of the body in local space
     /// </summary>
     /// <returns>The center of mass position of the body in local space</returns>
+    [Obsolete("Use the LocalCenterOfMass property instead")]
     public Vec2 GetLocalCenterOfMass() => b2Body_GetLocalCenterOfMass(this);
 
-    public Vec2 LocalCenterOfMass => GetLocalCenterOfMass();
+    /// <summary>
+    /// The center of mass position of the body in local space.
+    /// </summary>
+    public Vec2 LocalCenterOfMass => b2Body_GetLocalCenterOfMass(this);
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetWorldCenterOfMass")]
     private static extern Vec2 b2Body_GetWorldCenterOfMass(Body bodyId);
@@ -378,9 +474,13 @@ public struct Body
     /// Get the center of mass position of the body in world space
     /// </summary>
     /// <returns>The center of mass position of the body in world space</returns>
+    [Obsolete("Use the WorldCenterOfMass property instead")]
     public Vec2 GetWorldCenterOfMass() => b2Body_GetWorldCenterOfMass(this);
 
-    public Vec2 WorldCenterOfMass => GetWorldCenterOfMass();
+    /// <summary>
+    /// The center of mass position of the body in world space.
+    /// </summary>
+    public Vec2 WorldCenterOfMass => b2Body_GetWorldCenterOfMass(this);
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetMassData")]
     private static extern void b2Body_SetMassData(Body bodyId, MassData massData);
@@ -390,6 +490,7 @@ public struct Body
     /// </summary>
     /// <param name="massData">The mass data</param>
     /// <remarks>Normally this is computed automatically using the shape geometry and density. This information is lost if a shape is added or removed or if the body type changes</remarks>
+    [Obsolete("Use the MassData property instead")]
     public void SetMassData(MassData massData) => b2Body_SetMassData(this, massData);
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetMassData")]
@@ -399,12 +500,16 @@ public struct Body
     /// Get the mass data for a body
     /// </summary>
     /// <returns>The mass data for the body</returns>
+    [Obsolete("Use the MassData property instead")]
     public MassData GetMassData() => b2Body_GetMassData(this);
 
+    /// <summary>
+    /// The mass data for this body.
+    /// </summary>
     public MassData MassData
     {
-        get => GetMassData();
-        set => SetMassData(value);
+        get => b2Body_GetMassData(this);
+        set => b2Body_SetMassData(this, value);
     }
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ApplyMassFromShapes")]
@@ -424,6 +529,7 @@ public struct Body
     /// </summary>
     /// <param name="linearDamping">The linear damping</param>
     /// <remarks>Normally this is set in b2BodyDef before creation</remarks>
+    [Obsolete("Use the LinearDamping property instead")]
     public void SetLinearDamping(float linearDamping) => b2Body_SetLinearDamping(this, linearDamping);
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetLinearDamping")]
@@ -433,12 +539,17 @@ public struct Body
     /// Get the current linear damping
     /// </summary>
     /// <returns>The current linear damping</returns>
+    [Obsolete("Use the LinearDamping property instead")]
     public float GetLinearDamping() => b2Body_GetLinearDamping(this);
 
+    /// <summary>
+    /// The linear damping.
+    /// </summary>
+    /// <remarks>Normally this is set in BodyDef before creation</remarks>
     public float LinearDamping
     {
-        get => GetLinearDamping();
-        set => SetLinearDamping(value);
+        get => b2Body_GetLinearDamping(this);
+        set => b2Body_SetLinearDamping(this, value);
     }
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetAngularDamping")]
@@ -449,6 +560,7 @@ public struct Body
     /// </summary>
     /// <param name="angularDamping">The angular damping</param>
     /// <remarks>Normally this is set in b2BodyDef before creation</remarks>
+    [Obsolete("Use the AngularDamping property instead")]
     public void SetAngularDamping(float angularDamping) => b2Body_SetAngularDamping(this, angularDamping);
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetAngularDamping")]
@@ -458,12 +570,17 @@ public struct Body
     /// Get the current angular damping
     /// </summary>
     /// <returns>The current angular damping</returns>
+    [Obsolete("Use the AngularDamping property instead")]
     public float GetAngularDamping() => b2Body_GetAngularDamping(this);
 
+    /// <summary>
+    /// The angular damping.
+    /// </summary>
+    /// <remarks>Normally this is set in BodyDef before creation</remarks>
     public float AngularDamping
     {
-        get => GetAngularDamping();
-        set => SetAngularDamping(value);
+        get => b2Body_GetAngularDamping(this);
+        set => b2Body_SetAngularDamping(this, value);
     }
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetGravityScale")]
@@ -474,6 +591,7 @@ public struct Body
     /// </summary>
     /// <param name="gravityScale">The gravity scale</param>
     /// <remarks>Normally this is set in b2BodyDef before creation</remarks>
+    [Obsolete("Use the GravityScale property instead")]
     public void SetGravityScale(float gravityScale) => b2Body_SetGravityScale(this, gravityScale);
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetGravityScale")]
@@ -483,12 +601,17 @@ public struct Body
     /// Get the gravity scale
     /// </summary>
     /// <returns>The gravity scale</returns>
+    [Obsolete("Use the GravityScale property instead")]
     public float GetGravityScale() => b2Body_GetGravityScale(this);
 
+    /// <summary>
+    /// The gravity scale.
+    /// </summary>
+    /// <remarks>Normally this is set in BodyDef before creation</remarks>
     public float GravityScale
     {
-        get => GetGravityScale();
-        set => SetGravityScale(value);
+        get => b2Body_GetGravityScale(this);
+        set => b2Body_SetGravityScale(this, value);
     }
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_IsAwake")]
@@ -498,6 +621,7 @@ public struct Body
     /// Check if this body is awake
     /// </summary>
     /// <returns>true if this body is awake</returns>
+    [Obsolete("Use the Awake property instead")]
     public bool IsAwake() => b2Body_IsAwake(this);
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetAwake")]
@@ -511,12 +635,20 @@ public struct Body
     /// This wakes the entire island the body is touching.
     /// <b>Warning: Putting a body to sleep will put the entire island of bodies touching this body to sleep, which can be expensive and possibly unintuitive.</b>
     /// </remarks>
+    [Obsolete("Use the Awake property instead")]
     public void SetAwake(bool awake) => b2Body_SetAwake(this, awake);
 
+    /// <summary>
+    /// The body awake state.
+    /// </summary>
+    /// <remarks>
+    /// This wakes the entire island the body is touching.
+    /// <b>Warning: Putting a body to sleep will put the entire island of bodies touching this body to sleep, which can be expensive and possibly unintuitive.</b>
+    /// </remarks>
     public bool Awake
     {
-        get => IsAwake();
-        set => SetAwake(value);
+        get => b2Body_IsAwake(this);
+        set => b2Body_SetAwake(this, value);
     }
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_EnableSleep")]
@@ -527,6 +659,7 @@ public struct Body
     /// </summary>
     /// <param name="enableSleep">Option to enable or disable sleeping</param>
     /// <remarks>If sleeping is disabled the body will wake</remarks>
+    [Obsolete("Use the SleepEnabled property instead")]
     public void EnableSleep(bool enableSleep) => b2Body_EnableSleep(this, enableSleep);
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_IsSleepEnabled")]
@@ -536,12 +669,17 @@ public struct Body
     /// Check if sleeping is enabled for this body
     /// </summary>
     /// <returns>true if sleeping is enabled for this body</returns>
+    [Obsolete("Use the SleepEnabled property instead")]
     public bool IsSleepEnabled() => b2Body_IsSleepEnabled(this);
 
+    /// <summary>
+    /// Option to enable or disable sleeping for this body.
+    /// </summary>
+    /// <remarks>If sleeping is disabled the body will wake</remarks>
     public bool SleepEnabled
     {
-        get => IsSleepEnabled();
-        set => EnableSleep(value);
+        get => b2Body_IsSleepEnabled(this);
+        set => b2Body_EnableSleep(this, value);
     }
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetSleepThreshold")]
@@ -551,6 +689,7 @@ public struct Body
     /// Set the sleep threshold
     /// </summary>
     /// <param name="sleepThreshold">The sleep threshold, usually in meters per second</param>
+    [Obsolete("Use the SleepThreshold property instead")]
     public void SetSleepThreshold(float sleepThreshold) => b2Body_SetSleepThreshold(this, sleepThreshold);
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetSleepThreshold")]
@@ -560,12 +699,16 @@ public struct Body
     /// Get the sleep threshold
     /// </summary>
     /// <returns>The sleep threshold, usually in meters per second</returns>
+    [Obsolete("Use the SleepThreshold property instead")]
     public float GetSleepThreshold() => b2Body_GetSleepThreshold(this);
 
+    /// <summary>
+    /// The sleep threshold, usually in meters per second.
+    /// </summary>
     public float SleepThreshold
     {
-        get => GetSleepThreshold();
-        set => SetSleepThreshold(value);
+        get => b2Body_GetSleepThreshold(this);
+        set => b2Body_SetSleepThreshold(this, value);
     }
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_IsEnabled")]
@@ -575,8 +718,9 @@ public struct Body
     /// Check if this body is enabled
     /// </summary>
     /// <returns>true if this body is enabled</returns>
+    [Obsolete("Use the Enabled property instead")]
     public bool IsEnabled() => b2Body_IsEnabled(this);
-
+    
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_Disable")]
     private static extern void b2Body_Disable(Body bodyId);
     
@@ -584,6 +728,7 @@ public struct Body
     /// Disable a body
     /// </summary>
     /// <remarks>Disable a body by removing it completely from the simulation. <b>This is expensive</b></remarks>
+    [Obsolete("Use the Enabled method instead")]
     public void Disable() => b2Body_Disable(this);
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_Enable")]
@@ -593,7 +738,24 @@ public struct Body
     /// Enable a body
     /// </summary>
     /// <remarks>Enable a body by adding it to the simulation. <b>This is expensive</b></remarks>
+    [Obsolete("Use the Enabled method instead")]
     public void Enable() => b2Body_Enable(this);
+
+    /// <summary>
+    /// The body enabled flag. 
+    /// </summary>
+    public bool Enabled
+    {
+        get => b2Body_IsEnabled(this);
+        set
+        {
+            if (value)
+                b2Body_Enable(this);
+            else
+                b2Body_Disable(this);
+        }
+    }
+
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetFixedRotation")]
     private static extern void b2Body_SetFixedRotation(Body bodyId, bool flag);
@@ -603,6 +765,7 @@ public struct Body
     /// </summary>
     /// <param name="flag">Option to set the body to have fixed rotation</param>
     /// <remarks>This causes the mass to be reset in all cases</remarks>
+    [Obsolete("Use the FixedRotation property instead")]
     public void SetFixedRotation(bool flag) => b2Body_SetFixedRotation(this, flag);
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_IsFixedRotation")]
@@ -612,12 +775,17 @@ public struct Body
     /// Check if this body has fixed rotation
     /// </summary>
     /// <returns>true if this body has fixed rotation</returns>
+    [Obsolete("Use the FixedRotation property instead")]
     public bool IsFixedRotation() => b2Body_IsFixedRotation(this);
 
+    /// <summary>
+    /// The fixed rotation flag of the body.
+    /// </summary>
+    /// <remarks>Setting this causes the mass to be reset in all cases</remarks>
     public bool FixedRotation
     {
-        get => IsFixedRotation();
-        set => SetFixedRotation(value);
+        get => b2Body_IsFixedRotation(this);
+        set => b2Body_SetFixedRotation(this, value);
     }
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetBullet")]
@@ -628,6 +796,7 @@ public struct Body
     /// </summary>
     /// <param name="flag">Option to set the body to be a bullet</param>
     /// <remarks>A bullet does continuous collision detection against dynamic bodies (but not other bullets)</remarks>
+    [Obsolete("Use the Bullet property instead")]
     public void SetBullet(bool flag) => b2Body_SetBullet(this, flag);
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_IsBullet")]
@@ -637,12 +806,17 @@ public struct Body
     /// Check if this body is a bullet
     /// </summary>
     /// <returns>true if this body is a bullet</returns>
+    [Obsolete("Use the Bullet property instead")]
     public bool IsBullet() => b2Body_IsBullet(this);
 
+    /// <summary>
+    /// The bullet flag of the body.
+    /// </summary>
+    /// <remarks>A bullet does continuous collision detection against dynamic bodies (but not other bullets)</remarks>
     public bool Bullet
     {
-        get => IsBullet();
-        set => SetBullet(value);
+        get => b2Body_IsBullet(this);
+        set => b2Body_SetBullet(this, value);
     }
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_EnableContactEvents")]
@@ -671,9 +845,13 @@ public struct Body
     /// Get the world that owns this body
     /// </summary>
     /// <returns>The world that owns this body</returns>
+    [Obsolete("Use the World property instead")]
     public World GetWorld() => b2Body_GetWorld(this);
 
-    public World World => GetWorld();
+    /// <summary>
+    /// The world that owns this body.
+    /// </summary>
+    public World World => b2Body_GetWorld(this);
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetShapeCount")]
     private static extern int b2Body_GetShapeCount(Body bodyId);
@@ -682,9 +860,14 @@ public struct Body
     /// Get the number of shapes on this body
     /// </summary>
     /// <returns>The number of shapes on this body</returns>
+    [Obsolete("Use the Shapes property instead")]
     public int GetShapeCount() => b2Body_GetShapeCount(this);
-
-    public int ShapeCount => GetShapeCount();
+    
+    /// <summary>
+    /// The number of shapes on this body.
+    /// </summary>
+    [Obsolete("Use the Shapes property instead")]
+    public int ShapeCount => b2Body_GetShapeCount(this);
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetShapes")]
     private static extern int b2Body_GetShapes(Body bodyId, nint shapeArray, int capacity);
@@ -694,6 +877,7 @@ public struct Body
     /// </summary>
     /// <param name="shapeArray">The shape array</param>
     /// <returns>The number of shape ids stored in the user array</returns>
+    [Obsolete("Use the Shapes property instead")]
     public int GetShapes(ref Shape[] shapeArray)
     {
         int capacity = shapeArray.Length;
@@ -701,14 +885,18 @@ public struct Body
         int count = b2Body_GetShapes(this, shapeArrayPtr, capacity);
         return count;
     }
-    
+
+    /// <summary>
+    /// The shapes attached to this body.
+    /// </summary>
     public Shape[] Shapes
     {
         get
         {
-            int count = GetShapeCount();
-            Shape[] shapes = new Shape[count];
-            GetShapes(ref shapes);
+            int shapeCount = b2Body_GetShapeCount(this);
+            Shape[] shapes = new Shape[shapeCount];
+            nint shapeArrayPtr = Marshal.UnsafeAddrOfPinnedArrayElement(shapes, 0);
+            b2Body_GetShapes(this, shapeArrayPtr, shapeCount);
             return shapes;
         }
     }
@@ -720,9 +908,14 @@ public struct Body
     /// Get the number of joints on this body
     /// </summary>
     /// <returns>The number of joints on this body</returns>
+    [Obsolete("Use the Jointsproperty instead")]
     public int GetJointCount() => b2Body_GetJointCount(this);
 
-    public int JointCount => GetJointCount();
+    /// <summary>
+    /// The number of joints on this body.
+    /// </summary>
+    [Obsolete("Use the Joints property instead")]
+    public int JointCount => b2Body_GetJointCount(this);
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetJoints")]
     private static extern int b2Body_GetJoints(Body bodyId, nint jointArray, int capacity);
@@ -732,6 +925,7 @@ public struct Body
     /// </summary>
     /// <param name="jointArray">The joint array</param>
     /// <returns>The number of joint ids stored in the user array</returns>
+    [Obsolete("Use the Joints property instead")]
     public int GetJoints(ref Joint[] jointArray)
     {
         int capacity = jointArray.Length;
@@ -740,13 +934,17 @@ public struct Body
         return count;
     }
     
+    /// <summary>
+    /// The joints attached to this body.
+    /// </summary>
     public Joint[] Joints
     {
         get
         {
-            int count = GetJointCount();
-            Joint[] joints = new Joint[count];
-            GetJoints(ref joints);
+            int jointCount = b2Body_GetJointCount(this);
+            Joint[] joints = new Joint[jointCount];
+            nint jointArrayPtr = Marshal.UnsafeAddrOfPinnedArrayElement(joints, 0);
+            b2Body_GetJoints(this, jointArrayPtr, jointCount);
             return joints;
         }
     }
@@ -758,9 +956,14 @@ public struct Body
     /// Get the maximum capacity required for retrieving all the touching contacts on a body
     /// </summary>
     /// <returns>The maximum capacity required for retrieving all the touching contacts on a body</returns>
+    [Obsolete("Use the Contacts property instead")]
     public int GetContactCapacity() => b2Body_GetContactCapacity(this);
 
-    public int ContactCapacity => GetContactCapacity();
+    /// <summary>
+    /// The maximum capacity required for retrieving all the touching contacts on a body.
+    /// </summary>
+    [Obsolete("Use the Contacts property instead")]
+    public int ContactCapacity => b2Body_GetContactCapacity(this);
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetContactData")]
     private static extern int b2Body_GetContactData(Body bodyId, nint contactData, int capacity);
@@ -770,12 +973,28 @@ public struct Body
     /// </summary>
     /// <param name="contactData">The contact data</param>
     /// <returns>The number of elements filled in the provided array</returns>
+    [Obsolete("Use the Contacts property instead")]
     public int GetContactData(ref ContactData[] contactData)
     {
         int capacity = contactData.Length;
         nint contactDataPtr = Marshal.UnsafeAddrOfPinnedArrayElement(contactData, 0);
         int count = b2Body_GetContactData(this, contactDataPtr, capacity);
         return count;
+    }
+    
+    /// <summary>
+    /// The touching contact data for this body.
+    /// </summary>
+    public ContactData[] Contacts
+    {
+        get
+        {
+            int contactCapacity = b2Body_GetContactCapacity(this);
+            ContactData[] contactData = new ContactData[contactCapacity];
+            nint contactDataPtr = Marshal.UnsafeAddrOfPinnedArrayElement(contactData, 0);
+            b2Body_GetContactData(this, contactDataPtr, contactCapacity);
+            return contactData;
+        }
     }
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ComputeAABB")]
@@ -786,8 +1005,15 @@ public struct Body
     /// </summary>
     /// <returns>The current world AABB that contains all the attached shapes</returns>
     /// <remarks>Note that this may not encompass the body origin. If there are no shapes attached then the returned AABB is empty and centered on the body origin</remarks>
+    [Obsolete("Use the AABB property instead")]
     public AABB ComputeAABB() => b2Body_ComputeAABB(this);
 
+    /// <summary>
+    /// The current world AABB that contains all the attached shapes.
+    /// </summary>
+    /// <remarks>Note that this may not encompass the body origin. If there are no shapes attached then the returned AABB is empty and centered on the body origin</remarks>
+    public AABB AABB => b2Body_ComputeAABB(this);
+    
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateCircleShape")]
     private static extern Shape b2CreateCircleShape(Body bodyId, in ShapeDef def, in Circle circle);
     

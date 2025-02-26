@@ -365,7 +365,7 @@ public struct World
     /// <summary>
     /// Set the gravity vector for the entire world. Box2D has no concept of an up direction and this is left as a decision for the application.
     /// </summary>
-    /// <param name="gravity">The gravity vector, usually in m/s^2</param>
+    /// <param name="gravity">The gravity vector, usually in m/s²</param>
     public void SetGravity(Vec2 gravity) => b2World_SetGravity(this, gravity);
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetGravity")]

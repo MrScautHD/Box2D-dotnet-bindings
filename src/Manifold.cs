@@ -16,7 +16,7 @@ public struct Manifold
     public Vec2 Normal;
 
     /// <summary>
-    /// Angular impulse applied for rolling resistance. N * m * s = kg * m^2 / s
+    /// Angular impulse applied for rolling resistance. N * m * s = kg * m² / s
     /// </summary>
     [FieldOffset(8)]
     public float RollingImpulse;

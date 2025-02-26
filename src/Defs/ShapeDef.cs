@@ -49,7 +49,7 @@ public struct ShapeDef
     public int Material;
 
     /// <summary>
-    /// The density, usually in kg/m^2.
+    /// The density, usually in kg/m².
     /// </summary>
     [FieldOffset(28)]
     public float Density;
