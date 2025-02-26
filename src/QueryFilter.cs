@@ -14,14 +14,23 @@ public struct QueryFilter
     /// The collision category bits of this query. Normally you would just set one bit.
     /// </summary>
     [FieldOffset(0)]
-    public ulong CategoryBits = 0x00000001;
+    public ulong CategoryBits;
 
     /// <summary>
     /// The collision mask bits. This states the shape categories that this
     /// query would accept for collision.
     /// </summary>
     [FieldOffset(8)]
-    public ulong MaskBits = 0x00000001;
+    public ulong MaskBits;
+    
+    /// <summary>
+    /// The default query filter settings.
+    /// </summary>
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultQueryFilter")]
+    public static extern QueryFilter DefaultQueryFilter();
+
     public QueryFilter()
-    { }
+    {
+        this = DefaultQueryFilter();
+    }
 }

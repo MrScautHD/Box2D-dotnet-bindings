@@ -158,6 +158,17 @@ public struct DebugDraw
     /// </summary>
     [FieldOffset(104)]
     public nint context;
+
+    public DebugDraw()
+    {
+        this = DefaultDebugDraw();
+    }
+    
+    /// <summary>
+    /// The default debug draw settings.
+    /// </summary>
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultDebugDraw")]
+    public static extern DebugDraw DefaultDebugDraw();
     
     #region Delegates
     
@@ -245,8 +256,5 @@ public struct DebugDraw
     /// <remarks>Choose your own length scale</remarks>
     public delegate void DrawTransformDelegate(Transform transform, nint context);
     
-    
-    
     #endregion
-    
 }

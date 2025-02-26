@@ -134,21 +134,14 @@ public struct WorldDef
     [FieldOffset(96)]
     private readonly int internalValue = Box2D.B2_SECRET_COOKIE;
     
+    /// <summary>
+    /// Default world definition.
+    /// </summary>
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultWorldDef")]
+    public static extern WorldDef DefaultWorldDef();
+    
     public WorldDef()
     {
-        Gravity = (0,-10);
-        RestitutionThreshold = 1;
-        HitEventThreshold = 1;
-        ContactHertz = 30;
-        ContactDampingRatio = 10;
-        ContactPushMaxSpeed = 0;
-        JointHertz = 60;
-        JointDampingRatio = 2;
-        MaximumLinearSpeed = 400;
-        EnableSleep = true;
-        EnableContinuous = true;
-        WorkerCount = 0;
-        UserTaskContext = 0;
-        UserData = 0;
+        this = DefaultWorldDef();
     }
 }

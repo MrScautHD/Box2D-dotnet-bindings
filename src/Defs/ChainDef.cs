@@ -116,14 +116,15 @@ public struct ChainDef
     [FieldOffset(56)]
     private readonly int internalValue = Box2D.B2_SECRET_COOKIE;
     
+    //b2DefaultChainDef
+    /// <summary>
+    /// The default chain definition.
+    /// </summary>
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultChainDef")]
+    public static extern ChainDef DefaultChainDef();
+    
     public ChainDef()
     {
-        UserData = 0;
-        points = 0;
-        Count = 0;
-        Materials = [new SurfaceMaterial()];
-        MaterialCount = 0;
-        Filter = default;
-        IsLoop = false;
+        this = DefaultChainDef();
     }
 }

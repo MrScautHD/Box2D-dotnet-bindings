@@ -120,22 +120,15 @@ public struct ShapeDef
     [FieldOffset(68)]
     private readonly int InternalValue = Box2D.B2_SECRET_COOKIE;
     
+    /// <summary>
+    /// The default shape definition.
+    /// </summary>
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultShapeDef")]
+    public static extern ShapeDef DefaultShapeDef();
+    
+    
     public ShapeDef()
     {
-        UserData = 0;
-        Friction = 0.6f;
-        Restitution = 0;
-        RollingResistance = 0;
-        TangentSpeed = 0;
-        Material = 0;
-        Density = 1;
-        Filter = new();
-        CustomColor = HexColor.Black;
-        IsSensor = false;
-        EnableContactEvents = false;
-        EnableHitEvents = false;
-        EnablePreSolveEvents = false;
-        InvokeContactCreation = false;
-        UpdateBodyMass = true;
+        this = DefaultShapeDef();
     }
 }

@@ -24,7 +24,7 @@ public struct Filter
     /// </code>
     /// </summary>
     [FieldOffset(0)]
-    public ulong CategoryBits = 0x00000001;
+    public ulong CategoryBits;
 
     /// <summary>
     /// The collision mask bits. This states the categories that this
@@ -36,7 +36,7 @@ public struct Filter
     /// </code>
     /// </summary>
     [FieldOffset(8)]
-    public ulong MaskBits = 0x00000001;
+    public ulong MaskBits;
 
     /// <summary>
     /// Collision groups allow a certain group of objects to never collide (negative)
@@ -47,7 +47,16 @@ public struct Filter
     /// and apply that group index to all shapes on the ragdoll.
     /// </summary>
     [FieldOffset(16)]
-    public int GroupIndex = 0;
+    public int GroupIndex;
+    
+    /// <summary>
+    /// The default filter settings.
+    /// </summary>
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultFilter")]
+    public static extern Filter DefaultFilter();
+
     public Filter()
-    { }
+    {
+        this = DefaultFilter();
+    }
 }

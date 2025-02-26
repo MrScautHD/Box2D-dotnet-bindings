@@ -154,24 +154,14 @@ public struct BodyDef
     [FieldOffset(72)]
     private readonly int internalValue = Box2D.B2_SECRET_COOKIE;
     
+    /// <summary>
+    /// Default body definition.
+    /// </summary>
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultBodyDef")]
+    public static extern BodyDef DefaultBodyDef();
+    
     public BodyDef()
     {
-        Type = BodyType.Static;
-        Position = default;
-        Rotation = new();
-        LinearVelocity = default;
-        AngularVelocity = 0;
-        LinearDamping = 0;
-        AngularDamping = 0;
-        GravityScale = 1;
-        SleepThreshold = 0.05f;
-        name = 0;
-        UserData = 0;
-        EnableSleep = true;
-        IsAwake = true;
-        FixedRotation = false;
-        IsBullet = false;
-        IsEnabled = true;
-        AllowFastRotation = false;
+        this = DefaultBodyDef();
     }
 }

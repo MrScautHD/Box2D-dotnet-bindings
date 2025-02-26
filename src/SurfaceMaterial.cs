@@ -46,8 +46,14 @@ public struct SurfaceMaterial
     [FieldOffset(20)]
     public HexColor CustomColor;
     
+    /// <summary>
+    /// The default surface material settings.
+    /// </summary>
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultSurfaceMaterial")]
+    public static extern SurfaceMaterial DefaultSurfaceMaterial();
+    
     public SurfaceMaterial()
     {
-        Friction = 0.6f;
+        this = DefaultSurfaceMaterial();
     }
 }
