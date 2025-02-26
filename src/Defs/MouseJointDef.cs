@@ -67,10 +67,18 @@ public struct MouseJointDef
     private readonly int internalValue;
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultMouseJointDef")]
-    public static extern MouseJointDef Default();
+    private static extern MouseJointDef GetDefault();
     
+    /// <summary>
+    /// The default mouse joint definition.
+    /// </summary>
+    public static MouseJointDef Default => GetDefault();
+    
+    /// <summary>
+    /// Creates a mouse joint definition with the default values.
+    /// </summary>
     public MouseJointDef()
     {
-        this = Default();
+        this = Default;
     }
 }

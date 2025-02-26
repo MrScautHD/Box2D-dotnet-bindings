@@ -121,10 +121,18 @@ public struct DistanceJointDef
     private readonly int internalValue;
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultDistanceJointDef")]
-    public static extern DistanceJointDef Default();
+    private static extern DistanceJointDef GetDefault();
     
+    /// <summary>
+    /// The default distance joint definition.
+    /// </summary>
+    public static DistanceJointDef Default => GetDefault();
+    
+    /// <summary>
+    /// Creates a distance joint definition with the default values.
+    /// </summary>
     public DistanceJointDef()
     {
-        this = Default();
+        this = Default;
     }
 }

@@ -50,10 +50,12 @@
         <!-- Windows DLL -->
         <None Include="native/win-x64/box2d.dll" Pack="true" PackagePath="runtimes/win-x64/native/" />
         <!-- Linux SO -->
-        <None Include="native/linux-x64/libbox2d.so" Pack="true" PackagePath="runtimes/linux-x64/native/" />
             
         <!-- XMLDoc -->
         <None Include="bin/$(Configuration)/netstandard2.1/Box2DBindings.xml" Pack="true" PackagePath="lib/netstandard2.1/" />
+        <None Update="native\linux-x64\libbox2d.so">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 
 

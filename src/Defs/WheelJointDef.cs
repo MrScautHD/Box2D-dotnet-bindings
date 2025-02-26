@@ -120,10 +120,18 @@ public struct WheelJointDef
     private readonly int internalValue;
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultWheelJointDef")]
-    public static extern WheelJointDef Default();
+    private static extern WheelJointDef GetDefault();
     
+    /// <summary>
+    /// The default wheel joint definition.
+    /// </summary>
+    public static WheelJointDef Default => GetDefault();
+    
+    /// <summary>
+    /// Creates a wheel joint definition with the default values.
+    /// </summary>
     public WheelJointDef()
     {
-        this = Default();
+        this = Default;
     }
 }

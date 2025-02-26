@@ -72,10 +72,18 @@ public struct MotorJointDef
     private readonly int internalValue;
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultMotorJointDef")]
-    public static extern MotorJointDef Default();
+    private static extern MotorJointDef GetDefault();
     
+    /// <summary>
+    /// The default motor joint definition.
+    /// </summary>
+    public static MotorJointDef Default => GetDefault();
+    
+    /// <summary>
+    /// Creates a motor joint definition with the default values.
+    /// </summary>
     public MotorJointDef()
     {
-        this = Default();
+        this = Default;
     }
 }

@@ -138,10 +138,18 @@ public struct WorldDef
     /// Default world definition.
     /// </summary>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultWorldDef")]
-    public static extern WorldDef Default();
+    private static extern WorldDef GetDefault();
     
+    /// <summary>
+    /// The default world definition.
+    /// </summary>
+    public static WorldDef Default => GetDefault();
+    
+    /// <summary>
+    /// Creates a world definition with the default values.
+    /// </summary>
     public WorldDef()
     {
-        this = Default();
+        this = Default;
     }
 }

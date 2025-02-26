@@ -124,10 +124,15 @@ public struct ShapeDef
     /// The default shape definition.
     /// </summary>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultShapeDef")]
-    public static extern ShapeDef Default();
+    private static extern ShapeDef GetDefault();
+    
+    /// <summary>
+    /// The default shape definition.
+    /// </summary>
+    public static ShapeDef Default => GetDefault();
     
     public ShapeDef()
     {
-        this = Default();
+        this = Default;
     }
 }

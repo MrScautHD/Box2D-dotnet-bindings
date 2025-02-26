@@ -578,14 +578,14 @@ public struct World
     /// <param name="def">The distance joint definition</param>
     /// <returns>The distance joint</returns>
     [Obsolete("Use CreateJoint(DistanceJointDef def) instead")]
-    public DistanceJoint CreateDistanceJoint(DistanceJointDef def) => (DistanceJoint)new Joint(b2CreateDistanceJoint(this, def));
+    public DistanceJoint CreateDistanceJoint(DistanceJointDef def) => new(b2CreateDistanceJoint(this, def));
 
     /// <summary>
     /// Creates a distance joint
     /// </summary>
     /// <param name="def">The distance joint definition</param>
     /// <returns>The distance joint</returns>
-    public DistanceJoint CreateJoint(DistanceJointDef def) => (DistanceJoint)new Joint(b2CreateDistanceJoint(this, def));
+    public DistanceJoint CreateJoint(DistanceJointDef def) => new(b2CreateDistanceJoint(this, def));
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateMotorJoint")]
     private static extern JointId b2CreateMotorJoint(World worldId, in MotorJointDef def);
@@ -596,14 +596,14 @@ public struct World
     /// <param name="def">The motor joint definition</param>
     /// <returns>The motor joint</returns>
     [Obsolete("Use CreateJoint(MotorJointDef def) instead")]
-    public MotorJoint CreateMotorJoint(MotorJointDef def) => (MotorJoint)new Joint(b2CreateMotorJoint(this, def));
+    public MotorJoint CreateMotorJoint(MotorJointDef def) => new(b2CreateMotorJoint(this, def));
 
     /// <summary>
     /// Creates a motor joint
     /// </summary>
     /// <param name="def">The motor joint definition</param>
     /// <returns>The motor joint</returns>
-    public MotorJoint CreateJoint(MotorJointDef def) => (MotorJoint)new Joint(b2CreateMotorJoint(this, def));
+    public MotorJoint CreateJoint(MotorJointDef def) => new(b2CreateMotorJoint(this, def));
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateMouseJoint")]
     private static extern JointId b2CreateMouseJoint(World worldId, in MouseJointDef def);
@@ -614,14 +614,14 @@ public struct World
     /// <param name="def">The mouse joint definition</param>
     /// <returns>The mouse joint</returns>
     [Obsolete("Use CreateJoint(MouseJointDef def) instead")]
-    public MouseJoint CreateMouseJoint(MouseJointDef def) => (MouseJoint)new Joint(b2CreateMouseJoint(this, def));
+    public MouseJoint CreateMouseJoint(MouseJointDef def) => new(b2CreateMouseJoint(this, def));
 
     /// <summary>
     /// Creates a mouse joint
     /// </summary>
     /// <param name="def">The mouse joint definition</param>
     /// <returns>The mouse joint</returns>
-    public MouseJoint CreateJoint(MouseJointDef def) => (MouseJoint)new Joint(b2CreateMouseJoint(this, def));
+    public MouseJoint CreateJoint(MouseJointDef def) => new(b2CreateMouseJoint(this, def));
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateNullJoint")]
     private static extern JointId b2CreateNullJoint(World worldId, in NullJointDef def);
@@ -632,14 +632,14 @@ public struct World
     /// <param name="def">The null joint definition</param>
     /// <returns>The null joint</returns>
     [Obsolete("Use CreateJoint(NullJointDef def) instead")]
-    public Joint CreateNullJoint(NullJointDef def) => new Joint(b2CreateNullJoint(this, def));
+    public Joint CreateNullJoint(NullJointDef def) => new(b2CreateNullJoint(this, def));
 
     /// <summary>
     /// Creates a null joint
     /// </summary>
     /// <param name="def">The null joint definition</param>
     /// <returns>The null joint</returns>
-    public Joint CreateJoint(NullJointDef def) => new Joint(b2CreateNullJoint(this, def));
+    public Joint CreateJoint(NullJointDef def) => new(b2CreateNullJoint(this, def));
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreatePrismaticJoint")]
     private static extern JointId b2CreatePrismaticJoint(World worldId, in PrismaticJointDef def);
@@ -688,13 +688,6 @@ public struct World
     [Obsolete("Use CreateJoint(WeldJointDef def) instead")]
     public WeldJoint CreateWeldJoint(WeldJointDef def) => new(b2CreateWeldJoint(this, def));
 
-    /// <summary>
-    /// Creates a weld joint
-    /// </summary>
-    /// <param name="def">The weld joint definition</param>
-    /// <returns>The weld joint</returns>
-    [Obsolete("Use CreateJoint(WeldJointDef def) instead")]
-    
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateWheelJoint")]
     private static extern JointId b2CreateWheelJoint(World worldId, in WheelJointDef def);
 

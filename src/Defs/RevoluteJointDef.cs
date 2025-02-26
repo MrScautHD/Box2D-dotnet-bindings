@@ -132,10 +132,15 @@ public struct RevoluteJointDef
     private readonly int internalValue;
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultRevoluteJointDef")]
-    public static extern RevoluteJointDef Default();
+    private static extern RevoluteJointDef GetDefault();
+    
+    /// <summary>
+    /// The default revolute joint definition.
+    /// </summary>
+    public static RevoluteJointDef Default => GetDefault();
     
     public RevoluteJointDef()
     {
-        this = Default();
+        this = Default;
     }
 }

@@ -116,15 +116,19 @@ public struct ChainDef
     [FieldOffset(56)]
     private readonly int internalValue;
     
-    //b2DefaultChainDef
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultChainDef")]
+    private static extern ChainDef GetDefault();
+    
     /// <summary>
     /// The default chain definition.
     /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultChainDef")]
-    public static extern ChainDef Default();
+    public static ChainDef Default => GetDefault();
     
+    /// <summary>
+    /// Creates a chain definition with the default values.
+    /// </summary>
     public ChainDef()
     {
-        this = Default();
+        this = Default;
     }
 }

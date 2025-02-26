@@ -154,14 +154,19 @@ public struct BodyDef
     [FieldOffset(72)]
     private readonly int internalValue;
     
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultBodyDef")]
+    private static extern BodyDef GetDefault();
+    
     /// <summary>
     /// Default body definition.
     /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultBodyDef")]
-    public static extern BodyDef Default();
-    
+    public static BodyDef Default => GetDefault();
+
+    /// <summary>
+    /// Creates a body definition with the default values.
+    /// </summary>
     public BodyDef()
     {
-        this = Default();
+        this = Default;
     }
 }

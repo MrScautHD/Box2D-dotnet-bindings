@@ -86,10 +86,15 @@ public struct WeldJointDef
     private readonly int internalValue;
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultWeldJointDef")]
-    public static extern WeldJointDef Default();
+    private static extern WeldJointDef GetDefault();
+    
+    /// <summary>
+    /// The default weld joint definition.
+    /// </summary>
+    public static WeldJointDef Default => GetDefault();
     
     public WeldJointDef()
     {
-        this = Default();
+        this = Default;
     }
 }

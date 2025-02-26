@@ -33,10 +33,15 @@ public struct NullJointDef
     private readonly int internalValue;
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultNullJointDef")]
-    public static extern NullJointDef Default();
+    private static extern NullJointDef GetDefault();
+    
+    /// <summary>
+    /// The default null joint definition.
+    /// </summary>
+    public static NullJointDef Default => GetDefault();
     
     public NullJointDef()
     {
-        this = Default();
+        this = Default;
     }
 }

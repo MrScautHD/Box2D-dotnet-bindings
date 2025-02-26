@@ -42,10 +42,18 @@ public struct ExplosionDef
     public float ImpulsePerLength;
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultExplosionDef")]
-    public static extern ExplosionDef Default();
+    private static extern ExplosionDef GetDefault();
     
+    /// <summary>
+    /// The default explosion definition.
+    /// </summary>
+    public static ExplosionDef Default => GetDefault();
+    
+    /// <summary>
+    /// Creates a new explosion definition with the default values.
+    /// </summary>
     public ExplosionDef()
     {
-        this = Default();
+        this = Default;
     }
 }
