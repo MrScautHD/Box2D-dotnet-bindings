@@ -64,17 +64,13 @@ public struct MouseJointDef
     /// Used internally to detect a valid definition. DO NOT SET.
     /// </summary>
     [FieldOffset(48)]
-    private readonly int internalValue = Box2D.B2_SECRET_COOKIE;
+    private readonly int internalValue;
+    
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultMouseJointDef")]
+    public static extern MouseJointDef Default();
     
     public MouseJointDef()
     {
-        BodyA = default;
-        BodyB = default;
-        Target = default;
-        Hertz = 0;
-        DampingRatio = 0;
-        MaxForce = 0;
-        CollideConnected = false;
-        UserData = 0;
+        this = Default();
     }
 }

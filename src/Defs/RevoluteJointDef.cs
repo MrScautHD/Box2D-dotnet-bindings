@@ -129,26 +129,13 @@ public struct RevoluteJointDef
     /// Used internally to detect a valid definition. DO NOT SET.
     /// </summary>
     [FieldOffset(88)]
-    private readonly int internalValue = Box2D.B2_SECRET_COOKIE;
+    private readonly int internalValue;
+    
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultRevoluteJointDef")]
+    public static extern RevoluteJointDef Default();
     
     public RevoluteJointDef()
     {
-        BodyA = default;
-        BodyB = default;
-        LocalAnchorA = default;
-        LocalAnchorB = default;
-        ReferenceAngle = 0;
-        EnableSpring = false;
-        Hertz = 0;
-        DampingRatio = 0;
-        EnableLimit = false;
-        LowerAngle = 0;
-        UpperAngle = 0;
-        RnableMotor = false;
-        MaxMotorTorque = 0;
-        MotorSpeed = 0;
-        DrawSize = 0;
-        CollideConnected = false;
-        UserData = 0;
+        this = Default();
     }
 }

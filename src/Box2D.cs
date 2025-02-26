@@ -6,8 +6,6 @@ public static class Box2D
 {
     public const int B2_MAX_POLYGON_VERTICES = 8;
 
-    internal const int B2_SECRET_COOKIE = 1152023;
-
     internal const string libraryName = "box2d";
 
     /// <summary>

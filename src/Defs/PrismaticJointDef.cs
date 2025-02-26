@@ -123,26 +123,13 @@ public struct PrismaticJointDef
     /// Used internally to detect a valid definition. DO NOT SET.
     /// </summary>
     [FieldOffset(92)]
-    private readonly int internalValue = Box2D.B2_SECRET_COOKIE;
+    private readonly int internalValue;
+    
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultPrismaticJointDef")]
+    public static extern PrismaticJointDef Default();
     
     public PrismaticJointDef()
     {
-        BodyA = default;
-        BodyB = default;
-        LocalAnchorA = default;
-        LocalAnchorB = default;
-        LocalAxisA = default;
-        ReferenceAngle = 0;
-        EnableSpring = false;
-        Hertz = 0;
-        DampingRatio = 0;
-        EnableLimit = false;
-        LowerTranslation = 0;
-        UpperTranslation = 0;
-        EnableMotor = false;
-        MaxMotorForce = 0;
-        MotorSpeed = 0;
-        CollideConnected = false;
-        UserData = 0;
+        this = Default();
     }
 }

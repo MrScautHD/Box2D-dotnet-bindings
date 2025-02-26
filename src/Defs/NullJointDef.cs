@@ -30,12 +30,13 @@ public struct NullJointDef
     /// Used internally to detect a valid definition. DO NOT SET.
     /// </summary>
     [FieldOffset(24)]
-    private readonly int internalValue = Box2D.B2_SECRET_COOKIE;
+    private readonly int internalValue;
+
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultNullJointDef")]
+    public static extern NullJointDef Default();
     
     public NullJointDef()
     {
-        BodyA = default;
-        BodyB = default;
-        UserData = 0;
+        this = Default();
     }
 }

@@ -132,16 +132,16 @@ public struct WorldDef
     /// Used internally to detect a valid definition. DO NOT SET.
     /// </summary>
     [FieldOffset(96)]
-    private readonly int internalValue = Box2D.B2_SECRET_COOKIE;
+    private readonly int internalValue;
     
     /// <summary>
     /// Default world definition.
     /// </summary>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultWorldDef")]
-    public static extern WorldDef DefaultWorldDef();
+    public static extern WorldDef Default();
     
     public WorldDef()
     {
-        this = DefaultWorldDef();
+        this = Default();
     }
 }

@@ -118,25 +118,13 @@ public struct DistanceJointDef
     /// Used internally to detect a valid definition. DO NOT SET.
     /// </summary>
     [FieldOffset(80)]
-    private readonly int internalValue = Box2D.B2_SECRET_COOKIE;
+    private readonly int internalValue;
+    
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultDistanceJointDef")]
+    public static extern DistanceJointDef Default();
     
     public DistanceJointDef()
     {
-        BodyA = default;
-        BodyB = default;
-        LocalAnchorA = default;
-        LocalAnchorB = default;
-        Length = 0;
-        EnableSpring = false;
-        Hertz = 0;
-        DampingRatio = 0;
-        EnableLimit = false;
-        MinLength = 0;
-        MaxLength = 0;
-        EnableMotor = false;
-        MaxMotorForce = 0;
-        MotorSpeed = 0;
-        CollideConnected = false;
-        userData = 0;
+        this = Default();
     }
 }

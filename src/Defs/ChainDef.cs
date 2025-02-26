@@ -114,17 +114,17 @@ public struct ChainDef
     /// Used internally to detect a valid definition. DO NOT SET.
     /// </summary>
     [FieldOffset(56)]
-    private readonly int internalValue = Box2D.B2_SECRET_COOKIE;
+    private readonly int internalValue;
     
     //b2DefaultChainDef
     /// <summary>
     /// The default chain definition.
     /// </summary>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultChainDef")]
-    public static extern ChainDef DefaultChainDef();
+    public static extern ChainDef Default();
     
     public ChainDef()
     {
-        this = DefaultChainDef();
+        this = Default();
     }
 }

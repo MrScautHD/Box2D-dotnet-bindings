@@ -40,4 +40,12 @@ public struct ExplosionDef
     /// </summary>
     [FieldOffset(24)]
     public float ImpulsePerLength;
+    
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultExplosionDef")]
+    public static extern ExplosionDef Default();
+    
+    public ExplosionDef()
+    {
+        this = Default();
+    }
 }

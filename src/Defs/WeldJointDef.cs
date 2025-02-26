@@ -83,20 +83,13 @@ public struct WeldJointDef
     /// Used internally to detect a valid definition. DO NOT SET.
     /// </summary>
     [FieldOffset(64)]
-    private readonly int internalValue = Box2D.B2_SECRET_COOKIE;
+    private readonly int internalValue;
+    
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultWeldJointDef")]
+    public static extern WeldJointDef Default();
     
     public WeldJointDef()
     {
-        BodyA = default;
-        BodyB = default;
-        LocalAnchorA = default;
-        LocalAnchorB = default;
-        ReferenceAngle = 0;
-        LinearHertz = 0;
-        AngularHertz = 0;
-        LinearDampingRatio = 0;
-        AngularDampingRatio = 0;
-        CollideConnected = false;
-        UserData = 0;
+        this = Default();
     }
 }

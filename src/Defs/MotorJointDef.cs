@@ -69,18 +69,13 @@ public struct MotorJointDef
     /// Used internally to detect a valid definition. DO NOT SET.
     /// </summary>
     [FieldOffset(52)]
-    private readonly int internalValue = Box2D.B2_SECRET_COOKIE;
+    private readonly int internalValue;
+    
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultMotorJointDef")]
+    public static extern MotorJointDef Default();
     
     public MotorJointDef()
     {
-        BodyA = default;
-        BodyB = default;
-        LinearOffset = default;
-        AngularOffset = 0;
-        MaxForce = 0;
-        MaxTorque = 0;
-        CorrectionFactor = 0;
-        CollideConnected = false;
-        UserData = 0;
+        this = Default();
     }
 }
