@@ -53,9 +53,6 @@
             
         <!-- XMLDoc -->
         <None Include="bin/$(Configuration)/netstandard2.1/Box2DBindings.xml" Pack="true" PackagePath="lib/netstandard2.1/" />
-        <None Update="native\linux-x64\libbox2d.so">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
     </ItemGroup>
 
 
