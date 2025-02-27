@@ -128,7 +128,7 @@ public struct World
     private static extern TreeStats b2World_OverlapPoint(World worldId, Vec2 point, Transform transform, QueryFilter filter, OverlapResultCallback fcn, nint context);
 
     /// <summary>
-    /// Overlap test for for all shapes that overlap the provided point.
+    /// Overlap test for all shapes that overlap the provided point.
     /// </summary>
     /// <param name="point">The point</param>
     /// <param name="transform">The transform</param>
@@ -143,7 +143,7 @@ public struct World
     private static extern TreeStats b2World_OverlapCircle(World worldId, in Circle circle, Transform transform, QueryFilter filter, OverlapResultCallback fcn, nint context);
 
     /// <summary>
-    /// Overlap test for for all shapes that overlap the provided circle. A zero radius may be used for a point query.
+    /// Overlap test for all shapes that overlap the provided circle. A zero radius may be used for a point query.
     /// </summary>
     /// <param name="circle">The circle</param>
     /// <param name="transform">The transform</param>
@@ -396,14 +396,14 @@ public struct World
     }
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_Explode")]
-    private static extern void b2World_Explode(World worldId, ref ExplosionDef explosionDef);
+    private static extern void b2World_Explode(World worldId, in ExplosionDef explosionDef);
 
     /// <summary>
     /// Apply a radial explosion
     /// </summary>
     /// <param name="explosionDef">The explosion definition</param>
     /// <remarks>Explosions are modeled as a force, not as a collision event</remarks>
-    public void Explode(ref ExplosionDef explosionDef) => b2World_Explode(this, ref explosionDef);
+    public void Explode(in ExplosionDef explosionDef) => b2World_Explode(this, explosionDef);
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetContactTuning")]
     private static extern void b2World_SetContactTuning(World worldId, float hertz, float dampingRatio, float pushSpeed);

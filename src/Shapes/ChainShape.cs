@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.InteropServices;
 
 namespace Box2D;
@@ -37,24 +38,41 @@ public struct ChainShape
     /// Gets the number of segments on this chain
     /// </summary>
     /// <returns>The number of segments on this chain</returns>
+    [Obsolete("Use Segments property instead")]
     public int GetSegmentCount() => b2Chain_GetSegmentCount(this);
 
+    [Obsolete("Use Segments property instead")]
     public int SegmentCount => GetSegmentCount();
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Chain_GetSegments")]
     private static extern int b2Chain_GetSegments(ChainShape chainId, nint segmentArray, int capacity);
     
     /// <summary>
-    /// Fills a user array with chain segment shape ids up to the specified capacity
+    /// Fills a user array with chain segment shapes up to the specified capacity
     /// </summary>
     /// <param name="segmentArray">The segment array</param>
     /// <returns>The actual number of segments returned</returns>
+    [Obsolete("Use Segments property instead")]
     public int GetSegments(ref Shape[] segmentArray)
     {
         int capacity = segmentArray.Length;
         nint segmentArrayPtr = Marshal.UnsafeAddrOfPinnedArrayElement(segmentArray, 0);
         int count = b2Chain_GetSegments(this, segmentArrayPtr, capacity);
         return count;
+    }
+    
+    /// <summary>
+    /// The chain segments
+    /// </summary>
+    public Shape[] Segments
+    {
+        get
+        {
+            Shape[] segments = new Shape[SegmentCount];
+            nint segmentArrayPtr = Marshal.UnsafeAddrOfPinnedArrayElement(segments, 0);
+            b2Chain_GetSegments(this, segmentArrayPtr, segments.Length);
+            return segments;
+        }
     }
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Chain_SetFriction")]

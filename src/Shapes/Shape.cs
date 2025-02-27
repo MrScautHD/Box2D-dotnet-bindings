@@ -359,7 +359,7 @@ public struct Shape : IEquatable<Shape>
     /// </summary>
     /// <param name="input">The ray cast input</param>
     /// <returns>The ray cast output</returns>
-    public CastOutput RayCast(ref RayCastInput input) => b2Shape_RayCast(this, input);
+    public CastOutput RayCast(in RayCastInput input) => b2Shape_RayCast(this, input);
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetCircle")]
     private static extern Circle b2Shape_GetCircle(Shape shapeId);
@@ -419,7 +419,7 @@ public struct Shape : IEquatable<Shape>
     /// </summary>
     /// <param name="circle">The circle</param>
     /// <remarks>This does not modify the mass properties</remarks>
-    public void SetCircle(ref Circle circle) => b2Shape_SetCircle(this, circle);
+    public void SetCircle(in Circle circle) => b2Shape_SetCircle(this, circle);
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_SetCapsule")]
     private static extern void b2Shape_SetCapsule(Shape shapeId, in Capsule capsule);
@@ -429,7 +429,7 @@ public struct Shape : IEquatable<Shape>
     /// </summary>
     /// <param name="capsule">The capsule</param>
     /// <remarks>This does not modify the mass properties</remarks>
-    public void SetCapsule(ref Capsule capsule) => b2Shape_SetCapsule(this, capsule);
+    public void SetCapsule(in Capsule capsule) => b2Shape_SetCapsule(this, capsule);
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_SetSegment")]
     private static extern void b2Shape_SetSegment(Shape shapeId, in Segment segment);
@@ -438,7 +438,7 @@ public struct Shape : IEquatable<Shape>
     /// Allows you to change this shape to be a segment or update the current segment
     /// </summary>
     /// <param name="segment">The segment</param>
-    public void SetSegment(ref Segment segment) => b2Shape_SetSegment(this, segment);
+    public void SetSegment(in Segment segment) => b2Shape_SetSegment(this, segment);
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_SetPolygon")]
     private static extern void b2Shape_SetPolygon(Shape shapeId, in Polygon polygon);
@@ -448,7 +448,7 @@ public struct Shape : IEquatable<Shape>
     /// </summary>
     /// <param name="polygon">The polygon</param>
     /// <remarks>This does not modify the mass properties</remarks>
-    public void SetPolygon(ref Polygon polygon) => b2Shape_SetPolygon(this, polygon);
+    public void SetPolygon(in Polygon polygon) => b2Shape_SetPolygon(this, polygon);
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetParentChain")]
     private static extern ChainShape b2Shape_GetParentChain(Shape shapeId);
