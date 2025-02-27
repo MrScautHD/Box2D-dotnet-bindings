@@ -9,7 +9,7 @@ namespace Box2D;
 /// <i>Note: this data becomes invalid if bodies are destroyed</i>
 /// </summary>
 [StructLayout(LayoutKind.Explicit)]
-public struct BodyEvents
+public unsafe struct BodyEvents
 {
     [FieldOffset(0)]
     private nint moveEvents;
@@ -17,16 +17,7 @@ public struct BodyEvents
     /// <summary>
     /// Array of move events
     /// </summary>
-    public ReadOnlySpan<BodyMoveEvent> MoveEvents
-    {
-        get
-        {
-            unsafe
-            {
-                return new ReadOnlySpan<BodyMoveEvent>((BodyMoveEvent*)moveEvents, moveCount);
-            }
-        }
-    }
+    public ReadOnlySpan<BodyMoveEvent> MoveEvents => new((BodyMoveEvent*)moveEvents, moveCount);
 
     /// Number of move events
     [FieldOffset(8)]

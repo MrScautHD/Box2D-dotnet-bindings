@@ -112,8 +112,17 @@ public struct DistanceJointDef
     /// User data pointer
     /// </summary>
     [FieldOffset(76)]
-    public nint userData;
+    private nint userData;
 
+    /// <summary>
+    /// Use this to store application specific shape data.
+    /// </summary>
+    public object? UserData
+    {
+        get => GCHandle.FromIntPtr(userData).Target;
+        set => userData = GCHandle.ToIntPtr(GCHandle.Alloc(value));
+    }
+    
     /// <summary>
     /// Used internally to detect a valid definition. DO NOT SET.
     /// </summary>

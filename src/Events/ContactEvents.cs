@@ -9,7 +9,7 @@ namespace Box2D;
 /// <i>Note: these may become invalid if bodies and/or shapes are destroyed</i>
 /// </summary>
 [StructLayout(LayoutKind.Explicit)]
-public struct ContactEvents
+public unsafe struct ContactEvents
 {
     [FieldOffset(0)]
     private nint beginEvents;
@@ -17,16 +17,7 @@ public struct ContactEvents
     /// <summary>
     /// Array of begin touch events
     /// </summary>
-    public ReadOnlySpan<ContactBeginTouchEvent> BeginEvents
-    {
-        get
-        {
-            unsafe
-            {
-                return new ReadOnlySpan<ContactBeginTouchEvent>((ContactBeginTouchEvent*)beginEvents, beginCount);
-            }
-        }
-    }
+    public ReadOnlySpan<ContactBeginTouchEvent> BeginEvents => new((ContactBeginTouchEvent*)beginEvents, beginCount);
 
     [FieldOffset(8)]
     private nint endEvents;
@@ -34,16 +25,7 @@ public struct ContactEvents
     /// <summary>
     /// Array of end touch events
     /// </summary>
-    public ReadOnlySpan<ContactEndTouchEvent> EndEvents
-    {
-        get
-        {
-            unsafe
-            {
-                return new ReadOnlySpan<ContactEndTouchEvent>((ContactEndTouchEvent*)endEvents, endCount);
-            }
-        }
-    }
+    public ReadOnlySpan<ContactEndTouchEvent> EndEvents => new((ContactEndTouchEvent*)endEvents, endCount);
 
     [FieldOffset(16)]
     private nint hitEvents;
@@ -51,16 +33,7 @@ public struct ContactEvents
     /// <summary>
     /// Array of hit events
     /// </summary>
-    public ReadOnlySpan<ContactHitEvent> HitEvents
-    {
-        get
-        {
-            unsafe
-            {
-                return new ReadOnlySpan<ContactHitEvent>((ContactHitEvent*)hitEvents, hitCount);
-            }
-        }
-    }
+    public ReadOnlySpan<ContactHitEvent> HitEvents => new((ContactHitEvent*)hitEvents, hitCount);
 
     /// Number of begin touch events
     [FieldOffset(24)]

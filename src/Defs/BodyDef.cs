@@ -8,41 +8,71 @@ namespace Box2D;
 /// You can safely re-use body definitions. Shapes are added to a body after construction.
 /// Body definitions are temporary objects used to bundle creation parameters.
 /// </summary>
-[StructLayout(LayoutKind.Explicit)]
-public struct BodyDef
+public class BodyDef
 {
+    internal BodyDefInternal _internal;
+    
+    public BodyDef()
+    {
+        _internal = new BodyDefInternal();
+    }
+    
+    ~BodyDef()
+    {
+        if (_internal.Name != 0)
+        {
+            Marshal.FreeHGlobal(_internal.Name);
+            _internal.Name = 0;
+        }
+    }
+    
     /// <summary>
     /// The body type: static, kinematic, or dynamic.
     /// </summary>
-    [FieldOffset(0)]
-    public BodyType Type;
-
+    public BodyType Type
+    {
+        get => _internal.Type;
+        set => _internal.Type = value;
+    }
+    
     /// <summary>
     /// The initial world position of the body. Bodies should be created with the desired position.
     /// <i>Note: Creating bodies at the origin and then moving them nearly doubles the cost of body creation, especially
     /// if the body is moved after shapes have been added.</i>
     /// </summary>
-    [FieldOffset(4)]
-    public Vec2 Position;
-
+    public Vec2 Position
+    {
+        get => _internal.Position;
+        set => _internal.Position = value;
+    }
+    
     /// <summary>
     /// The initial world rotation of the body.
     /// </summary>
-    [FieldOffset(12)]
-    public Rotation Rotation;
-
+    public Rotation Rotation
+    {
+        get => _internal.Rotation;
+        set => _internal.Rotation = value;
+    }
+    
     /// <summary>
     /// The initial linear velocity of the body's origin. Usually in meters per second.
     /// </summary>
-    [FieldOffset(20)]
-    public Vec2 LinearVelocity;
-
+    public Vec2 LinearVelocity
+    {
+        get => _internal.LinearVelocity;
+        set => _internal.LinearVelocity = value;
+    }
+    
     /// <summary>
     /// The initial angular velocity of the body. Radians per second.
     /// </summary>
-    [FieldOffset(28)]
-    public float AngularVelocity;
-
+    public float AngularVelocity
+    {
+        get => _internal.AngularVelocity;
+        set => _internal.AngularVelocity = value;
+    }
+    
     /// <summary>
     /// Linear damping is used to reduce the linear velocity. The damping parameter
     /// can be larger than 1 but the damping effect becomes sensitive to the
@@ -50,123 +80,128 @@ public struct BodyDef
     /// Generally linear damping is undesirable because it makes objects move slowly
     /// as if they are floating.
     /// </summary>
-    [FieldOffset(32)]
-    public float LinearDamping;
-
+    public float LinearDamping
+    {
+        get => _internal.LinearDamping;
+        set => _internal.LinearDamping = value;
+    }
+    
     /// <summary>
     /// Angular damping is used to reduce the angular velocity. The damping parameter
     /// can be larger than 1.0f but the damping effect becomes sensitive to the
     /// time step when the damping parameter is large.
     /// Angular damping can be use slow down rotating bodies.
     /// </summary>
-    [FieldOffset(36)]
-    public float AngularDamping;
-
+    public float AngularDamping
+    {
+        get => _internal.AngularDamping;
+        set => _internal.AngularDamping = value;
+    }
+    
     /// <summary>
     /// Scale the gravity applied to this body. Non-dimensional.
     /// </summary>
-    [FieldOffset(40)]
-    public float GravityScale;
-
+    public float GravityScale
+    {
+        get => _internal.GravityScale;
+        set => _internal.GravityScale = value;
+    }
+    
     /// <summary>
     /// Sleep speed threshold, default is 0.05 meters per second
     /// </summary>
-    [FieldOffset(44)]
-    public float SleepThreshold;
-
-    [FieldOffset(48)]
-    private nint name;
-	
+    public float SleepThreshold
+    {
+        get => _internal.SleepThreshold;
+        set => _internal.SleepThreshold = value;
+    }
+    
     /// <summary>
     /// Optional body name for debugging. Up to 31 characters (excluding null termination)
     /// </summary>
     public string? Name
     {
-        get => Marshal.PtrToStringAnsi(name);
+        get => Marshal.PtrToStringAnsi(_internal.Name);
         set
         {
-            if (value == null)
+            if (_internal.Name != IntPtr.Zero)
             {
-                name = 0;
-                return;
+                Marshal.FreeHGlobal(_internal.Name);
+                _internal.Name = IntPtr.Zero;
             }
-            if (value.Length > 31)
-                throw new ArgumentOutOfRangeException(nameof(value), "Name must be 31 characters or less");
-            name = Marshal.StringToHGlobalAnsi(value);
+            if (value != null)
+            {
+                if (value.Length > 31)
+                    throw new ArgumentOutOfRangeException(nameof(value), "Name must be 31 characters or less");
+                _internal.Name = Marshal.StringToHGlobalAnsi(value);
+            }
         }
     }
-
+    
     /// <summary>
     /// Use this to store application specific body data.
     /// </summary>
-    [FieldOffset(56)]
-    public nint UserData;
+    public object? UserData
+    {
+        get => GCHandle.FromIntPtr(_internal.UserData).Target;
+        set => _internal.UserData = GCHandle.ToIntPtr(GCHandle.Alloc(value));
+    }
 
     /// <summary>
     /// Set this flag to false if this body should never fall asleep.
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(64)]
-    public bool EnableSleep;
-
+    public bool EnableSleep
+    {
+        get => _internal.EnableSleep;
+        set => _internal.EnableSleep = value;
+    }
+    
     /// <summary>
     /// Is this body initially awake or sleeping?
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(65)]
-    public bool IsAwake;
-
+    public bool IsAwake
+    {
+        get => _internal.IsAwake;
+        set => _internal.IsAwake = value;
+    }
+    
     /// <summary>
     /// Should this body be prevented from rotating? Useful for characters.
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(66)]
-    public bool FixedRotation;
-
+    public bool FixedRotation
+    {
+        get => _internal.FixedRotation;
+        set => _internal.FixedRotation = value;
+    }
+    
     /// <summary>
     /// Treat this body as high speed object that performs continuous collision detection
     /// against dynamic and kinematic bodies, but not other bullet bodies.
     /// <b>Warning: Bullets should be used sparingly. They are not a solution for general dynamic-versus-dynamic</b>
     /// continuous collision. They may interfere with joint constraints.
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(67)]
-    public bool IsBullet;
-
+    public bool IsBullet
+    {
+        get => _internal.IsBullet;
+        set => _internal.IsBullet = value;
+    }
+    
     /// <summary>
     /// Used to disable a body. A disabled body does not move or collide.
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(68)]
-    public bool IsEnabled;
-
+    public bool IsEnabled
+    {
+        get => _internal.IsEnabled;
+        set => _internal.IsEnabled = value;
+    }
+    
     /// <summary>
     /// This allows this body to bypass rotational speed limits. Should only be used
     /// for circular objects, like wheels.
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(69)]
-    public bool AllowFastRotation;
-
-    /// <summary>
-    /// Used internally to detect a valid definition. DO NOT SET.
-    /// </summary>
-    [FieldOffset(72)]
-    private readonly int internalValue;
-    
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultBodyDef")]
-    private static extern BodyDef GetDefault();
-    
-    /// <summary>
-    /// Default body definition.
-    /// </summary>
-    public static BodyDef Default => GetDefault();
-
-    /// <summary>
-    /// Creates a body definition with the default values.
-    /// </summary>
-    public BodyDef()
+    public bool AllowFastRotation
     {
-        this = Default;
+        get => _internal.AllowFastRotation;
+        set => _internal.AllowFastRotation = value;
     }
 }

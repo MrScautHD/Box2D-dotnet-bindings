@@ -555,7 +555,7 @@ public struct World
     public void DumpMemoryStats() => b2World_DumpMemoryStats(this);
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateBody")]
-    private static extern Body b2CreateBody(World worldId, in BodyDef def);
+    private static extern Body b2CreateBody(World worldId, in BodyDefInternal def);
 
     /// <summary>
     /// Creates a rigid body given a definition.
@@ -564,7 +564,7 @@ public struct World
     /// <returns>The body</returns>
     public Body CreateBody(BodyDef def)
     {
-        Body body = b2CreateBody(this, def);
+        Body body = b2CreateBody(this, def._internal);
         _bodies[index1].Add(body.index1, body);
         return body;
     }

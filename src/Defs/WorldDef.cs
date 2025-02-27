@@ -120,13 +120,31 @@ public struct WorldDef
     /// User context that is provided to enqueueTask and finishTask
     /// </summary>
     [FieldOffset(80)]
-    public nint UserTaskContext;
+    private nint userTaskContext;
+
+    /// <summary>
+    /// User context that is provided to enqueueTask and finishTask
+    /// </summary>
+    public object? UserTaskContext
+    {
+        get => GCHandle.FromIntPtr(userData).Target;
+        set => userData = GCHandle.ToIntPtr(GCHandle.Alloc(value));
+    }
 
     /// <summary>
     /// User data
     /// </summary>
     [FieldOffset(88)]
-    public nint UserData;
+    private nint userData;
+
+    /// <summary>
+    /// User data pointer
+    /// </summary>
+    public object? UserData
+    {
+        get => GCHandle.FromIntPtr(userData).Target;
+        set => userData = GCHandle.ToIntPtr(GCHandle.Alloc(value));
+    }
 
     /// <summary>
     /// Used internally to detect a valid definition. DO NOT SET.

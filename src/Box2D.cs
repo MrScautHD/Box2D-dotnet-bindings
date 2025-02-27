@@ -218,25 +218,37 @@ public static class Box2D
     /// Shape cast versus a circle. Initial overlap is treated as a miss.
     /// </summary>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ShapeCastCircle")]
-    public static extern CastOutput ShapeCastCircle(in ShapeCastInput input, in Circle shape);
+    private static extern CastOutput ShapeCastCircle(in ShapeCastInputInternal input, in Circle shape);
+    
+    public static CastOutput ShapeCastCicle(ShapeCastInput input, in Circle shape) =>
+        ShapeCastCircle(input._internal, shape);
 
     /// <summary>
     /// Shape cast versus a capsule. Initial overlap is treated as a miss.
     /// </summary>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ShapeCastCapsule")]
-    public static extern CastOutput ShapeCastCapsule(in ShapeCastInput input, in Capsule shape);
+    private static extern CastOutput ShapeCastCapsule(in ShapeCastInputInternal input, in Capsule shape);
+    
+    public static CastOutput ShapeCastCapsule(ShapeCastInput input, in Capsule shape) =>
+        ShapeCastCapsule(input._internal, shape);
 
     /// <summary>
     /// Shape cast versus a line segment. Initial overlap is treated as a miss.
     /// </summary>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ShapeCastSegment")]
-    public static extern CastOutput ShapeCastSegment(in ShapeCastInput input, in Segment shape);
+    private static extern CastOutput ShapeCastSegment(in ShapeCastInputInternal input, in Segment shape);
+    
+    public static CastOutput ShapeCastSegment(ShapeCastInput input, in Segment shape) =>
+        ShapeCastSegment(input._internal, shape);
 
     /// <summary>
     /// Shape cast versus a convex polygon. Initial overlap is treated as a miss.
     /// </summary>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ShapeCastPolygon")]
-    public static extern CastOutput ShapeCastPolygon(in ShapeCastInput input, in Polygon shape);
+    private static extern CastOutput ShapeCastPolygon(in ShapeCastInputInternal input, in Polygon shape);
+    
+    public static CastOutput ShapeCastPolygon(ShapeCastInput input, in Polygon shape) =>
+        ShapeCastPolygon(input._internal, shape);
 
     /// <summary>
     /// Compute the convex hull of a set of points. Returns an empty hull if it fails.

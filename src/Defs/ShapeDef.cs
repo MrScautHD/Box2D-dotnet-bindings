@@ -14,7 +14,16 @@ public struct ShapeDef
     /// Use this to store application specific shape data.
     /// </summary>
     [FieldOffset(0)]
-    public nint UserData;
+    private nint userData;
+
+    /// <summary>
+    /// Use this to store application specific shape data.
+    /// </summary>
+    public object? UserData
+    {
+        get => GCHandle.FromIntPtr(userData).Target;
+        set => userData = GCHandle.ToIntPtr(GCHandle.Alloc(value));
+    }
 	
     /// <summary>
     /// The Coulomb (dry) friction coefficient, usually in the range [0,1].

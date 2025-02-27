@@ -9,7 +9,7 @@ namespace Box2D;
 /// Note: these may become invalid if bodies and/or shapes are destroyed
 /// </summary>
 [StructLayout(LayoutKind.Explicit)]
-public struct SensorEvents
+public unsafe struct SensorEvents
 {
     /// <summary>
     /// Array of sensor begin touch events
@@ -29,25 +29,7 @@ public struct SensorEvents
     [FieldOffset(20)]
     private int endCount;
 	
-    public ReadOnlySpan<SensorBeginTouchEvent> BeginEvents
-    {
-        get
-        {
-            unsafe
-            {
-                return new ReadOnlySpan<SensorBeginTouchEvent>((SensorBeginTouchEvent*)beginEvents, beginCount);
-            }
-        }
-    }
-	
-    public ReadOnlySpan<SensorEndTouchEvent> EndEvents
-    {
-        get
-        {
-            unsafe
-            {
-                return new ReadOnlySpan<SensorEndTouchEvent>((SensorEndTouchEvent*)endEvents, endCount);
-            }
-        }
-    }
+    public ReadOnlySpan<SensorBeginTouchEvent> BeginEvents => new((SensorBeginTouchEvent*)beginEvents, beginCount);
+
+    public ReadOnlySpan<SensorEndTouchEvent> EndEvents => new((SensorEndTouchEvent*)endEvents, endCount);
 }

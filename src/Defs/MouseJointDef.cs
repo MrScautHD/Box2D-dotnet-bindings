@@ -58,7 +58,16 @@ public struct MouseJointDef
     /// User data pointer
     /// </summary>
     [FieldOffset(40)]
-    public nint UserData;
+    private nint userData;
+
+    /// <summary>
+    /// User data pointer
+    /// </summary>
+    public object? UserData
+    {
+        get => GCHandle.FromIntPtr(userData).Target;
+        set => userData = GCHandle.ToIntPtr(GCHandle.Alloc(value));
+    }
 
     /// <summary>
     /// Used internally to detect a valid definition. DO NOT SET.

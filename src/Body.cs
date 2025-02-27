@@ -1063,13 +1063,13 @@ public struct Body
     public Shape CreateShape(ref ShapeDef def, ref Polygon polygon) => b2CreatePolygonShape(this, def, polygon);
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateChain")]
-    private static extern ChainShape b2CreateChain(Body bodyId, in ChainDef def);
+    private static extern ChainShape b2CreateChain(Body bodyId, in ChainDefInternal def);
     
     /// <summary>
     /// Creates a chain shape
     /// </summary>
     /// <param name="def">The chain definition</param>
     /// <returns>The chain shape</returns>
-    public ChainShape CreateChain(ref ChainDef def) => b2CreateChain(this, def);
+    public ChainShape CreateChain(ref ChainDef def) => b2CreateChain(this, def._internal);
 
 }

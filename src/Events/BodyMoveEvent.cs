@@ -19,10 +19,15 @@ public struct BodyMoveEvent
 {
     [FieldOffset(0)]
     public Transform Transform; // 16 bytes
+    
     [FieldOffset(16)]
     public Body Body;
+    
     [FieldOffset(24)]
-    public nint UserData;
+    private nint userData;
+    
+    public object? UserData => GCHandle.FromIntPtr(userData).Target;
+
     [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(32)]
     public bool FellAsleep;

@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.InteropServices;
 
 namespace Box2D;
@@ -11,21 +12,19 @@ namespace Box2D;
 /// MakePolygon or MakeBox.</b>
 /// </summary>
 [StructLayout(LayoutKind.Explicit)]
-public struct Polygon
+public unsafe struct Polygon
 {
     /// <summary>
     /// The polygon vertices
     /// </summary>
-    [MarshalAs(UnmanagedType.ByValArray, SizeConst = Box2D.B2_MAX_POLYGON_VERTICES)]
     [FieldOffset(0)]
-    public Vec2[] Vertices;
+    private nint* vertices;
 
     /// <summary>
     /// The outward normal vectors of the polygon sides
     /// </summary>
-    [MarshalAs(UnmanagedType.ByValArray, SizeConst = Box2D.B2_MAX_POLYGON_VERTICES)]
     [FieldOffset(Box2D.B2_MAX_POLYGON_VERTICES * 8)]
-    public Vec2[] Normals;
+    private nint* normals;
 
     /// <summary>
     /// The centroid of the polygon
@@ -43,5 +42,8 @@ public struct Polygon
     /// The number of polygon vertices
     /// </summary>
     [FieldOffset(Box2D.B2_MAX_POLYGON_VERTICES * 8 * 2 + 12)]
-    public int Count;
+    private int count;
+    
+    public ReadOnlySpan<Vec2> Vertices => new(vertices, count);
+    public ReadOnlySpan<Vec2> Normals => new(normals, count);
 }
