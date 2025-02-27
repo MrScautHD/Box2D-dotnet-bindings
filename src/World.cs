@@ -44,12 +44,7 @@ public struct World
             body.Destroy();
         
         nint userDataPtr = b2World_GetUserData(this);
-        if (userDataPtr != 0)
-        {
-            GCHandle handle = GCHandle.FromIntPtr(userDataPtr);
-            if (handle.IsAllocated) handle.Free();
-        }
-        
+        Box2D.FreeHandle(userDataPtr);
         
         b2DestroyWorld(this);
         _bodies.Remove(index1);
@@ -537,36 +532,9 @@ public struct World
     /// </summary>
     public object? UserData
     {
-        get
-        {
-            nint userDataPtr = b2World_GetUserData(this);
-            if (userDataPtr == 0) return null;
-            GCHandle handle = GCHandle.FromIntPtr(userDataPtr);
-            if (!handle.IsAllocated) return null;
-            object? userData = handle.Target;
-            return userData;
-        }
-        set
-        {
-            // dealloc previous user data
-            nint userDataPtr = b2World_GetUserData(this);
-            GCHandle handle;
-            if (userDataPtr != 0)
-            {
-                handle = GCHandle.FromIntPtr(userDataPtr);
-                if (handle.IsAllocated) handle.Free();
-            }
-            if (value == null)
-            {
-                b2World_SetUserData(this, 0);
-                return;
-            }
-            handle = GCHandle.Alloc(value);
-            userDataPtr = GCHandle.ToIntPtr(handle);
-            b2World_SetUserData(this, userDataPtr);
-        }
+        get => Box2D.GetObjectAtPointer(b2World_GetUserData, this);
+        set => Box2D.SetObjectAtPointer(b2World_GetUserData, b2World_SetUserData, this, value);
     }
-    
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetFrictionCallback")]
     private static extern void b2World_SetFrictionCallback(World worldId, FrictionCallback callback);

@@ -26,7 +26,7 @@ public struct BodyMoveEvent
     [FieldOffset(24)]
     private nint userData;
     
-    public object? UserData => GCHandle.FromIntPtr(userData).Target;
+    public object? UserData => Box2D.GetObjectAtPointer(userData);
 
     [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(32)]

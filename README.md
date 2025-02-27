@@ -10,7 +10,7 @@ While it's not impossible to implement in C# - intrinsics have been available si
 
 ## How is this better than Hexa.NET.Box2D or Box2D.NET?
 Hexa.NET.Box2D and Box2D.NET are auto-generated with code generators, and are direct mappings of the Box2D API. This, by contrast, is a hand-crafted API that is designed to be more idiomatic to dotnet coders.
-These bindings also have full XmlDoc comments and fully defined delegates.
+These bindings also have full XmlDoc comments and fully defined delegates. Where there are pointers, these are allocated and freed for you by wrapper classes.
 In this case "better" is probably subjective: Hexa.NET.Box2D and Box2D.NET are more likely to be API-complete with the Box2D version that they target, while this library brings quality of life improvements. *This API is complete up to 3.0.0 and at least part of 3.1.0*
 
 ### This library includes:
@@ -27,6 +27,14 @@ PascalCased properties that populate from the underlying Box2D API
 <img src="media/BodyProperties.png" alt="An image demonstrating the PascalCased properties of a Body object showing detailed information about the Body."/>
 
 
+## Raising Issues
+
+If you think you've found a bug, it's best if you can provide code that proves the bug. That code can then go towards a unit test to initially prove the bug, and later prevent regression. Sometimes bugs or queries may be referred to the original Box2D project.
+
+## Contributing
+
+If you want to add code, please keep it consistent with the rest of the codebase. Consistency within a codebase helps others recognise repeated patterns. Your IDE may automatically detect and use the .editorconfig file in the root of the project.
+
 ## Getting things working
 
 If you want to just use it, get the NuGet package HughPH.Box2D using your IDE. Package info: https://www.nuget.org/packages/HughPH.Box2D/
@@ -34,11 +42,11 @@ If you want to just use it, get the NuGet package HughPH.Box2D using your IDE. P
 If you want to contribute:
 
 1. Clone this repo, then either build it or add a DLL reference, or copy it into your solution and add a project reference, or configure it as a submodule.
-  - (If this is too cryptic, you should probably just use the NuGet package - which *should* include the native libraries - if this doesn't work, please raies an Issue)
+- (If this is too cryptic, you should probably just use the NuGet package - which *should* include the native libraries - if this doesn't work, please raies an Issue)
 2. Clone the main branch of Erin Catto's incredible Box2D project from https://github.com/erincatto/box2d
 3. Build Box2D shared library:
-  - CD into the box2d repo
-  - Execute the commands in build.sh or build.bat, but for the first `cmake` command, add `-DBOX2D_SAMPLES=OFF -DBUILD_SHARED_LIBS=ON` before the `..`
-  - (If this is too cryptic, this might not be the project for you.)
+- CD into the box2d repo
+- Execute the commands in build.sh or build.bat, but for the first `cmake` command, add `-DBOX2D_SAMPLES=OFF -DBUILD_SHARED_LIBS=ON` before the `..`
+- (If this is too cryptic, this might not be the project for you.)
 4. You fill find the shared object or DLL in ./build/src on Linux and .\build\bin\Debug on Windows
 5. Make sure that file gets into your output dir

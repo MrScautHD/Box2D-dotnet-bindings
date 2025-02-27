@@ -24,8 +24,7 @@ public class DistanceJointDef
     
     ~DistanceJointDef()
     {
-        if (_internal.UserData != 0)
-            GCHandle.FromIntPtr(_internal.UserData).Free();
+        Box2D.FreeHandle(_internal.UserData);
     }
 
     /// <summary>
@@ -169,16 +168,7 @@ public class DistanceJointDef
     /// </summary>
     public object? UserData
     {
-        get => GCHandle.FromIntPtr(_internal.UserData).Target;
-        set
-        {
-            if (_internal.UserData != 0)
-            {
-                GCHandle.FromIntPtr(_internal.UserData).Free();
-                _internal.UserData = 0;
-            }
-            if (value != null)
-                _internal.UserData = GCHandle.ToIntPtr(GCHandle.Alloc(value));
-        }
+        get => Box2D.GetObjectAtPointer(_internal.UserData);
+        set => Box2D.SetObjectAtPointer(ref _internal.UserData, value);
     }
 }

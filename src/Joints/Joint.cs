@@ -23,13 +23,8 @@ public class Joint
     /// </summary>
     public void Destroy()
     {
-        // dealloc user data
         nint userDataPtr = b2Joint_GetUserData(_id);
-        if (userDataPtr != 0)
-        {
-            GCHandle handle = GCHandle.FromIntPtr(userDataPtr);
-            if (handle.IsAllocated) handle.Free();
-        }
+        Box2D.FreeHandle(userDataPtr);
         
         b2DestroyJoint(_id);
     }
@@ -163,36 +158,9 @@ public class Joint
     /// </summary>
     public object? UserData
     {
-        get
-        {
-            nint userDataPtr = b2Joint_GetUserData(_id);
-            if (userDataPtr == 0) return null;
-            GCHandle handle = GCHandle.FromIntPtr(userDataPtr);
-            if (!handle.IsAllocated) return null;
-            object? userData = handle.Target;
-            return userData;
-        }
-        set
-        {
-            // dealloc previous user data
-            nint userDataPtr = b2Joint_GetUserData(_id);
-            GCHandle handle;
-            if (userDataPtr != 0)
-            {
-                handle = GCHandle.FromIntPtr(userDataPtr);
-                if (handle.IsAllocated) handle.Free();
-            }
-            if (value == null)
-            {
-                b2Joint_SetUserData(_id, 0);
-                return;
-            }
-            handle = GCHandle.Alloc(value);
-            userDataPtr = GCHandle.ToIntPtr(handle);
-            b2Joint_SetUserData(_id, userDataPtr);
-        }
+        get => Box2D.GetObjectAtPointer(b2Joint_GetUserData, _id);
+        set => Box2D.SetObjectAtPointer(b2Joint_GetUserData, b2Joint_SetUserData, _id, value);
     }
-
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_WakeBodies")]
     private static extern void b2Joint_WakeBodies(JointId jointId);

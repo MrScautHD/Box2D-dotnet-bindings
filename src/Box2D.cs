@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 
 namespace Box2D;
 
@@ -412,5 +413,60 @@ public static class Box2D
         set => SetLengthUnitsPerMeter(value);
     }
     
+    internal static object? GetObjectAtPointer(nint ptr)
+    {
+        if (ptr == 0) return null;
+        GCHandle handle = GCHandle.FromIntPtr(ptr);
+        if (!handle.IsAllocated) return null;
+        object? userData = handle.Target;
+        return userData;
+    }
     
+    internal static void SetObjectAtPointer(ref nint ptr, object? value)
+    {
+        if (ptr != 0)
+        {
+            GCHandle handle = GCHandle.FromIntPtr(ptr);
+            if (handle.IsAllocated) handle.Free();
+        }
+        if (value == null) return;
+        GCHandle newHandle = GCHandle.Alloc(value);
+        ptr = GCHandle.ToIntPtr(newHandle);
+    }
+
+    internal static void FreeHandle(nint ptr)
+    {
+        if (ptr != 0)
+        {
+            var hnd = GCHandle.FromIntPtr(ptr);
+            if (hnd.IsAllocated)
+                hnd.Free();
+        }
+    }
+ 
+    internal static object? GetObjectAtPointer<T>(Func<T,nint> getFunc, T param)
+    {
+        nint ptr = getFunc(param);
+        return GetObjectAtPointer(ptr);
+    }
+
+    internal static void SetObjectAtPointer<T>(Func<T,nint> getFunc, Action<T, nint> setFunc, T param, object? value)
+    {
+        // dealloc previous user data
+        nint userDataPtr = getFunc(param);
+        GCHandle handle;
+        if (userDataPtr != 0)
+        {
+            handle = GCHandle.FromIntPtr(userDataPtr);
+            if (handle.IsAllocated) handle.Free();
+        }
+        if (value == null)
+        {
+            setFunc(param, 0);
+            return;
+        }
+        handle = GCHandle.Alloc(value);
+        userDataPtr = GCHandle.ToIntPtr(handle);
+        setFunc(param, userDataPtr);
+    }
 }

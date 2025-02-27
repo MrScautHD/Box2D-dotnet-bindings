@@ -35,11 +35,7 @@ public struct Body
         
         // dealloc user data
         nint userDataPtr = b2Body_GetUserData(this);
-        if (userDataPtr != 0)
-        {
-            GCHandle handle = GCHandle.FromIntPtr(userDataPtr);
-            if (handle.IsAllocated) handle.Free();
-        }
+        Box2D.FreeHandle(userDataPtr);
         
         b2DestroyBody(this);
     }
@@ -146,34 +142,8 @@ public struct Body
     /// </summary>
     public object? UserData
     {
-        get
-        {
-            nint userDataPtr = b2Body_GetUserData(this);
-            if (userDataPtr == 0) return null;
-            GCHandle handle = GCHandle.FromIntPtr(userDataPtr);
-            if (!handle.IsAllocated) return null;
-            object? userData = handle.Target;
-            return userData;
-        }
-        set
-        {
-            // dealloc previous user data
-            nint userDataPtr = b2Body_GetUserData(this);
-            GCHandle handle;
-            if (userDataPtr != 0)
-            {
-                handle = GCHandle.FromIntPtr(userDataPtr);
-                if (handle.IsAllocated) handle.Free();
-            }
-            if (value == null)
-            {
-                b2Body_SetUserData(this, 0);
-                return;
-            }
-            handle = GCHandle.Alloc(value);
-            userDataPtr = GCHandle.ToIntPtr(handle);
-            b2Body_SetUserData(this, userDataPtr);
-        }
+        get => Box2D.GetObjectAtPointer(b2Body_GetUserData,this);
+        set => Box2D.SetObjectAtPointer(b2Body_GetUserData, b2Body_SetUserData, this, value);
     }
     
     

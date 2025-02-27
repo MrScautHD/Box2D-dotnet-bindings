@@ -18,10 +18,8 @@ public class WorldDef
     
     ~WorldDef()
     {
-        if (_internal.UserData != 0)
-            GCHandle.FromIntPtr(_internal.UserData).Free();
-        if (_internal.UserTaskContext != 0)
-            GCHandle.FromIntPtr(_internal.UserTaskContext).Free();
+        Box2D.FreeHandle(_internal.UserData);
+        Box2D.FreeHandle(_internal.UserTaskContext);
     }
     
     /// <summary>
@@ -183,17 +181,8 @@ public class WorldDef
     /// </summary>
     public object? UserData
     {
-        get => GCHandle.FromIntPtr(_internal.UserData).Target;
-        set
-        {
-            if (_internal.UserData != 0)
-            {
-                GCHandle.FromIntPtr(_internal.UserData).Free();
-                _internal.UserData = 0;
-            }
-            if (value != null)
-                _internal.UserData = GCHandle.ToIntPtr(GCHandle.Alloc(value));
-        }
+        get => Box2D.GetObjectAtPointer(_internal.UserData);
+        set => Box2D.SetObjectAtPointer(ref _internal.UserData, value);
     }
     
     /// <summary>
@@ -201,16 +190,7 @@ public class WorldDef
     /// </summary>
     public object? UserTaskContext
     {
-        get => GCHandle.FromIntPtr(_internal.UserTaskContext).Target;
-        set 
-        {
-            if (_internal.UserTaskContext != 0)
-            {
-                GCHandle.FromIntPtr(_internal.UserTaskContext).Free();
-                _internal.UserTaskContext = 0;
-            }
-            if (value != null)
-                _internal.UserTaskContext = GCHandle.ToIntPtr(GCHandle.Alloc(value));
-        }
+        get => Box2D.GetObjectAtPointer(_internal.UserTaskContext);
+        set => Box2D.SetObjectAtPointer(ref _internal.UserTaskContext, value);
     }
 }

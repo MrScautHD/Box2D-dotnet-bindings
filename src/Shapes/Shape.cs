@@ -29,11 +29,7 @@ public struct Shape : IEquatable<Shape>
     {
         // dealloc user data
         nint userDataPtr = b2Shape_GetUserData(this);
-        if (userDataPtr != 0)
-        {
-            GCHandle handle = GCHandle.FromIntPtr(userDataPtr);
-            if (handle.IsAllocated) handle.Free();
-        }
+        Box2D.FreeHandle(userDataPtr);
         
         b2DestroyShape(this, updateBodyMass);
     }
@@ -126,34 +122,8 @@ public struct Shape : IEquatable<Shape>
     /// </summary>
     public object? UserData
     {
-        get
-        {
-            nint userDataPtr = b2Shape_GetUserData(this);
-            if (userDataPtr == 0) return null;
-            GCHandle handle = GCHandle.FromIntPtr(userDataPtr);
-            if (!handle.IsAllocated) return null;
-            object? userData = handle.Target;
-            return userData;
-        }
-        set
-        {
-            // dealloc previous user data
-            nint userDataPtr = b2Shape_GetUserData(this);
-            GCHandle handle;
-            if (userDataPtr != 0)
-            {
-                handle = GCHandle.FromIntPtr(userDataPtr);
-                if (handle.IsAllocated) handle.Free();
-            }
-            if (value == null)
-            {
-                b2Shape_SetUserData(this, 0);
-                return;
-            }
-            handle = GCHandle.Alloc(value);
-            userDataPtr = GCHandle.ToIntPtr(handle);
-            b2Shape_SetUserData(this, userDataPtr);
-        }
+        get => Box2D.GetObjectAtPointer(b2Shape_GetUserData,this);
+        set => Box2D.SetObjectAtPointer(b2Shape_GetUserData, b2Shape_SetUserData, this, value);
     }
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_SetDensity")]

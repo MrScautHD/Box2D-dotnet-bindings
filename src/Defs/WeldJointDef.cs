@@ -20,8 +20,7 @@ public class WeldJointDef
     
     ~WeldJointDef()
     {
-        if (_internal.UserData != 0)
-            GCHandle.FromIntPtr(_internal.UserData).Free();
+        Box2D.FreeHandle(_internal.UserData);
     }
     
     /// <summary>
@@ -117,18 +116,9 @@ public class WeldJointDef
     /// <summary>
     /// User data
     /// </summary>
-    public object UserData
+    public object? UserData
     {
-        get => GCHandle.FromIntPtr(_internal.UserData).Target;
-        set
-        {
-            if (_internal.UserData != 0)
-            {
-                GCHandle.FromIntPtr(_internal.UserData).Free();
-                _internal.UserData = 0;
-            }
-            if (value != null)
-                _internal.UserData = GCHandle.ToIntPtr(GCHandle.Alloc(value));
-        }
+        get => Box2D.GetObjectAtPointer(_internal.UserData);
+        set => Box2D.SetObjectAtPointer(ref _internal.UserData, value);
     }
 }
