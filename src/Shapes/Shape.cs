@@ -25,7 +25,18 @@ public struct Shape : IEquatable<Shape>
     /// </summary>
     /// <param name="updateBodyMass">Option to defer the body mass update</param>
     /// <remarks>You may defer the body mass update which can improve performance if several shapes on a body are destroyed at once</remarks>
-    public void Destroy(bool updateBodyMass) => b2DestroyShape(this, updateBodyMass);
+    public void Destroy(bool updateBodyMass)
+    {
+        // dealloc user data
+        nint userDataPtr = b2Shape_GetUserData(this);
+        if (userDataPtr != 0)
+        {
+            GCHandle handle = GCHandle.FromIntPtr(userDataPtr);
+            if (handle.IsAllocated) handle.Free();
+        }
+        
+        b2DestroyShape(this, updateBodyMass);
+    }
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_IsValid")]
     private static extern bool b2Shape_IsValid(Shape shapeId);
@@ -89,11 +100,10 @@ public struct Shape : IEquatable<Shape>
     /// </summary>
     /// <param name="userData">The user data</param>
     /// <typeparam name="T">The user data type</typeparam>
+    [Obsolete("Use UserData property instead")]
     public void SetUserData<T>(ref T userData)
     {
-        GCHandle handle = GCHandle.Alloc(userData);
-        nint userDataPtr = GCHandle.ToIntPtr(handle);
-        b2Shape_SetUserData(this, userDataPtr);
+        UserData = userData;
     }
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetUserData")]
@@ -105,14 +115,45 @@ public struct Shape : IEquatable<Shape>
     /// <returns>The user data for this shape</returns>
     /// <remarks>This is useful when you get a shape id from an event or query</remarks>
     /// <typeparam name="T">The user data type</typeparam>
+    [Obsolete("Use GetUserData<T> method instead")]
     public T? GetUserData<T>()
     {
-        nint userDataPtr = b2Shape_GetUserData(this);
-        if (userDataPtr == 0) return default;
-        GCHandle handle = GCHandle.FromIntPtr(userDataPtr);
-        if (!handle.IsAllocated) return default;
-        T? userData = (T?)handle.Target;
-        return userData;
+        return (T?)UserData;
+    }
+    
+    /// <summary>
+    /// The user data object for this shape.
+    /// </summary>
+    public object? UserData
+    {
+        get
+        {
+            nint userDataPtr = b2Shape_GetUserData(this);
+            if (userDataPtr == 0) return null;
+            GCHandle handle = GCHandle.FromIntPtr(userDataPtr);
+            if (!handle.IsAllocated) return null;
+            object? userData = handle.Target;
+            return userData;
+        }
+        set
+        {
+            // dealloc previous user data
+            nint userDataPtr = b2Shape_GetUserData(this);
+            GCHandle handle;
+            if (userDataPtr != 0)
+            {
+                handle = GCHandle.FromIntPtr(userDataPtr);
+                if (handle.IsAllocated) handle.Free();
+            }
+            if (value == null)
+            {
+                b2Shape_SetUserData(this, 0);
+                return;
+            }
+            handle = GCHandle.Alloc(value);
+            userDataPtr = GCHandle.ToIntPtr(handle);
+            b2Shape_SetUserData(this, userDataPtr);
+        }
     }
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_SetDensity")]

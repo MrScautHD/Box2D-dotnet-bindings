@@ -92,6 +92,15 @@ public class MouseJointDef
     public object? UserData
     {
         get => GCHandle.FromIntPtr(_internal.UserData).Target;
-        set => _internal.UserData = GCHandle.ToIntPtr(GCHandle.Alloc(value));
+        set
+        {
+            if (_internal.UserData != 0)
+            {
+                GCHandle.FromIntPtr(_internal.UserData).Free();
+                _internal.UserData = 0;
+            }
+            if (value != null)
+                _internal.UserData = GCHandle.ToIntPtr(GCHandle.Alloc(value));
+        }
     }
 }

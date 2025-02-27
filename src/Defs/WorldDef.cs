@@ -184,7 +184,16 @@ public class WorldDef
     public object? UserData
     {
         get => GCHandle.FromIntPtr(_internal.UserData).Target;
-        set => _internal.UserData = GCHandle.ToIntPtr(GCHandle.Alloc(value));
+        set
+        {
+            if (_internal.UserData != 0)
+            {
+                GCHandle.FromIntPtr(_internal.UserData).Free();
+                _internal.UserData = 0;
+            }
+            if (value != null)
+                _internal.UserData = GCHandle.ToIntPtr(GCHandle.Alloc(value));
+        }
     }
     
     /// <summary>
@@ -193,6 +202,15 @@ public class WorldDef
     public object? UserTaskContext
     {
         get => GCHandle.FromIntPtr(_internal.UserTaskContext).Target;
-        set => _internal.UserTaskContext = GCHandle.ToIntPtr(GCHandle.Alloc(value));
+        set 
+        {
+            if (_internal.UserTaskContext != 0)
+            {
+                GCHandle.FromIntPtr(_internal.UserTaskContext).Free();
+                _internal.UserTaskContext = 0;
+            }
+            if (value != null)
+                _internal.UserTaskContext = GCHandle.ToIntPtr(GCHandle.Alloc(value));
+        }
     }
 }

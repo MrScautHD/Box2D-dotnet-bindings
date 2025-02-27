@@ -124,10 +124,10 @@ public class BodyDef
         get => Marshal.PtrToStringAnsi(_internal.Name);
         set
         {
-            if (_internal.Name != IntPtr.Zero)
+            if (_internal.Name != 0)
             {
                 Marshal.FreeHGlobal(_internal.Name);
-                _internal.Name = IntPtr.Zero;
+                _internal.Name = 0;
             }
             if (value != null)
             {
@@ -144,7 +144,16 @@ public class BodyDef
     public object? UserData
     {
         get => GCHandle.FromIntPtr(_internal.UserData).Target;
-        set => _internal.UserData = GCHandle.ToIntPtr(GCHandle.Alloc(value));
+        set
+        {
+            if (_internal.UserData != 0)
+            {
+                GCHandle.FromIntPtr(_internal.UserData).Free();
+                _internal.UserData = 0;
+            }
+            if (value != null)
+                _internal.UserData = GCHandle.ToIntPtr(GCHandle.Alloc(value));
+        }
     }
 
     /// <summary>

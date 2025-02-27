@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.InteropServices;
 
 namespace Box2D;
@@ -20,7 +21,18 @@ public class Joint
     /// <summary>
     /// Destroys this joint
     /// </summary>
-    public void Destroy() => b2DestroyJoint(_id);
+    public void Destroy()
+    {
+        // dealloc user data
+        nint userDataPtr = b2Joint_GetUserData(_id);
+        if (userDataPtr != 0)
+        {
+            GCHandle handle = GCHandle.FromIntPtr(userDataPtr);
+            if (handle.IsAllocated) handle.Free();
+        }
+        
+        b2DestroyJoint(_id);
+    }
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_IsValid")]
     private static extern bool b2Joint_IsValid(JointId jointId);
@@ -127,11 +139,10 @@ public class Joint
     /// Sets the user data on this joint
     /// </summary>
     /// <param name="userData">The user data</param>
+    [Obsolete("Use the UserData property instead")]
     public void SetUserData<T>(ref T userData)
     {
-        GCHandle handle = GCHandle.Alloc(userData);
-        nint userDataPtr = GCHandle.ToIntPtr(handle);
-        b2Joint_SetUserData(_id, userDataPtr);
+        UserData = userData;
     }
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetUserData")]
@@ -141,15 +152,47 @@ public class Joint
     /// Gets the user data on this joint
     /// </summary>
     /// <returns>The user data on this joint</returns>
+    [Obsolete("Use the UserData property instead")]
     public T? GetUserData<T>()
     {
-        nint userDataPtr = b2Joint_GetUserData(_id);
-        if (userDataPtr == 0) return default;
-        GCHandle handle = GCHandle.FromIntPtr(userDataPtr);
-        if (!handle.IsAllocated) return default;
-        T? userData = (T?)handle.Target;
-        return userData;
+        return (T?)UserData;
     }
+    
+    /// <summary>
+    /// The user data object for this joint.
+    /// </summary>
+    public object? UserData
+    {
+        get
+        {
+            nint userDataPtr = b2Joint_GetUserData(_id);
+            if (userDataPtr == 0) return null;
+            GCHandle handle = GCHandle.FromIntPtr(userDataPtr);
+            if (!handle.IsAllocated) return null;
+            object? userData = handle.Target;
+            return userData;
+        }
+        set
+        {
+            // dealloc previous user data
+            nint userDataPtr = b2Joint_GetUserData(_id);
+            GCHandle handle;
+            if (userDataPtr != 0)
+            {
+                handle = GCHandle.FromIntPtr(userDataPtr);
+                if (handle.IsAllocated) handle.Free();
+            }
+            if (value == null)
+            {
+                b2Joint_SetUserData(_id, 0);
+                return;
+            }
+            handle = GCHandle.Alloc(value);
+            userDataPtr = GCHandle.ToIntPtr(handle);
+            b2Joint_SetUserData(_id, userDataPtr);
+        }
+    }
+
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_WakeBodies")]
     private static extern void b2Joint_WakeBodies(JointId jointId);

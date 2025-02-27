@@ -39,6 +39,18 @@ public struct World
     /// </summary>
     public void Destroy()
     {
+        // dealloc user data
+        foreach (var body in _bodies[index1].Values)
+            body.Destroy();
+        
+        nint userDataPtr = b2World_GetUserData(this);
+        if (userDataPtr != 0)
+        {
+            GCHandle handle = GCHandle.FromIntPtr(userDataPtr);
+            if (handle.IsAllocated) handle.Free();
+        }
+        
+        
         b2DestroyWorld(this);
         _bodies.Remove(index1);
     }
@@ -501,11 +513,10 @@ public struct World
     /// Set the user data object.
     /// </summary>
     /// <param name="userData">The user data object</param>
+    [Obsolete("Use UserData property instead")]
     public void SetUserData<T>(T userData)
     {
-        GCHandle handle = GCHandle.Alloc(userData);
-        nint userDataPtr = GCHandle.ToIntPtr(handle);
-        b2World_SetUserData(this, userDataPtr);
+        UserData = userData;
     }
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetUserData")]
@@ -515,15 +526,47 @@ public struct World
     /// Gets the user data object.
     /// </summary>
     /// <returns>The user data object</returns>
+    [Obsolete("Use UserData property instead")]
     public T? GetUserData<T>()
     {
-        nint userDataPtr = b2World_GetUserData(this);
-        if (userDataPtr == 0) return default;
-        GCHandle handle = GCHandle.FromIntPtr(userDataPtr);
-        if (!handle.IsAllocated) return default;
-        T? userData = (T?)handle.Target;
-        return userData;
+        return (T?)UserData;
     }
+    
+    /// <summary>
+    /// The user data object for this world.
+    /// </summary>
+    public object? UserData
+    {
+        get
+        {
+            nint userDataPtr = b2World_GetUserData(this);
+            if (userDataPtr == 0) return null;
+            GCHandle handle = GCHandle.FromIntPtr(userDataPtr);
+            if (!handle.IsAllocated) return null;
+            object? userData = handle.Target;
+            return userData;
+        }
+        set
+        {
+            // dealloc previous user data
+            nint userDataPtr = b2World_GetUserData(this);
+            GCHandle handle;
+            if (userDataPtr != 0)
+            {
+                handle = GCHandle.FromIntPtr(userDataPtr);
+                if (handle.IsAllocated) handle.Free();
+            }
+            if (value == null)
+            {
+                b2World_SetUserData(this, 0);
+                return;
+            }
+            handle = GCHandle.Alloc(value);
+            userDataPtr = GCHandle.ToIntPtr(handle);
+            b2World_SetUserData(this, userDataPtr);
+        }
+    }
+    
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetFrictionCallback")]
     private static extern void b2World_SetFrictionCallback(World worldId, FrictionCallback callback);

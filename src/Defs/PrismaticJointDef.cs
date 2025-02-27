@@ -175,7 +175,16 @@ public class PrismaticJointDef
     public object? UserData
     {
         get => GCHandle.FromIntPtr(_internal.UserData).Target;
-        set => _internal.UserData = GCHandle.ToIntPtr(GCHandle.Alloc(value, GCHandleType.Normal));
+        set
+        {
+            if (_internal.UserData != 0)
+            {
+                GCHandle.FromIntPtr(_internal.UserData).Free();
+                _internal.UserData = 0;
+            }
+            if (value != null)
+                _internal.UserData = GCHandle.ToIntPtr(GCHandle.Alloc(value));
+        }
     }
 
 }

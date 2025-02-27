@@ -15,6 +15,12 @@ public class MotorJointDef
     {
         _internal = new MotorJointDefInternal();
     }
+    
+    ~MotorJointDef()
+    {
+        if (_internal.UserData != 0)
+            GCHandle.FromIntPtr(_internal.UserData).Free();
+    }
 
     /// <summary>
     /// The first attached body
@@ -94,6 +100,15 @@ public class MotorJointDef
     public object? UserData
     {
         get => GCHandle.FromIntPtr(_internal.UserData).Target;
-        set => _internal.UserData = GCHandle.ToIntPtr(GCHandle.Alloc(value));
+        set
+        {
+            if (_internal.UserData != 0)
+            {
+                GCHandle.FromIntPtr(_internal.UserData).Free();
+                _internal.UserData = 0;
+            }
+            if (value != null)
+                _internal.UserData = GCHandle.ToIntPtr(GCHandle.Alloc(value));
+        }
     }
 }

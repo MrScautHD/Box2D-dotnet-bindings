@@ -38,6 +38,8 @@ public class ChainDef
             Marshal.FreeHGlobal(_internal.Points);
         if (_internal.Materials != 0)
             Marshal.FreeHGlobal(_internal.Materials);
+        if (_internal.UserData != 0)
+            Marshal.FreeHGlobal(_internal.UserData);
     }
     
     /// <summary>
@@ -46,7 +48,16 @@ public class ChainDef
     public object? UserData
     {
         get => GCHandle.FromIntPtr(_internal.UserData).Target;
-        set => _internal.UserData = GCHandle.ToIntPtr(GCHandle.Alloc(value));
+        set
+        {
+            if (_internal.UserData != 0)
+            {
+                GCHandle.FromIntPtr(_internal.UserData).Free();
+                _internal.UserData = 0;
+            }
+            if (value != null)
+                _internal.UserData = GCHandle.ToIntPtr(GCHandle.Alloc(value));
+        }
     }
 
     /// <summary>
@@ -56,11 +67,18 @@ public class ChainDef
     {
         set {
             if (_internal.Points != 0)
+            {
                 Marshal.FreeHGlobal(_internal.Points);
-            _internal.Points = Marshal.AllocHGlobal(value.Length * sizeof(Vec2));
-            for (int i = 0; i < value.Length; i++)
-                ((Vec2*)_internal.Points)[i] = value[i];
-            _internal.Count = value.Length;
+                _internal.Points = 0;
+                _internal.Count = 0;
+            }
+            if (value.Length > 0)
+            {
+                _internal.Points = Marshal.AllocHGlobal(value.Length * sizeof(Vec2));
+                for (int i = 0; i < value.Length; i++)
+                    ((Vec2*)_internal.Points)[i] = value[i];
+                _internal.Count = value.Length;
+            }
         }
     }
 
@@ -71,11 +89,18 @@ public class ChainDef
     {
         set {
             if (_internal.Materials != 0)
+            {
                 Marshal.FreeHGlobal(_internal.Materials);
-            _internal.Materials = Marshal.AllocHGlobal(value.Length * sizeof(SurfaceMaterial));
-            for (int i = 0; i < value.Length; i++)
-                ((SurfaceMaterial*)_internal.Materials)[i] = value[i];
-            _internal.MaterialCount = value.Length;
+                _internal.Materials = 0;
+                _internal.MaterialCount = 0;
+            }
+            if (value.Length > 0)
+            {
+                _internal.Materials = Marshal.AllocHGlobal(value.Length * sizeof(SurfaceMaterial));
+                for (int i = 0; i < value.Length; i++)
+                    ((SurfaceMaterial*)_internal.Materials)[i] = value[i];
+                _internal.MaterialCount = value.Length;
+            }
         }
     }
     

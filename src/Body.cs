@@ -32,6 +32,15 @@ public struct Body
     public void Destroy()
     {
         World._bodies[world0+1].Remove(index1);
+        
+        // dealloc user data
+        nint userDataPtr = b2Body_GetUserData(this);
+        if (userDataPtr != 0)
+        {
+            GCHandle handle = GCHandle.FromIntPtr(userDataPtr);
+            if (handle.IsAllocated) handle.Free();
+        }
+        
         b2DestroyBody(this);
     }
 
@@ -133,7 +142,7 @@ public struct Body
     }
     
     /// <summary>
-    /// The user data object for a body.
+    /// The user data object for this body.
     /// </summary>
     public object? UserData
     {
@@ -148,13 +157,21 @@ public struct Body
         }
         set
         {
+            // dealloc previous user data
+            nint userDataPtr = b2Body_GetUserData(this);
+            GCHandle handle;
+            if (userDataPtr != 0)
+            {
+                handle = GCHandle.FromIntPtr(userDataPtr);
+                if (handle.IsAllocated) handle.Free();
+            }
             if (value == null)
             {
                 b2Body_SetUserData(this, 0);
                 return;
             }
-            GCHandle handle = GCHandle.Alloc(value);
-            nint userDataPtr = GCHandle.ToIntPtr(handle);
+            handle = GCHandle.Alloc(value);
+            userDataPtr = GCHandle.ToIntPtr(handle);
             b2Body_SetUserData(this, userDataPtr);
         }
     }
