@@ -5,93 +5,146 @@ namespace Box2D;
 /// <summary>
 /// World definition used to create a simulation world.
 /// </summary>
-[StructLayout(LayoutKind.Explicit)]
-public struct WorldDef
+public class WorldDef
 {
+    internal WorldDefInternal _internal;
+    
+    public WorldDef()
+    {
+        _internal = new WorldDefInternal();
+    }
+    
+    public static WorldDef Default => new ();
+    
+    ~WorldDef()
+    {
+        if (_internal.UserData != 0)
+            GCHandle.FromIntPtr(_internal.UserData).Free();
+        if (_internal.UserTaskContext != 0)
+            GCHandle.FromIntPtr(_internal.UserTaskContext).Free();
+    }
+    
     /// <summary>
     /// Gravity vector. Box2D has no up-vector defined.
     /// </summary>
-    [FieldOffset(0)]
-    public Vec2 Gravity;
-
+    public Vec2 Gravity
+    {
+        get => _internal.Gravity;
+        set => _internal.Gravity = value;
+    }
+    
     /// <summary>
     /// Restitution speed threshold, usually in m/s. Collisions above this
     /// speed have restitution applied (will bounce).
     /// </summary>
-    [FieldOffset(8)]
-    public float RestitutionThreshold;
-
+    public float RestitutionThreshold
+    {
+        get => _internal.RestitutionThreshold;
+        set => _internal.RestitutionThreshold = value;
+    }
+    
     /// <summary>
     /// Threshold speed for hit events. Usually meters per second.
     /// </summary>
-    [FieldOffset(12)]
-    public float HitEventThreshold;
-
+    public float HitEventThreshold
+    {
+        get => _internal.HitEventThreshold;
+        set => _internal.HitEventThreshold = value;
+    }
+    
     /// <summary>
     /// Contact stiffness. Cycles per second. Increasing this increases the speed of overlap recovery, but can introduce jitter.
     /// </summary>
-    [FieldOffset(16)]
-    public float ContactHertz;
-
+    public float ContactHertz
+    {
+        get => _internal.ContactHertz;
+        set => _internal.ContactHertz = value;
+    }
+    
     /// <summary>
     /// Contact bounciness. Non-dimensional. You can speed up overlap recovery by decreasing this with
     /// the trade-off that overlap resolution becomes more energetic.
     /// </summary>
-    [FieldOffset(20)]
-    public float ContactDampingRatio;
-
+    public float ContactDampingRatio
+    {
+        get => _internal.ContactDampingRatio;
+        set => _internal.ContactDampingRatio = value;
+    }
+    
     /// <summary>
     /// This parameter controls how fast overlap is resolved and usually has units of meters per second. This only
     /// puts a cap on the resolution speed. The resolution speed is increased by increasing the hertz and/or
     /// decreasing the damping ratio.
     /// </summary>
-    [FieldOffset(24)]
-    public float ContactPushMaxSpeed;
-
+    public float ContactPushMaxSpeed
+    {
+        get => _internal.ContactPushMaxSpeed;
+        set => _internal.ContactPushMaxSpeed = value;
+    }
+    
     /// <summary>
     /// Joint stiffness. Cycles per second.
     /// </summary>
-    [FieldOffset(28)]
-    public float JointHertz;
-
+    public float JointHertz
+    {
+        get => _internal.JointHertz;
+        set => _internal.JointHertz = value;
+    }
+    
     /// <summary>
     /// Joint bounciness. Non-dimensional.
     /// </summary>
-    [FieldOffset(32)]
-    public float JointDampingRatio;
-
+    public float JointDampingRatio
+    {
+        get => _internal.JointDampingRatio;
+        set => _internal.JointDampingRatio = value;
+    }
+    
     /// <summary>
     /// Maximum linear speed. Usually meters per second.
     /// </summary>
-    [FieldOffset(36)]
-    public float MaximumLinearSpeed;
-
+    public float MaximumLinearSpeed
+    {
+        get => _internal.MaximumLinearSpeed;
+        set => _internal.MaximumLinearSpeed = value;
+    }
+    
     /// <summary>
     /// Optional mixing callback for friction. The default uses sqrt(frictionA * frictionB).
     /// </summary>
-    [FieldOffset(40)]
-    public FrictionCallback FrictionCallback;
-
+    public FrictionCallback FrictionCallback
+    {
+        get => _internal.FrictionCallback;
+        set => _internal.FrictionCallback = value;
+    }
+    
     /// <summary>
     /// Optional mixing callback for restitution. The default uses max(restitutionA, restitutionB).
     /// </summary>
-    [FieldOffset(48)]
-    public RestitutionCallback RestitutionCallback;
-
+    public RestitutionCallback RestitutionCallback
+    {
+        get => _internal.RestitutionCallback;
+        set => _internal.RestitutionCallback = value;
+    }
+    
     /// <summary>
     /// Can bodies go to sleep to improve performance
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(56)]
-    public bool EnableSleep;
-
+    public bool EnableSleep
+    {
+        get => _internal.EnableSleep;
+        set => _internal.EnableSleep = value;
+    }
+    
     /// <summary>
     /// Enable continuous collision
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(57)]
-    public bool EnableContinuous;
-
+    public bool EnableContinuous
+    {
+        get => _internal.EnableContinuous;
+        set => _internal.EnableContinuous = value;
+    }
+    
     /// <summary>
     /// Number of workers to use with the provided task system. Box2D performs best when using only
     /// performance cores and accessing a single L2 cache. Efficiency cores and hyper-threading provide
@@ -101,73 +154,45 @@ public struct WorldDef
     /// <b>Warning: Do not modify the default value unless you are also providing a task system and providing
     /// task callbacks (enqueueTask and finishTask).</b>
     /// </summary>
-    [FieldOffset(60)]
-    public int WorkerCount;
-
+    public int WorkerCount
+    {
+        get => _internal.WorkerCount;
+        set => _internal.WorkerCount = value;
+    }
+    
     /// <summary>
     /// Callback function to spawn tasks
     /// </summary>
-    [FieldOffset(64)]
-    public EnqueueTaskCallback EnqueueTask;
-
+    public EnqueueTaskCallback EnqueueTask
+    {
+        get => _internal.EnqueueTask;
+        set => _internal.EnqueueTask = value;
+    }
+    
     /// <summary>
     /// Callback function to finish a task
     /// </summary>
-    [FieldOffset(72)]
-    public FinishTaskCallback FinishTask;
-
-    /// <summary>
-    /// User context that is provided to enqueueTask and finishTask
-    /// </summary>
-    [FieldOffset(80)]
-    private nint userTaskContext;
-
-    /// <summary>
-    /// User context that is provided to enqueueTask and finishTask
-    /// </summary>
-    public object? UserTaskContext
+    public FinishTaskCallback FinishTask
     {
-        get => GCHandle.FromIntPtr(userData).Target;
-        set => userData = GCHandle.ToIntPtr(GCHandle.Alloc(value));
+        get => _internal.FinishTask;
+        set => _internal.FinishTask = value;
     }
-
-    /// <summary>
-    /// User data
-    /// </summary>
-    [FieldOffset(88)]
-    private nint userData;
-
+    
     /// <summary>
     /// User data pointer
     /// </summary>
     public object? UserData
     {
-        get => GCHandle.FromIntPtr(userData).Target;
-        set => userData = GCHandle.ToIntPtr(GCHandle.Alloc(value));
+        get => GCHandle.FromIntPtr(_internal.UserData).Target;
+        set => _internal.UserData = GCHandle.ToIntPtr(GCHandle.Alloc(value));
     }
-
-    /// <summary>
-    /// Used internally to detect a valid definition. DO NOT SET.
-    /// </summary>
-    [FieldOffset(96)]
-    private readonly int internalValue;
     
     /// <summary>
-    /// Default world definition.
+    /// User context that is provided to enqueueTask and finishTask
     /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultWorldDef")]
-    private static extern WorldDef GetDefault();
-    
-    /// <summary>
-    /// The default world definition.
-    /// </summary>
-    public static WorldDef Default => GetDefault();
-    
-    /// <summary>
-    /// Creates a world definition with the default values.
-    /// </summary>
-    public WorldDef()
+    public object? UserTaskContext
     {
-        this = Default;
+        get => GCHandle.FromIntPtr(_internal.UserTaskContext).Target;
+        set => _internal.UserTaskContext = GCHandle.ToIntPtr(GCHandle.Alloc(value));
     }
 }

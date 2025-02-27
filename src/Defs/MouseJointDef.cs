@@ -8,86 +8,90 @@ namespace Box2D;
 /// This a soft constraint and allows the constraint to stretch without
 /// applying huge forces. This also applies rotation constraint heuristic to improve control.
 /// </summary>
-[StructLayout(LayoutKind.Explicit)]
-public struct MouseJointDef
+public class MouseJointDef
 {
+    internal MouseJointDefInternal _internal;
+
+    public MouseJointDef()
+    {
+        _internal = MouseJointDefInternal.Default;
+    }
+    
+    ~MouseJointDef()
+    {
+        if (_internal.UserData != 0)
+            GCHandle.FromIntPtr(_internal.UserData).Free();
+    }
+    
     /// <summary>
     /// The first attached body. This is assumed to be static.
     /// </summary>
-    [FieldOffset(0)]
-    public Body BodyA;
-    
+    public Body BodyA
+    {
+        get => _internal.BodyA;
+        set => _internal.BodyA = value;
+    }
+
     /// <summary>
     /// The second attached body.
     /// </summary>
-    [FieldOffset(8)]
-    public Body BodyB;
+    public Body BodyB
+    {
+        get => _internal.BodyB;
+        set => _internal.BodyB = value;
+    }
 
     /// <summary>
     /// The initial target point in world space
     /// </summary>
-    [FieldOffset(16)]
-    public Vec2 Target;
+    public Vec2 Target
+    {
+        get => _internal.Target;
+        set => _internal.Target = value;
+    }
 
     /// <summary>
     /// Stiffness in hertz
     /// </summary>
-    [FieldOffset(24)]
-    public float Hertz;
+    public float Hertz
+    {
+        get => _internal.Hertz;
+        set => _internal.Hertz = value;
+    }
 
     /// <summary>
     /// Damping ratio, non-dimensional
     /// </summary>
-    [FieldOffset(28)]
-    public float DampingRatio;
+    public float DampingRatio
+    {
+        get => _internal.DampingRatio;
+        set => _internal.DampingRatio = value;
+    }
 
     /// <summary>
     /// Maximum force, typically in newtons
     /// </summary>
-    [FieldOffset(32)]
-    public float MaxForce;
+    public float MaxForce
+    {
+        get => _internal.MaxForce;
+        set => _internal.MaxForce = value;
+    }
 
     /// <summary>
     /// Set this flag to true if the attached bodies should collide.
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(36)]
-    public bool CollideConnected;
-
-    /// <summary>
-    /// User data pointer
-    /// </summary>
-    [FieldOffset(40)]
-    private nint userData;
+    public bool CollideConnected
+    {
+        get => _internal.CollideConnected;
+        set => _internal.CollideConnected = value;
+    }
 
     /// <summary>
     /// User data pointer
     /// </summary>
     public object? UserData
     {
-        get => GCHandle.FromIntPtr(userData).Target;
-        set => userData = GCHandle.ToIntPtr(GCHandle.Alloc(value));
-    }
-
-    /// <summary>
-    /// Used internally to detect a valid definition. DO NOT SET.
-    /// </summary>
-    [FieldOffset(48)]
-    private readonly int internalValue;
-    
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultMouseJointDef")]
-    private static extern MouseJointDef GetDefault();
-    
-    /// <summary>
-    /// The default mouse joint definition.
-    /// </summary>
-    public static MouseJointDef Default => GetDefault();
-    
-    /// <summary>
-    /// Creates a mouse joint definition with the default values.
-    /// </summary>
-    public MouseJointDef()
-    {
-        this = Default;
+        get => GCHandle.FromIntPtr(_internal.UserData).Target;
+        set => _internal.UserData = GCHandle.ToIntPtr(GCHandle.Alloc(value));
     }
 }

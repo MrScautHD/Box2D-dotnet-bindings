@@ -10,143 +10,172 @@ namespace Box2D;
 /// configuration can violate the constraint slightly. The joint translation is zero
 /// when the local anchor points coincide in world space.
 /// </summary>
-[StructLayout(LayoutKind.Explicit)]
-public struct PrismaticJointDef
+public class PrismaticJointDef
 {
+    internal PrismaticJointDefInternal _internal;
+
+    public PrismaticJointDef()
+    {
+        _internal = new PrismaticJointDefInternal();
+    }
+
+    ~PrismaticJointDef()
+    {
+        if (_internal.UserData != 0)
+            GCHandle.FromIntPtr(_internal.UserData).Free();
+    }
+
     /// <summary>
     /// The first attached body
     /// </summary>
-    [FieldOffset(0)]
-    public Body BodyA;
+    public Body BodyA
+    {
+        get => _internal.BodyA;
+        set => _internal.BodyA = value;
+    }
 
     /// <summary>
     /// The second attached body
     /// </summary>
-    [FieldOffset(8)]
-    public Body BodyB;
-
+    public Body BodyB
+    {
+        get => _internal.BodyB;
+        set => _internal.BodyB = value;
+    }
+    
     /// <summary>
     /// The local anchor point relative to bodyA's origin
     /// </summary>
-    [FieldOffset(16)]
-    public Vec2 LocalAnchorA;
+    public Vec2 LocalAnchorA
+    {
+        get => _internal.LocalAnchorA;
+        set => _internal.LocalAnchorA = value;
+    }
 
     /// <summary>
     /// The local anchor point relative to bodyB's origin
     /// </summary>
-    [FieldOffset(24)]
-    public Vec2 LocalAnchorB;
+    public Vec2 LocalAnchorB
+    {
+        get => _internal.LocalAnchorB;
+        set => _internal.LocalAnchorB = value;
+    }
 
     /// <summary>
     /// The local translation unit axis in bodyA
     /// </summary>
-    [FieldOffset(32)]
-    public Vec2 LocalAxisA;
+    public Vec2 LocalAxisA
+    {
+        get => _internal.LocalAxisA;
+        set => _internal.LocalAxisA = value;
+    }
 
     /// <summary>
     /// The constrained angle between the bodies: bodyB_angle - bodyA_angle
     /// </summary>
-    [FieldOffset(40)]
-    public float ReferenceAngle;
+    public float ReferenceAngle
+    {
+        get => _internal.ReferenceAngle;
+        set => _internal.ReferenceAngle = value;
+    }
 
     /// <summary>
     /// Enable a linear spring along the prismatic joint axis
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(44)]
-    public bool EnableSpring;
+    public bool EnableSpring
+    {
+        get => _internal.EnableSpring;
+        set => _internal.EnableSpring = value;
+    }
 
     /// <summary>
     /// The spring stiffness Hertz, cycles per second
     /// </summary>
-    [FieldOffset(48)]
-    public float Hertz;
+    public float Hertz
+    {
+        get => _internal.Hertz;
+        set => _internal.Hertz = value;
+    }
 
     /// <summary>
     /// The spring damping ratio, non-dimensional
     /// </summary>
-    [FieldOffset(52)]
-    public float DampingRatio;
+    public float DampingRatio
+    {
+        get => _internal.DampingRatio;
+        set => _internal.DampingRatio = value;
+    }
 
     /// <summary>
     /// Enable/disable the joint limit
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(56)]
-    public bool EnableLimit;
+    public bool EnableLimit
+    {
+        get => _internal.EnableLimit;
+        set => _internal.EnableLimit = value;
+    }
 
     /// <summary>
     /// The lower translation limit
     /// </summary>
-    [FieldOffset(60)]
-    public float LowerTranslation;
+    public float LowerTranslation
+    {
+        get => _internal.LowerTranslation;
+        set => _internal.LowerTranslation = value;
+    }
 
     /// <summary>
     /// The upper translation limit
     /// </summary>
-    [FieldOffset(64)]
-    public float UpperTranslation;
+    public float UpperTranslation
+    {
+        get => _internal.UpperTranslation;
+        set => _internal.UpperTranslation = value;
+    }
 
     /// <summary>
     /// Enable/disable the joint motor
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(68)]
-    public bool EnableMotor;
+    public bool EnableMotor
+    {
+        get => _internal.EnableMotor;
+        set => _internal.EnableMotor = value;
+    }
 
     /// <summary>
     /// The maximum motor force, typically in newtons
     /// </summary>
-    [FieldOffset(72)]
-    public float MaxMotorForce;
+    public float MaxMotorForce
+    {
+        get => _internal.MaxMotorForce;
+        set => _internal.MaxMotorForce = value;
+    }
 
     /// <summary>
     /// The desired motor speed, typically in meters per second
     /// </summary>
-    [FieldOffset(76)]
-    public float MotorSpeed;
+    public float MotorSpeed
+    {
+        get => _internal.MotorSpeed;
+        set => _internal.MotorSpeed = value;
+    }
 
     /// <summary>
     /// Set this flag to true if the attached bodies should collide
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(80)]
-    public bool CollideConnected;
+    public bool CollideConnected
+    {
+        get => _internal.CollideConnected;
+        set => _internal.CollideConnected = value;
+    }
 
     /// <summary>
-    /// User data pointer
-    /// </summary>
-    [FieldOffset(84)]
-    private nint userData;
-
-    /// <summary>
-    /// User data pointer
+    /// User data
     /// </summary>
     public object? UserData
     {
-        get => GCHandle.FromIntPtr(userData).Target;
-        set => userData = GCHandle.ToIntPtr(GCHandle.Alloc(value));
+        get => GCHandle.FromIntPtr(_internal.UserData).Target;
+        set => _internal.UserData = GCHandle.ToIntPtr(GCHandle.Alloc(value, GCHandleType.Normal));
     }
 
-    /// <summary>
-    /// Used internally to detect a valid definition. DO NOT SET.
-    /// </summary>
-    [FieldOffset(92)]
-    private readonly int internalValue;
-    
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultPrismaticJointDef")]
-    private static extern PrismaticJointDef GetDefault();
-    
-    /// <summary>
-    /// The default prismatic joint definition.
-    /// </summary>
-    public static PrismaticJointDef Default => GetDefault();
-    
-    /// <summary>
-    /// Creates a prismatic joint definition with the default values.
-    /// </summary>
-    public PrismaticJointDef()
-    {
-        this = Default;
-    }
 }

@@ -9,101 +9,117 @@ namespace Box2D;
 /// soft-body simulation.
 /// <i>Note: The approximate solver in Box2D cannot hold many bodies together rigidly</i>.
 /// </summary>
-[StructLayout(LayoutKind.Explicit)]
-public struct WeldJointDef
+public class WeldJointDef
 {
-    /// <summary>
-    /// The first attached body
-    /// </summary>
-    [FieldOffset(0)]
-    public Body BodyA;
-
-    /// <summary>
-    /// The second attached body
-    /// </summary>
-    [FieldOffset(8)]
-    public Body BodyB;
-
-    /// <summary>
-    /// The local anchor point relative to bodyA's origin
-    /// </summary>
-    [FieldOffset(16)]
-    public Vec2 LocalAnchorA;
-
-    /// <summary>
-    /// The local anchor point relative to bodyB's origin
-    /// </summary>
-    [FieldOffset(24)]
-    public Vec2 LocalAnchorB;
-
-    /// <summary>
-    /// The bodyB angle minus bodyA angle in the reference state (radians)
-    /// </summary>
-    [FieldOffset(32)]
-    public float ReferenceAngle;
-
-    /// <summary>
-    /// Linear stiffness expressed as Hertz (cycles per second). Use zero for maximum stiffness.
-    /// </summary>
-    [FieldOffset(36)]
-    public float LinearHertz;
-
-    /// <summary>
-    /// Angular stiffness as Hertz (cycles per second). Use zero for maximum stiffness.
-    /// </summary>
-    [FieldOffset(40)]
-    public float AngularHertz;
-
-    /// <summary>
-    /// Linear damping ratio, non-dimensional. Use 1 for critical damping.
-    /// </summary>
-    [FieldOffset(44)]
-    public float LinearDampingRatio;
-
-    /// <summary>
-    /// Linear damping ratio, non-dimensional. Use 1 for critical damping.
-    /// </summary>
-    [FieldOffset(48)]
-    public float AngularDampingRatio;
-
-    /// <summary>
-    /// Set this flag to true if the attached bodies should collide
-    /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(52)]
-    public bool CollideConnected;
-
-    /// <summary>
-    /// User data pointer
-    /// </summary>
-    [FieldOffset(56)]
-    private nint userData;
-
-    /// <summary>
-    /// User data pointer
-    /// </summary>
-    public object? UserData
-    {
-        get => GCHandle.FromIntPtr(userData).Target;
-        set => userData = GCHandle.ToIntPtr(GCHandle.Alloc(value));
-    }
-
-    /// <summary>
-    /// Used internally to detect a valid definition. DO NOT SET.
-    /// </summary>
-    [FieldOffset(64)]
-    private readonly int internalValue;
-    
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultWeldJointDef")]
-    private static extern WeldJointDef GetDefault();
-    
-    /// <summary>
-    /// The default weld joint definition.
-    /// </summary>
-    public static WeldJointDef Default => GetDefault();
+    internal WeldJointDefInternal _internal;
     
     public WeldJointDef()
     {
-        this = Default;
+        _internal = new WeldJointDefInternal();
+    }
+    
+    ~WeldJointDef()
+    {
+        if (_internal.UserData != 0)
+            GCHandle.FromIntPtr(_internal.UserData).Free();
+    }
+    
+    /// <summary>
+    /// The first attached body
+    /// </summary>
+    public Body BodyA
+    {
+        get => _internal.BodyA;
+        set => _internal.BodyA = value;
+    }
+    
+    /// <summary>
+    /// The second attached body
+    /// </summary>
+    public Body BodyB
+    {
+        get => _internal.BodyB;
+        set => _internal.BodyB = value;
+    }
+    
+    /// <summary>
+    /// The local anchor point relative to bodyA's origin
+    /// </summary>
+    public Vec2 LocalAnchorA
+    {
+        get => _internal.LocalAnchorA;
+        set => _internal.LocalAnchorA = value;
+    }
+    
+    /// <summary>
+    /// The local anchor point relative to bodyB's origin
+    /// </summary>
+    public Vec2 LocalAnchorB
+    {
+        get => _internal.LocalAnchorB;
+        set => _internal.LocalAnchorB = value;
+    }
+    
+    /// <summary>
+    /// The bodyB angle minus bodyA angle in the reference state (radians)
+    /// </summary>
+    public float ReferenceAngle
+    {
+        get => _internal.ReferenceAngle;
+        set => _internal.ReferenceAngle = value;
+    }
+    
+    /// <summary>
+    /// Linear stiffness expressed as Hertz (cycles per second). Use zero for maximum stiffness.
+    /// </summary>
+    public float LinearHertz
+    {
+        get => _internal.LinearHertz;
+        set => _internal.LinearHertz = value;
+    }
+    
+    /// <summary>
+    /// Angular stiffness as Hertz (cycles per second). Use zero for maximum stiffness.
+    /// </summary>
+    public float AngularHertz
+    {
+        get => _internal.AngularHertz;
+        set => _internal.AngularHertz = value;
+    }
+    
+    /// <summary>
+    /// Linear damping ratio, non-dimensional. Use 1 for critical damping.
+    /// </summary>
+    public float LinearDampingRatio
+    {
+        get => _internal.LinearDampingRatio;
+        set => _internal.LinearDampingRatio = value;
+    }
+
+    /// <summary>
+    /// Linear damping ratio, non-dimensional. Use 1 for critical damping.
+    /// </summary>
+    public float AngularDampingRatio
+    {
+        get => _internal.AngularDampingRatio;
+        set => _internal.AngularDampingRatio = value;
+    }
+    
+    /// <summary>
+    /// Set this flag to true if the attached bodies should collide
+    /// </summary>
+    public bool CollideConnected
+    {
+        get => _internal.CollideConnected;
+        set => _internal.CollideConnected = value;
+    }
+    
+    /// <summary>
+    /// User data
+    /// </summary>
+    public object UserData
+    {
+        get => GCHandle.FromIntPtr(_internal.UserData).Target;
+        set => _internal.UserData = GCHandle.ToIntPtr(GCHandle.Alloc(value, GCHandleType.Normal));
     }
 }

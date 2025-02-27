@@ -10,137 +10,164 @@ namespace Box2D;
 /// configuration can violate the constraint slightly. The joint translation is zero
 /// when the local anchor points coincide in world space.
 /// </summary>
-[StructLayout(LayoutKind.Explicit)]
-public struct WheelJointDef
+public class WheelJointDef
 {
+    internal WheelJointDefInternal _internal;
+    
+    public WheelJointDef()
+    {
+        _internal = new WheelJointDefInternal();
+    }
+    
+    ~WheelJointDef()
+    {
+        if (_internal.UserData != 0)
+            GCHandle.FromIntPtr(_internal.UserData).Free();
+    }
+    
     /// <summary>
     /// The first attached body
     /// </summary>
-    [FieldOffset(0)]
-    private Body BodyA;
-    
+    public Body BodyA
+    {
+        get => _internal.BodyA;
+        set => _internal.BodyA = value;
+    }
+
     /// <summary>
     /// The second attached body
     /// </summary>
-    [FieldOffset(8)]
-    public Body BodyB;
+    public Body BodyB
+    {
+        get => _internal.BodyB;
+        set => _internal.BodyB = value;
+    }
 
     /// <summary>
     /// The local anchor point relative to bodyA's origin
     /// </summary>
-    [FieldOffset(16)]
-    public Vec2 LocalAnchorA;
+    public Vec2 LocalAnchorA
+    {
+        get => _internal.LocalAnchorA;
+        set => _internal.LocalAnchorA = value;
+    }
 
     /// <summary>
     /// The local anchor point relative to bodyB's origin
     /// </summary>
-    [FieldOffset(24)]
-    public Vec2 LocalAnchorB;
+    public Vec2 LocalAnchorB
+    {
+        get => _internal.LocalAnchorB;
+        set => _internal.LocalAnchorB = value;
+    }
 
     /// <summary>
     /// The local translation unit axis in bodyA
     /// </summary>
-    [FieldOffset(32)]
-    public Vec2 LocalAxisA;
+    public Vec2 LocalAxisA
+    {
+        get => _internal.LocalAxisA;
+        set => _internal.LocalAxisA = value;
+    }
 
     /// <summary>
     /// Enable a linear spring along the local axis
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(40)]
-    public bool EnableSpring;
+    public bool EnableSpring
+    {
+        get => _internal.EnableSpring;
+        set => _internal.EnableSpring = value;
+    }
 
     /// <summary>
     /// Spring stiffness in Hertz
     /// </summary>
-    [FieldOffset(44)]
-    public float Hertz;
+    public float Hertz
+    {
+        get => _internal.Hertz;
+        set => _internal.Hertz = value;
+    }
 
     /// <summary>
     /// Spring damping ratio, non-dimensional
     /// </summary>
-    [FieldOffset(48)]
-    public float DampingRatio;
+    public float DampingRatio
+    {
+        get => _internal.DampingRatio;
+        set => _internal.DampingRatio = value;
+    }
 
     /// <summary>
     /// Enable/disable the joint linear limit
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(52)]
-    public bool EnableLimit;
+    public bool EnableLimit
+    {
+        get => _internal.EnableLimit;
+        set => _internal.EnableLimit = value;
+    }
 
     /// <summary>
     /// The lower translation limit
     /// </summary>
-    [FieldOffset(56)]
-    public float LowerTranslation;
+    public float LowerTranslation
+    {
+        get => _internal.LowerTranslation;
+        set => _internal.LowerTranslation = value;
+    }
 
     /// <summary>
     /// The upper translation limit
     /// </summary>
-    [FieldOffset(60)]
-    public float UpperTranslation;
-
+    public float UpperTranslation
+    {
+        get => _internal.UpperTranslation;
+        set => _internal.UpperTranslation = value;
+    }
+    
     /// <summary>
     /// Enable/disable the joint rotational motor
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(64)]
-    public bool EnableMotor;
+    public bool EnableMotor
+    {
+        get => _internal.EnableMotor;
+        set => _internal.EnableMotor = value;
+    }
 
     /// <summary>
     /// The maximum motor torque, typically in newton-meters
     /// </summary>
-    [FieldOffset(68)]
-    public float MaxMotorTorque;
+    public float MaxMotorTorque
+    {
+        get => _internal.MaxMotorTorque;
+        set => _internal.MaxMotorTorque = value;
+    }
 
     /// <summary>
     /// The desired motor speed in radians per second
     /// </summary>
-    [FieldOffset(72)]
-    public float MotorSpeed;
+    public float MotorSpeed
+    {
+        get => _internal.MotorSpeed;
+        set => _internal.MotorSpeed = value;
+    }
 
     /// <summary>
     /// Set this flag to true if the attached bodies should collide
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(76)]
-    public bool CollideConnected;
-
-    /// <summary>
-    /// User data pointer
-    /// </summary>
-    [FieldOffset(80)]
-    private nint userData;
+    public bool CollideConnected
+    {
+        get => _internal.CollideConnected;
+        set => _internal.CollideConnected = value;
+    }
 
     /// <summary>
     /// User data pointer
     /// </summary>
     public object? UserData
     {
-        get => GCHandle.FromIntPtr(userData).Target;
-        set => userData = GCHandle.ToIntPtr(GCHandle.Alloc(value));
+        get => GCHandle.FromIntPtr(_internal.UserData).Target;
+        set => _internal.UserData = GCHandle.ToIntPtr(GCHandle.Alloc(value));
     }
 
-    /// <summary>
-    /// Used internally to detect a valid definition. DO NOT SET.
-    /// </summary>
-    [FieldOffset(88)]
-    private readonly int internalValue;
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultWheelJointDef")]
-    private static extern WheelJointDef GetDefault();
-    
-    /// <summary>
-    /// The default wheel joint definition.
-    /// </summary>
-    public static WheelJointDef Default => GetDefault();
-    
-    /// <summary>
-    /// Creates a wheel joint definition with the default values.
-    /// </summary>
-    public WheelJointDef()
-    {
-        this = Default;
-    }
 }

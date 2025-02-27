@@ -10,138 +10,166 @@ namespace Box2D;
 /// local anchor points so that the initial configuration can violate the
 /// constraint slightly. This helps when saving and loading a game.
 /// </summary>
-[StructLayout(LayoutKind.Explicit)]
-public struct DistanceJointDef
+public class DistanceJointDef
 {
-    /// <summary>
-    /// The first attached body
-    /// </summary>
-    [FieldOffset(0)]
-    public Body BodyA;
+    internal DistanceJointDefInternal _internal;
 
-    /// <summary>
-    /// The second attached body
-    /// </summary>
-    [FieldOffset(8)]
-    public Body BodyB;
-
-    /// <summary>
-    /// The local anchor point relative to bodyA's origin
-    /// </summary>
-    [FieldOffset(16)]
-    public Vec2 LocalAnchorA;
-
-    /// <summary>
-    /// The local anchor point relative to bodyB's origin
-    /// </summary>
-    [FieldOffset(24)]
-    public Vec2 LocalAnchorB;
-
-    /// <summary>
-    /// The rest length of this joint. Clamped to a stable minimum value.
-    /// </summary>
-    [FieldOffset(32)]
-    public float Length;
-
-    /// <summary>
-    /// Enable the distance constraint to behave like a spring. If false
-    /// then the distance joint will be rigid, overriding the limit and motor.
-    /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(36)]
-    public bool EnableSpring;
-
-    /// <summary>
-    /// The spring linear stiffness Hertz, cycles per second
-    /// </summary>
-    [FieldOffset(40)]
-    public float Hertz;
-
-    /// <summary>
-    /// The spring linear damping ratio, non-dimensional
-    /// </summary>
-    [FieldOffset(44)]
-    public float DampingRatio;
-
-    /// <summary>
-    /// Enable/disable the joint limit
-    /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(48)]
-    public bool EnableLimit;
-
-    /// <summary>
-    /// Minimum length. Clamped to a stable minimum value.
-    /// </summary>
-    [FieldOffset(52)]
-    public float MinLength;
-
-    /// <summary>
-    /// Maximum length. Must be greater than or equal to the minimum length.
-    /// </summary>
-    [FieldOffset(56)]
-    public float MaxLength;
-
-    /// <summary>
-    /// Enable/disable the joint motor
-    /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(60)]
-    public bool EnableMotor;
-
-    /// <summary>
-    /// The maximum motor force, usually in newtons
-    /// </summary>
-    [FieldOffset(64)]
-    public float MaxMotorForce;
-
-    /// <summary>
-    /// The desired motor speed, usually in meters per second
-    /// </summary>
-    [FieldOffset(68)]
-    public float MotorSpeed;
-
-    /// <summary>
-    /// Set this flag to true if the attached bodies should collide
-    /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(72)]
-    public bool CollideConnected;
-
-    /// <summary>
-    /// User data pointer
-    /// </summary>
-    [FieldOffset(76)]
-    private nint userData;
-
-    /// <summary>
-    /// Use this to store application specific shape data.
-    /// </summary>
-    public object? UserData
-    {
-        get => GCHandle.FromIntPtr(userData).Target;
-        set => userData = GCHandle.ToIntPtr(GCHandle.Alloc(value));
-    }
-    
-    /// <summary>
-    /// Used internally to detect a valid definition. DO NOT SET.
-    /// </summary>
-    [FieldOffset(80)]
-    private readonly int internalValue;
-    
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultDistanceJointDef")]
-    private static extern DistanceJointDef GetDefault();
-    
-    /// <summary>
-    /// The default distance joint definition.
-    /// </summary>
-    public static DistanceJointDef Default => GetDefault();
-    
     /// <summary>
     /// Creates a distance joint definition with the default values.
     /// </summary>
     public DistanceJointDef()
     {
-        this = Default;
+        _internal = new DistanceJointDefInternal();
+    }
+    
+    ~DistanceJointDef()
+    {
+        if (_internal.UserData != 0)
+            GCHandle.FromIntPtr(_internal.UserData).Free();
+    }
+
+    /// <summary>
+    /// The first attached body
+    /// </summary>
+    public Body BodyA
+    {
+        get => _internal.BodyA;
+        set => _internal.BodyA = value;
+    }
+
+    /// <summary>
+    /// The second attached body
+    /// </summary>
+    public Body BodyB
+    {
+        get => _internal.BodyB;
+        set => _internal.BodyB = value;
+    }
+
+    /// <summary>
+    /// The local anchor point relative to bodyA's origin
+    /// </summary>
+    public Vec2 LocalAnchorA
+    {
+        get => _internal.LocalAnchorA;
+        set => _internal.LocalAnchorA = value;
+    }
+
+    /// <summary>
+    /// The local anchor point relative to bodyB's origin
+    /// </summary>
+    public Vec2 LocalAnchorB
+    {
+        get => _internal.LocalAnchorB;
+        set => _internal.LocalAnchorB = value;
+    }
+
+    /// <summary>
+    /// The rest length of this joint. Clamped to a stable minimum value.
+    /// </summary>
+    public float Length
+    {
+        get => _internal.Length;
+        set => _internal.Length = value;
+    }
+
+    /// <summary>
+    /// Enable the distance constraint to behave like a spring. If false
+    /// then the distance joint will be rigid, overriding the limit and motor.
+    /// </summary>
+    public bool EnableSpring
+    {
+        get => _internal.EnableSpring;
+        set => _internal.EnableSpring = value;
+    }
+
+    /// <summary>
+    /// The spring linear stiffness Hertz, cycles per second
+    /// </summary>
+    public float Hertz
+    {
+        get => _internal.Hertz;
+        set => _internal.Hertz = value;
+    }
+
+    /// <summary>
+    /// The spring linear damping ratio, non-dimensional
+    /// </summary>
+    public float DampingRatio
+    {
+        get => _internal.DampingRatio;
+        set => _internal.DampingRatio = value;
+    }
+
+    /// <summary>
+    /// Enable/disable the joint limit
+    /// </summary>
+    public bool EnableLimit
+    {
+        get => _internal.EnableLimit;
+        set => _internal.EnableLimit = value;
+    }
+    
+    /// <summary>
+    /// Minimum length. Clamped to a stable minimum value.
+    /// </summary>
+    public float MinLength
+    {
+        get => _internal.MinLength;
+        set => _internal.MinLength = value;
+    }
+    
+    /// <summary>
+    /// Maximum length. Must be greater than or equal to the minimum length.
+    /// </summary>
+    public float MaxLength
+    {
+        get => _internal.MaxLength;
+        set => _internal.MaxLength = value;
+    }
+    
+    /// <summary>
+    /// Enable/disable the joint motor
+    /// </summary>
+    public bool EnableMotor
+    {
+        get => _internal.EnableMotor;
+        set => _internal.EnableMotor = value;
+    }
+    
+    /// <summary>
+    /// The maximum motor force, usually in newtons
+    /// </summary>
+    public float MaxMotorForce
+    {
+        get => _internal.MaxMotorForce;
+        set => _internal.MaxMotorForce = value;
+    }
+    
+    /// <summary>
+    /// The desired motor speed, usually in meters per second
+    /// </summary>
+    public float MotorSpeed
+    {
+        get => _internal.MotorSpeed;
+        set => _internal.MotorSpeed = value;
+    }
+    
+    /// <summary>
+    /// Set this flag to true if the attached bodies should collide
+    /// </summary>
+    public bool CollideConnected
+    {
+        get => _internal.CollideConnected;
+        set => _internal.CollideConnected = value;
+    }
+    
+    /// <summary>
+    /// Use this to store application specific shape data.
+    /// </summary>
+    public object? UserData
+    {
+        get => GCHandle.FromIntPtr(_internal.UserData).Target;
+        set => _internal.UserData = GCHandle.ToIntPtr(GCHandle.Alloc(value));
     }
 }

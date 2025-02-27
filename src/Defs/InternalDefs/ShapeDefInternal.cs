@@ -7,142 +7,95 @@ namespace Box2D;
 /// This is a temporary object used to bundle shape creation parameters. You may use
 /// the same shape definition to create multiple shapes.
 /// </summary>
-public class ShapeDef
+[StructLayout(LayoutKind.Explicit)]
+struct ShapeDefInternal
 {
-    internal ShapeDefInternal _internal;
- 
-    public ShapeDef()
-    {
-        _internal = ShapeDefInternal.Default;
-    }
-    
-    ~ShapeDef()
-    {
-        if (_internal.UserData != 0)
-            GCHandle.FromIntPtr(_internal.UserData).Free();
-    }
-    
     /// <summary>
     /// Use this to store application specific shape data.
     /// </summary>
-    public object? UserData
-    {
-        get => GCHandle.FromIntPtr(_internal.UserData).Target;
-        set => _internal.UserData = GCHandle.ToIntPtr(GCHandle.Alloc(value));
-    }
-
+    [FieldOffset(0)]
+    internal nint UserData;
+    
     /// <summary>
     /// The Coulomb (dry) friction coefficient, usually in the range [0,1].
     /// </summary>
-    public float Friction
-    {
-        get => _internal.Friction;
-        set => _internal.Friction = value;
-    }
+    [FieldOffset(8)]
+    internal float Friction;
 
     /// <summary>
     /// The coefficient of restitution (bounce) usually in the range [0,1].<br/>
     /// https://en.wikipedia.org/wiki/Coefficient_of_restitution
     /// </summary>
-    public float Restitution
-    {
-        get => _internal.Restitution;
-        set => _internal.Restitution = value;
-    }
+    [FieldOffset(12)]
+    internal float Restitution;
 
     /// <summary>
     /// The rolling resistance usually in the range [0,1].
     /// </summary>
-    public float RollingResistance
-    {
-        get => _internal.RollingResistance;
-        set => _internal.RollingResistance = value;
-    }
+    [FieldOffset(16)]
+    internal float RollingResistance;
 
     /// <summary>
     /// The tangent speed for conveyor belts
     /// </summary>
-    public float TangentSpeed
-    {
-        get => _internal.TangentSpeed;
-        set => _internal.TangentSpeed = value;
-    }
+    [FieldOffset(20)]
+    internal float TangentSpeed;
 
     /// <summary>
     /// User material identifier. This is passed with query results and to friction and restitution
     /// combining functions. It is not used internally.
     /// </summary>
-    public int Material
-    {
-        get => _internal.Material;
-        set => _internal.Material = value;
-    }
+    [FieldOffset(24)]
+    internal int Material;
 
     /// <summary>
     /// The density, usually in kg/m².
     /// </summary>
-    public float Density
-    {
-        get => _internal.Density;
-        set => _internal.Density = value;
-    }
+    [FieldOffset(28)]
+    internal float Density;
 
     /// <summary>
     /// Collision filtering data.
     /// </summary>
-    public Filter Filter
-    {
-        get => _internal.Filter;
-        set => _internal.Filter = value;
-    }
+    [FieldOffset(32)]
+    internal Filter Filter; // 24 bytes
 
     /// <summary>
     /// Custom debug draw color.
     /// </summary>
-    public HexColor CustomColor
-    {
-        get => _internal.CustomColor;
-        set => _internal.CustomColor = value;
-    }
-    
+    [FieldOffset(56)]
+    internal HexColor CustomColor;
+
     /// <summary>
     /// A sensor shape generates overlap events but never generates a collision response.
     /// Sensors do not collide with other sensors and do not have continuous collision.
     /// Instead, use a ray or shape cast for those scenarios.
     /// </summary>
-    public bool IsSensor
-    {
-        get => _internal.IsSensor;
-        set => _internal.IsSensor = value;
-    }
+    [MarshalAs(UnmanagedType.U1)]
+    [FieldOffset(60)]
+    internal bool IsSensor;
 
     /// <summary>
     /// Enable contact events for this shape. Only applies to kinematic and dynamic bodies. Ignored for sensors.
     /// </summary>
-    public bool EnableContactEvents
-    {
-        get => _internal.EnableContactEvents;
-        set => _internal.EnableContactEvents = value;
-    }
+    [MarshalAs(UnmanagedType.U1)]
+    [FieldOffset(61)]
+    internal bool EnableContactEvents;
 
     /// <summary>
     /// Enable hit events for this shape. Only applies to kinematic and dynamic bodies. Ignored for sensors.
     /// </summary>
-    public bool EnableHitEvents
-    {
-        get => _internal.EnableHitEvents;
-        set => _internal.EnableHitEvents = value;
-    }
+    [MarshalAs(UnmanagedType.U1)]
+    [FieldOffset(62)]
+    internal bool EnableHitEvents;
 
     /// <summary>
     /// Enable pre-solve contact events for this shape. Only applies to dynamic bodies. These are expensive
     /// and must be carefully handled due to threading. Ignored for sensors.
     /// </summary>
-    public bool EnablePreSolveEvents
-    {
-        get => _internal.EnablePreSolveEvents;
-        set => _internal.EnablePreSolveEvents = value;
-    }
+    [MarshalAs(UnmanagedType.U1)]
+    [FieldOffset(63)]
+    internal bool EnablePreSolveEvents;
 
     /// <summary>
     /// Normally shapes on static bodies don't invoke contact creation when they are added to the world. This overrides
@@ -150,19 +103,36 @@ public class ShapeDef
     /// when there are many static shapes.
     /// This is implicitly always true for sensors, dynamic bodies, and kinematic bodies.
     /// </summary>
-    public bool InvokeContactCreation
-    {
-        get => _internal.InvokeContactCreation;
-        set => _internal.InvokeContactCreation = value;
-    }
+    [MarshalAs(UnmanagedType.U1)]
+    [FieldOffset(64)]
+    internal bool InvokeContactCreation;
 
     /// <summary>
     /// Should the body update the mass properties when this shape is created. Default is true.
     /// </summary>
-    public bool UpdateBodyMass
-    {
-        get => _internal.UpdateBodyMass;
-        set => _internal.UpdateBodyMass = value;
-    }
+    [MarshalAs(UnmanagedType.U1)]
+    [FieldOffset(65)]
+    internal bool UpdateBodyMass;
 
+    /// <summary>
+    /// Used internally to detect a valid definition. DO NOT SET.
+    /// </summary>
+    [FieldOffset(68)]
+    private readonly int internalValue;
+    
+    /// <summary>
+    /// The default shape definition.
+    /// </summary>
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultShapeDef")]
+    private static extern ShapeDefInternal GetDefault();
+    
+    /// <summary>
+    /// The default shape definition.
+    /// </summary>
+    public static ShapeDefInternal Default => GetDefault();
+    
+    public ShapeDefInternal()
+    {
+        this = Default;
+    }
 }

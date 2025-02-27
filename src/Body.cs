@@ -1015,7 +1015,7 @@ public struct Body
     public AABB AABB => b2Body_ComputeAABB(this);
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateCircleShape")]
-    private static extern Shape b2CreateCircleShape(Body bodyId, in ShapeDef def, in Circle circle);
+    private static extern Shape b2CreateCircleShape(Body bodyId, in ShapeDefInternal def, in Circle circle);
     
     /// <summary>
     /// Creates a circle shape and attaches it to this body
@@ -1024,10 +1024,10 @@ public struct Body
     /// <param name="circle">The circle</param>
     /// <returns>The shape</returns>
     /// <remarks>The shape definition and geometry are fully cloned. Contacts are not created until the next time step</remarks>
-    public Shape CreateShape(ShapeDef def, Circle circle) => b2CreateCircleShape(this, def, circle);
+    public Shape CreateShape(ShapeDef def, in Circle circle) => b2CreateCircleShape(this, def._internal, circle);
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateSegmentShape")]
-    private static extern Shape b2CreateSegmentShape(Body bodyId, in ShapeDef def, in Segment segment);
+    private static extern Shape b2CreateSegmentShape(Body bodyId, in ShapeDefInternal def, in Segment segment);
     
     /// <summary>
     /// Creates a line segment shape and attaches it to this body
@@ -1036,10 +1036,10 @@ public struct Body
     /// <param name="segment">The segment</param>
     /// <returns>The shape</returns>
     /// <remarks>The shape definition and geometry are fully cloned. Contacts are not created until the next time step</remarks>
-    public Shape CreateShape(in ShapeDef def, in Segment segment) => b2CreateSegmentShape(this, def, segment);
+    public Shape CreateShape(ShapeDef def, in Segment segment) => b2CreateSegmentShape(this, def._internal, segment);
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateCapsuleShape")]
-    private static extern Shape b2CreateCapsuleShape(Body bodyId, in ShapeDef def, in Capsule capsule);
+    private static extern Shape b2CreateCapsuleShape(Body bodyId, in ShapeDefInternal def, in Capsule capsule);
     
     /// <summary>
     /// Creates a capsule shape and attaches it to this body
@@ -1048,10 +1048,10 @@ public struct Body
     /// <param name="capsule">The capsule</param>
     /// <returns>The shape</returns>
     /// <remarks>The shape definition and geometry are fully cloned. Contacts are not created until the next time step</remarks>
-    public Shape CreateShape(ref ShapeDef def, ref Capsule capsule) => b2CreateCapsuleShape(this, def, capsule);
+    public Shape CreateShape(ShapeDef def, in Capsule capsule) => b2CreateCapsuleShape(this, def._internal, capsule);
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreatePolygonShape")]
-    private static extern Shape b2CreatePolygonShape(Body bodyId, in ShapeDef def, in Polygon polygon);
+    private static extern Shape b2CreatePolygonShape(Body bodyId, in ShapeDefInternal def, in Polygon polygon);
     
     /// <summary>
     /// Creates a polygon shape and attaches it to this body
@@ -1060,7 +1060,7 @@ public struct Body
     /// <param name="polygon">The polygon</param>
     /// <returns>The shape</returns>
     /// <remarks>The shape definition and geometry are fully cloned. Contacts are not created until the next time step</remarks>
-    public Shape CreateShape(ref ShapeDef def, ref Polygon polygon) => b2CreatePolygonShape(this, def, polygon);
+    public Shape CreateShape(ShapeDef def, in Polygon polygon) => b2CreatePolygonShape(this, def._internal, polygon);
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateChain")]
     private static extern ChainShape b2CreateChain(Body bodyId, in ChainDefInternal def);
@@ -1070,6 +1070,6 @@ public struct Body
     /// </summary>
     /// <param name="def">The chain definition</param>
     /// <returns>The chain shape</returns>
-    public ChainShape CreateChain(ref ChainDef def) => b2CreateChain(this, def._internal);
+    public ChainShape CreateChain(ChainDef def) => b2CreateChain(this, def._internal);
 
 }

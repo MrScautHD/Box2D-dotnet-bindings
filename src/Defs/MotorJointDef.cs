@@ -7,92 +7,93 @@ namespace Box2D;
 ///
 /// A typical usage is to control the movement of a dynamic body with respect to the ground.
 /// </summary>
-[StructLayout(LayoutKind.Explicit)]
-public struct MotorJointDef
+public class MotorJointDef
 {
+    internal MotorJointDefInternal _internal;
+
+    public MotorJointDef()
+    {
+        _internal = new MotorJointDefInternal();
+    }
+
     /// <summary>
     /// The first attached body
     /// </summary>
-    [FieldOffset(0)]
-    public Body BodyA;
+    public Body BodyA
+    {
+        get => _internal.BodyA;
+        set => _internal.BodyA = value;
+    }
 
     /// <summary>
     /// The second attached body
     /// </summary>
-    [FieldOffset(8)]
-    public Body BodyB;
+    public Body BodyB
+    {
+        get => _internal.BodyB;
+        set => _internal.BodyB = value;
+    }
 
     /// <summary>
     /// Position of bodyB minus the position of bodyA, in bodyA's frame
     /// </summary>
-    [FieldOffset(16)]
-    public Vec2 LinearOffset;
+    public Vec2 LinearOffset
+    {
+        get => _internal.LinearOffset;
+        set => _internal.LinearOffset = value;
+    }
 
     /// <summary>
     /// The bodyB angle minus bodyA angle in radians
     /// </summary>
-    [FieldOffset(24)]
-    public float AngularOffset;
+    public float AngularOffset
+    {
+        get => _internal.AngularOffset;
+        set => _internal.AngularOffset = value;
+    }
 
     /// <summary>
     /// The maximum motor force in newtons
     /// </summary>
-    [FieldOffset(28)]
-    public float MaxForce;
+    public float MaxForce
+    {
+        get => _internal.MaxForce;
+        set => _internal.MaxForce = value;
+    }
 
     /// <summary>
     /// The maximum motor torque in newton-meters
     /// </summary>
-    [FieldOffset(32)]
-    public float MaxTorque;
+    public float MaxTorque
+    {
+        get => _internal.MaxTorque;
+        set => _internal.MaxTorque = value;
+    }
 
     /// <summary>
     /// Position correction factor in the range [0,1]
     /// </summary>
-    [FieldOffset(36)]
-    public float CorrectionFactor;
+    public float CorrectionFactor
+    {
+        get => _internal.CorrectionFactor;
+        set => _internal.CorrectionFactor = value;
+    }
 
     /// <summary>
     /// Set this flag to true if the attached bodies should collide
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(40)]
-    public bool CollideConnected;
-
-    /// <summary>
-    /// User data pointer
-    /// </summary>
-    [FieldOffset(44)]
-    private nint userData;
-
-    /// <summary>
-    /// User data pointer
-    /// </summary>
-    public object? UserData
+    public bool CollideConnected
     {
-        get => GCHandle.FromIntPtr(userData).Target;
-        set => userData = GCHandle.ToIntPtr(GCHandle.Alloc(value));
+        get => _internal.CollideConnected;
+        set => _internal.CollideConnected = value;
     }
 
     /// <summary>
-    /// Used internally to detect a valid definition. DO NOT SET.
+    /// Use this to store application specific shape data.
     /// </summary>
-    [FieldOffset(52)]
-    private readonly int internalValue;
-    
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultMotorJointDef")]
-    private static extern MotorJointDef GetDefault();
-    
-    /// <summary>
-    /// The default motor joint definition.
-    /// </summary>
-    public static MotorJointDef Default => GetDefault();
-    
-    /// <summary>
-    /// Creates a motor joint definition with the default values.
-    /// </summary>
-    public MotorJointDef()
+    public object? UserData
     {
-        this = Default;
+        get => GCHandle.FromIntPtr(_internal.UserData).Target;
+        set => _internal.UserData = GCHandle.ToIntPtr(GCHandle.Alloc(value));
     }
 }

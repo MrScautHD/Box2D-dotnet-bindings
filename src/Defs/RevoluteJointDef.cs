@@ -15,141 +15,172 @@ namespace Box2D;
 /// 1. you might not know where the center of mass will be
 /// 2. if you add/remove shapes from a body and recompute the mass, the joints will be broken
 /// </summary>
-[StructLayout(LayoutKind.Explicit)]
-public struct RevoluteJointDef
+public class RevoluteJointDef
 {
+    internal RevoluteJointDefInternal _internal;
+    
+    public RevoluteJointDef()
+    {
+        _internal = new RevoluteJointDefInternal();
+    }
+    
+    ~RevoluteJointDef()
+    {
+        if (_internal.UserData != 0)
+            GCHandle.FromIntPtr(_internal.UserData).Free();
+    }
+    
     /// <summary>
     /// The first attached body
     /// </summary>
-    [FieldOffset(0)]
-    public Body BodyA;
-    
+    public Body BodyA
+    {
+        get => _internal.BodyA;
+        set => _internal.BodyA = value;
+    }
+
     /// <summary>
     /// The second attached body
     /// </summary>
-    [FieldOffset(8)]
-    public Body BodyB;
+    public Body BodyB
+    {
+        get => _internal.BodyB;
+        set => _internal.BodyB = value;
+    }
 
     /// <summary>
     /// The local anchor point relative to bodyA's origin
     /// </summary>
-    [FieldOffset(16)]
-    public Vec2 LocalAnchorA;
+    public Vec2 LocalAnchorA
+    {
+        get => _internal.LocalAnchorA;
+        set => _internal.LocalAnchorA = value;
+    }
 
     /// <summary>
     /// The local anchor point relative to bodyB's origin
     /// </summary>
-    [FieldOffset(24)]
-    public Vec2 LocalAnchorB;
+    public Vec2 LocalAnchorB
+    {
+        get => _internal.LocalAnchorB;
+        set => _internal.LocalAnchorB = value;
+    }
 
     /// <summary>
     /// The bodyB angle minus bodyA angle in the reference state (radians).
     /// This defines the zero angle for the joint limit.
     /// </summary>
-    [FieldOffset(32)]
-    public float ReferenceAngle;
+    public float ReferenceAngle
+    {
+        get => _internal.ReferenceAngle;
+        set => _internal.ReferenceAngle = value;
+    }
 
     /// <summary>
     /// Enable a rotational spring on the revolute hinge axis
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(36)]
-    public bool EnableSpring;
+    public bool EnableSpring
+    {
+        get => _internal.EnableSpring;
+        set => _internal.EnableSpring = value;
+    }
 
     /// <summary>
     /// The spring stiffness Hertz, cycles per second
     /// </summary>
-    [FieldOffset(40)]
-    public float Hertz;
+    public float Hertz
+    {
+        get => _internal.Hertz;
+        set => _internal.Hertz = value;
+    }
 
     /// <summary>
     /// The spring damping ratio, non-dimensional
     /// </summary>
-    [FieldOffset(44)]
-    public float DampingRatio;
+    public float DampingRatio
+    {
+        get => _internal.DampingRatio;
+        set => _internal.DampingRatio = value;
+    }
 
     /// <summary>
     /// A flag to enable joint limits
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(48)]
-    public bool EnableLimit;
+    public bool EnableLimit
+    {
+        get => _internal.EnableLimit;
+        set => _internal.EnableLimit = value;
+    }
 
     /// <summary>
     /// The lower angle for the joint limit in radians
     /// </summary>
-    [FieldOffset(52)]
-    public float LowerAngle;
+    public float LowerAngle
+    {
+        get => _internal.LowerAngle;
+        set => _internal.LowerAngle = value;
+    }
 
     /// <summary>
     /// The upper angle for the joint limit in radians
     /// </summary>
-    [FieldOffset(56)]
-    public float UpperAngle;
+    public float UpperAngle
+    {
+        get => _internal.UpperAngle;
+        set => _internal.UpperAngle = value;
+    }
 
     /// <summary>
     /// A flag to enable the joint motor
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(60)]
-    public bool RnableMotor;
+    public bool EnableMotor
+    {
+        get => _internal.EnableMotor;
+        set => _internal.EnableMotor = value;
+    }
 
     /// <summary>
     /// The maximum motor torque, typically in newton-meters
     /// </summary>
-    [FieldOffset(64)]
-    public float MaxMotorTorque;
+    public float MaxMotorTorque
+    {
+        get => _internal.MaxMotorTorque;
+        set => _internal.MaxMotorTorque = value;
+    }
 
     /// <summary>
     /// The desired motor speed in radians per second
     /// </summary>
-    [FieldOffset(68)]
-    public float MotorSpeed;
+    public float MotorSpeed
+    {
+        get => _internal.MotorSpeed;
+        set => _internal.MotorSpeed = value;
+    }
 
     /// <summary>
     /// Scale the debug draw
     /// </summary>
-    [FieldOffset(72)]
-    public float DrawSize;
+    public float DrawSize
+    {
+        get => _internal.DrawSize;
+        set => _internal.DrawSize = value;
+    }
 
     /// <summary>
     /// Set this flag to true if the attached bodies should collide
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(76)]
-    public bool CollideConnected;
-
-    /// <summary>
-    /// User data pointer
-    /// </summary>
-    [FieldOffset(80)]
-    private nint userData;
-
-    /// <summary>
-    /// User data pointer
-    /// </summary>
-    public object? UserData
+    public bool CollideConnected
     {
-        get => GCHandle.FromIntPtr(userData).Target;
-        set => userData = GCHandle.ToIntPtr(GCHandle.Alloc(value));
+        get => _internal.CollideConnected;
+        set => _internal.CollideConnected = value;
     }
 
     /// <summary>
-    /// Used internally to detect a valid definition. DO NOT SET.
+    /// User data
     /// </summary>
-    [FieldOffset(88)]
-    private readonly int internalValue;
-    
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultRevoluteJointDef")]
-    private static extern RevoluteJointDef GetDefault();
-    
-    /// <summary>
-    /// The default revolute joint definition.
-    /// </summary>
-    public static RevoluteJointDef Default => GetDefault();
-    
-    public RevoluteJointDef()
+    public object? UserData
     {
-        this = Default;
+        get => GCHandle.FromIntPtr(_internal.UserData).Target;
+        set => _internal.UserData = GCHandle.ToIntPtr(GCHandle.Alloc(value, GCHandleType.Normal));
     }
 }
