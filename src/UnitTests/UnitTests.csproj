@@ -28,7 +28,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\src\Box2DBindings.csproj" />
+      <ProjectReference Include="..\Box2DBindings\Box2DBindings.csproj" />
     </ItemGroup>
 
     <ItemGroup>

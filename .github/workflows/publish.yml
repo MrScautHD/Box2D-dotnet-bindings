@@ -74,13 +74,13 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: box2d-windows
-          path: src/native/win-x64
+          path: src/Box2DBindings/native/win-x64
 
       - name: Get Linux artefacts
         uses: actions/download-artifact@v4
         with:
           name: box2d-linux
-          path: src/native/linux-x64
+          path: src/Box2DBindings/native/linux-x64
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
@@ -88,7 +88,7 @@ jobs:
           dotnet-version: 9.0.x
 
       - name: Build and pack
-        run: dotnet pack src --configuration Release --output ./artefacts
+        run: dotnet pack src/Box2DBindings --configuration Release --output ./artefacts
 
       - name: Publish to NuGet
         run: dotnet nuget push artefacts/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
