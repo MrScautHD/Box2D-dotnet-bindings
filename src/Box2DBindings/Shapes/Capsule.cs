@@ -26,4 +26,60 @@ public struct Capsule
     /// </summary>
     [FieldOffset(16)]
     public float Radius;
+    
+    /// <summary>
+    /// Compute mass properties of a capsule
+    /// </summary>
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ComputeCapsuleMass")]
+    private static extern MassData ComputeCapsuleMass(in Capsule shape, float density);
+
+    /// <summary>
+    /// Compute mass properties of this capsule
+    /// </summary>
+    public MassData ComputeMass(float density) => ComputeCapsuleMass(this, density);
+    
+    /// <summary>
+    /// Compute the bounding box of a transformed capsule
+    /// </summary>
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ComputeCapsuleAABB")]
+    private static extern AABB ComputeCapsuleAABB(in Capsule shape, in Transform transform);
+    
+    /// <summary>
+    /// Compute the bounding box of this transformed capsule
+    /// </summary>
+    public AABB ComputeAABB(in Transform transform) => ComputeCapsuleAABB(this, transform);
+    
+    /// <summary>
+    /// Test a point for overlap with a capsule in local space
+    /// </summary>
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PointInCapsule")]
+    private static extern bool PointInCapsule(in Vec2 point, in Capsule shape);
+    
+    /// <summary>
+    /// Test a point for overlap with this capsule in local space
+    /// </summary>
+    public bool TestPoint(in Vec2 point) => PointInCapsule(point, this);
+    
+    /// <summary>
+    /// Ray cast versus capsule shape in local space. Initial overlap is treated as a miss.
+    /// </summary>
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2RayCastCapsule")]
+    private static extern CastOutput RayCastCapsule(in RayCastInput input, in Capsule shape);
+    
+    /// <summary>
+    /// Ray cast versus this capsule shape in local space. Initial overlap is treated as a miss.
+    /// </summary>
+    public CastOutput RayCast(in RayCastInput input) => RayCastCapsule(input, this);
+
+    /// <summary>
+    /// Shape cast versus a capsule. Initial overlap is treated as a miss.
+    /// </summary>
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ShapeCastCapsule")]
+    private static extern CastOutput ShapeCastCapsule(in ShapeCastInputInternal input, in Capsule shape);
+
+    /// <summary>
+    /// Shape cast versus this capsule. Initial overlap is treated as a miss.
+    /// </summary>
+    public CastOutput ShapeCast(in ShapeCastInput input) => ShapeCastCapsule(input._internal, this);
+
 }
