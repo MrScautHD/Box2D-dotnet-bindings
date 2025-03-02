@@ -242,7 +242,7 @@ public static class Box2D
     /// </summary>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ShapeCastCircle")]
     private static extern CastOutput ShapeCastCircle(in ShapeCastInputInternal input, in Circle shape);
-    
+
     /// <summary>
     /// Shape cast versus a circle. Initial overlap is treated as a miss.
     /// </summary>
@@ -255,7 +255,7 @@ public static class Box2D
     /// </summary>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ShapeCastCapsule")]
     private static extern CastOutput ShapeCastCapsule(in ShapeCastInputInternal input, in Capsule shape);
-    
+
     /// <summary>
     /// Shape cast versus a capsule. Initial overlap is treated as a miss.
     /// </summary>
@@ -268,7 +268,7 @@ public static class Box2D
     /// </summary>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ShapeCastSegment")]
     private static extern CastOutput ShapeCastSegment(in ShapeCastInputInternal input, in Segment shape);
-    
+
     /// <summary>
     /// Shape cast versus a line segment. Initial overlap is treated as a miss.
     /// </summary>
@@ -281,7 +281,7 @@ public static class Box2D
     /// </summary>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ShapeCastPolygon")]
     private static extern CastOutput ShapeCastPolygon(in ShapeCastInputInternal input, in Polygon shape);
-    
+
     /// <summary>
     /// Shape cast versus a convex polygon. Initial overlap is treated as a miss.
     /// </summary>
@@ -330,7 +330,7 @@ public static class Box2D
     /// </summary>
     public static SegmentDistanceResult SegmentDistance(in Segment segmentA, in Segment segmentB) =>
         SegmentDistance(segmentA.Point1, segmentA.Point2, segmentB.Point1, segmentB.Point2);
-    
+
     /// <summary>
     /// Compute the closest points between two shapes represented as point clouds.
     /// b2SimplexCache cache is input/output. On the first call set SimplexCache.Count to zero.
@@ -371,7 +371,7 @@ public static class Box2D
     /// </summary>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CollideCircles")]
     public static extern Manifold Collide(in Circle circleA, in Transform xfA, in Circle circleB, in Transform xfB);
-    
+
     [Obsolete("Use Collide instead")]
     public static Manifold CollideCircles(in Circle circleA, in Transform xfA, in Circle circleB, in Transform xfB)
         => Collide(circleA, xfA, circleB, xfB);
@@ -385,23 +385,23 @@ public static class Box2D
     [Obsolete("Use Collide instead")]
     public static Manifold CollideCapsuleAndCircle(in Capsule capsuleA, in Transform xfA, in Circle circleB, in Transform xfB)
         => Collide(capsuleA, xfA, circleB, xfB);
-    
+
     /// <summary>
     /// Compute the contact manifold between an segment and a circle
     /// </summary>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CollideSegmentAndCircle")]
     public static extern Manifold Collide(in Segment segmentA, in Transform xfA, in Circle circleB, in Transform xfB);
-    
+
     [Obsolete("Use Collide instead")]
     public static Manifold CollideSegmentAndCircle(in Segment segmentA, in Transform xfA, in Circle circleB, in Transform xfB)
         => Collide(segmentA, xfA, circleB, xfB);
-    
+
     /// <summary>
     /// Compute the contact manifold between a polygon and a circle
     /// </summary>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CollidePolygonAndCircle")]
     public static extern Manifold Collide(in Polygon polygonA, in Transform xfA, in Circle circleB, in Transform xfB);
-    
+
     [Obsolete("Use Collide instead")]
     public static Manifold CollidePolygonAndCircle(in Polygon polygonA, in Transform xfA, in Circle circleB, in Transform xfB)
         => Collide(polygonA, xfA, circleB, xfB);
@@ -410,18 +410,18 @@ public static class Box2D
     /// Compute the contact manifold between a capsule and circle
     /// </summary>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CollideCapsules")]
-    public static extern Manifold Collides(in Capsule capsuleA, in Transform xfA, in Capsule capsuleB, in Transform xfB);
-    
+    public static extern Manifold Collide(in Capsule capsuleA, in Transform xfA, in Capsule capsuleB, in Transform xfB);
+
     [Obsolete("Use Collide instead")]
     public static Manifold CollideCapsules(in Capsule capsuleA, in Transform xfA, in Capsule capsuleB, in Transform xfB)
-        => Collides(capsuleA, xfA, capsuleB, xfB);
+        => Collide(capsuleA, xfA, capsuleB, xfB);
 
     /// <summary>
     /// Compute the contact manifold between an segment and a capsule
     /// </summary>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CollideSegmentAndCapsule")]
     public static extern Manifold Collide(in Segment segmentA, in Transform xfA, in Capsule capsuleB, in Transform xfB);
-    
+
     [Obsolete("Use Collide instead")]
     public static Manifold CollideSegmentAndCapsule(in Segment segmentA, in Transform xfA, in Capsule capsuleB, in Transform xfB)
         => Collide(segmentA, xfA, capsuleB, xfB);
@@ -431,7 +431,7 @@ public static class Box2D
     /// </summary>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CollidePolygonAndCapsule")]
     public static extern Manifold Collide(in Polygon polygonA, in Transform xfA, in Capsule capsuleB, in Transform xfB);
-    
+
     [Obsolete("Use Collide instead")]
     public static Manifold CollidePolygonAndCapsule(in Polygon polygonA, in Transform xfA, in Capsule capsuleB, in Transform xfB)
         => Collide(polygonA, xfA, capsuleB, xfB);
@@ -451,7 +451,8 @@ public static class Box2D
     /// </summary>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CollideSegmentAndPolygon")]
     public static extern Manifold Collide(in Segment segmentA, in Transform xfA, in Polygon polygonB, in Transform xfB);
-    
+
+    [Obsolete("Use Collide instead")]
     public static Manifold CollideSegmentAndPolygon(in Segment segmentA, in Transform xfA, in Polygon polygonB, in Transform xfB)
         => Collide(segmentA, xfA, polygonB, xfB);
 
@@ -460,7 +461,7 @@ public static class Box2D
     /// </summary>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CollideChainSegmentAndCircle")]
     public static extern Manifold Collide(in ChainSegment segmentA, in Transform xfA, in Circle circleB, in Transform xfB);
-    
+
     [Obsolete("Use Collide instead")]
     public static Manifold CollideChainSegmentAndCircle(in ChainSegment segmentA, in Transform xfA, in Circle circleB, in Transform xfB)
         => Collide(segmentA, xfA, circleB, xfB);
@@ -470,7 +471,7 @@ public static class Box2D
     /// </summary>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CollideChainSegmentAndCapsule")]
     public static extern Manifold Collide(in ChainSegment segmentA, in Transform xfA, in Capsule capsuleB, in Transform xfB, ref SimplexCache cache);
-    
+
     [Obsolete("Use Collide instead")]
     public static Manifold CollideChainSegmentAndCapsule(in ChainSegment segmentA, in Transform xfA, in Capsule capsuleB, in Transform xfB, ref SimplexCache cache)
         => Collide(segmentA, xfA, capsuleB, xfB, ref cache);
@@ -480,7 +481,8 @@ public static class Box2D
     /// </summary>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CollideChainSegmentAndPolygon")]
     public static extern Manifold Collide(in ChainSegment segmentA, in Transform xfA, in Polygon polygonB, in Transform xfB, ref SimplexCache cache);
-    
+
+    [Obsolete("Use Collide instead")]
     public static Manifold CollideChainSegmentAndPolygon(in ChainSegment segmentA, in Transform xfA, in Polygon polygonB, in Transform xfB, ref SimplexCache cache)
         => Collide(segmentA, xfA, polygonB, xfB, ref cache);
 
@@ -490,14 +492,14 @@ public static class Box2D
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2SetLengthUnitsPerMeter")]
     [Obsolete("Use LengthUnitsPerMeter property instead")]
     public static extern void SetLengthUnitsPerMeter(float lengthUnitsPerMeter);
-    
+
     /// <summary>
     /// Get LengthUnitsPerMeter. By default, 1.0 corresponds to 1 meter.
     /// </summary>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2GetLengthUnitsPerMeter")]
     [Obsolete("Use LengthUnitsPerMeter property instead")]
     public static extern float GetLengthUnitsPerMeter();
-    
+
     /// <summary>
     /// Length units per meter. By default 1.0 corresponds to 1 meter.
     /// </summary>
@@ -506,7 +508,7 @@ public static class Box2D
         get => GetLengthUnitsPerMeter();
         set => SetLengthUnitsPerMeter(value);
     }
-    
+
     internal static object? GetObjectAtPointer(nint ptr)
     {
         if (ptr == 0) return null;
@@ -515,7 +517,7 @@ public static class Box2D
         object? userData = handle.Target;
         return userData;
     }
-    
+
     internal static void SetObjectAtPointer(ref nint ptr, object? value)
     {
         if (ptr != 0)
@@ -537,14 +539,14 @@ public static class Box2D
                 hnd.Free();
         }
     }
- 
-    internal static object? GetObjectAtPointer<T>(Func<T,nint> getFunc, T param)
+
+    internal static object? GetObjectAtPointer<T>(Func<T, nint> getFunc, T param)
     {
         nint ptr = getFunc(param);
         return GetObjectAtPointer(ptr);
     }
 
-    internal static void SetObjectAtPointer<T>(Func<T,nint> getFunc, Action<T, nint> setFunc, T param, object? value)
+    internal static void SetObjectAtPointer<T>(Func<T, nint> getFunc, Action<T, nint> setFunc, T param, object? value)
     {
         // dealloc previous user data
         nint userDataPtr = getFunc(param);
