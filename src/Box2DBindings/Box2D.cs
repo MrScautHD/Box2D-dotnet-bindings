@@ -44,13 +44,7 @@ public static class Box2D
     /// </summary>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Hash")]
     public static extern uint Hash(uint hash, byte[] data, int count);
-
-    /// <summary>
-    /// Validate ray cast input data (NaN, etc)
-    /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2IsValidRay")]
-    public static extern bool IsValidRay(in RayCastInput input);
-
+    
     /// <summary>
     /// Compute the distance between two line segments, clamping at the end points if needed.
     /// </summary>
@@ -65,8 +59,7 @@ public static class Box2D
 
     /// <summary>
     /// Compute the closest points between two shapes represented as point clouds.
-    /// b2SimplexCache cache is input/output. On the first call set SimplexCache.Count to zero.
-    /// The underlying GJK algorithm may be debugged by passing in debug simplexes and capacity. You may pass in NULL and 0 for these.
+    /// SimplexCache cache is input/output. On the first call set SimplexCache.Count to zero.
     /// </summary>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ShapeDistance")]
     public static extern DistanceOutput ShapeDistance(ref SimplexCache cache, in DistanceInput input, in Simplex simplexes, int simplexCapacity);
@@ -82,13 +75,7 @@ public static class Box2D
     /// </summary>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakeProxy")]
     public static extern ShapeProxy MakeProxy(in Vec2 vertices, int count, float radius);
-
-    /// <summary>
-    /// Evaluate the transform sweep at a specific time.
-    /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2GetSweepTransform")]
-    public static extern Transform GetSweepTransform(in Sweep sweep, float time);
-
+    
     /// <summary>
     /// Compute the upper bound on time before two shapes penetrate. Time is represented as
     /// a fraction between [0,tMax]. This uses a swept separating axis and may miss some intermediate,
@@ -98,77 +85,6 @@ public static class Box2D
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2TimeOfImpact")]
     public static extern TOIOutput TimeOfImpact(in TOIInput input);
 
-    /// <summary>
-    /// Compute the contact manifold between two circles
-    /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CollideCircles")]
-    public static extern Manifold Collide(in Circle circleA, in Transform xfA, in Circle circleB, in Transform xfB);
-
-    /// <summary>
-    /// Compute the contact manifold between a capsule and circle
-    /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CollideCapsuleAndCircle")]
-    public static extern Manifold Collide(in Capsule capsuleA, in Transform xfA, in Circle circleB, in Transform xfB);
-
-    /// <summary>
-    /// Compute the contact manifold between an segment and a circle
-    /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CollideSegmentAndCircle")]
-    public static extern Manifold Collide(in Segment segmentA, in Transform xfA, in Circle circleB, in Transform xfB);
-
-    /// <summary>
-    /// Compute the contact manifold between a polygon and a circle
-    /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CollidePolygonAndCircle")]
-    public static extern Manifold Collide(in Polygon polygonA, in Transform xfA, in Circle circleB, in Transform xfB);
-
-    /// <summary>
-    /// Compute the contact manifold between a capsule and circle
-    /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CollideCapsules")]
-    public static extern Manifold Collide(in Capsule capsuleA, in Transform xfA, in Capsule capsuleB, in Transform xfB);
-
-    /// <summary>
-    /// Compute the contact manifold between an segment and a capsule
-    /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CollideSegmentAndCapsule")]
-    public static extern Manifold Collide(in Segment segmentA, in Transform xfA, in Capsule capsuleB, in Transform xfB);
-
-    /// <summary>
-    /// Compute the contact manifold between a polygon and capsule
-    /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CollidePolygonAndCapsule")]
-    public static extern Manifold Collide(in Polygon polygonA, in Transform xfA, in Capsule capsuleB, in Transform xfB);
-
-    /// <summary>
-    /// Compute the contact manifold between two polygons
-    /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CollidePolygons")]
-    public static extern Manifold Collide(in Polygon polygonA, in Transform xfA, in Polygon polygonB, in Transform xfB);
-
-    /// <summary>
-    /// Compute the contact manifold between a segment and a polygon
-    /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CollideSegmentAndPolygon")]
-    public static extern Manifold Collide(in Segment segmentA, in Transform xfA, in Polygon polygonB, in Transform xfB);
-
-    /// <summary>
-    /// Compute the contact manifold between a chain segment and a circle
-    /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CollideChainSegmentAndCircle")]
-    public static extern Manifold Collide(in ChainSegment segmentA, in Transform xfA, in Circle circleB, in Transform xfB);
-
-    /// <summary>
-    /// Compute the contact manifold between a chain segment and a capsule
-    /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CollideChainSegmentAndCapsule")]
-    public static extern Manifold Collide(in ChainSegment segmentA, in Transform xfA, in Capsule capsuleB, in Transform xfB, ref SimplexCache cache);
-
-    /// <summary>
-    /// Compute the contact manifold between a chain segment and a rounded polygon
-    /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CollideChainSegmentAndPolygon")]
-    public static extern Manifold Collide(in ChainSegment segmentA, in Transform xfA, in Polygon polygonB, in Transform xfB, ref SimplexCache cache);
 
     /// <summary>
     /// Set LengthUnitsPerMeter. By default, 1.0 corresponds to 1 meter.

@@ -25,4 +25,16 @@ public struct RayCastInput
     /// </summary>
     [FieldOffset(16)]
     public float MaxFraction;
+    
+    /// <summary>
+    /// Validate ray cast input data (NaN, etc)
+    /// </summary>
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2IsValidRay")]
+    private static extern bool IsValidRay(in RayCastInput input);
+    
+    /// <summary>
+    /// Validate this ray cast input data (NaN, etc)
+    /// </summary>
+    public bool IsValid => IsValidRay(this);
+
 }
