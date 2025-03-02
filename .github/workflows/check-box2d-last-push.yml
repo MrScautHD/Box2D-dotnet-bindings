@@ -1,48 +1,55 @@
 name: Check Box2D Last Push
 
 on:
-  schedule:
-    - cron: '0 * * * *' # Runs every hour
+    schedule:
+        - cron: '0 * * * *' # Runs every hour
 
 jobs:
-  check_last_push:
-    runs-on: ubuntu-latest
+    check_last_push:
+        runs-on: ubuntu-latest
+        
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 1
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-
-      - name: Fetch last push date/time
-        run: |
-          last_push=$(curl -s https://api.github.com/repos/erincatto/box2d | jq -r '.pushed_at')
-          echo "Last push: $last_push"
-          
-          if [ -f box2d_last_push.json ]; then
-            old_push=$(jq -r '.last_push' box2d_last_push.json)
-            if [ $? -ne 0 ]; then
-              echo "Corrupt JSON detected. Deleting and resetting..."
-              rm box2d_last_push.json
-            elif [ "$last_push" == "$old_push" ]; then
-              echo "The last push has not changed."
-              exit 0    
-            fi
-          fi
-          
-          echo "{\"last_push\": \"$last_push\"}" > box2d_last_push.json
-
-          git config --global user.name 'github-actions'
-          git config --global user.email 'github-actions@github.com'
-
-          git add box2d_last_push.json
-          if git diff --staged --quiet; then
-            echo "No changes to commit."
-            exit 0
-          fi
-
-          git commit -m "Detected change in Box2D repository"
-          git push
-          
-          echo "Changes committed and pushed. Starting deployment..."
-          curl -X POST -H "Accept: application/vnd.github.everest-preview +json" -H "Authorization: token ${{ secrets.PAT }}" https://api.github.com/repos/HughPH/Box2D-dotnet-bindings/dispatches --data '{"event_type": "publish"}'
+            - name: Fetch last push date/time from main branch
+              run: |
+                  # This grabs the date/time of the last commit on Box2D's main branch
+                  last_push=$(curl -s https://api.github.com/repos/erincatto/box2d/branches/main | jq -r '.commit.commit.committer.date')
+                  echo "Last push on main branch: $last_push"
+                  
+                  # If we already have a record, compare. If it's the same, exit. If it doesn't parse, reset.
+                  if [ -f box2d_last_push.json ]; then
+                    old_push=$(jq -r '.last_push' box2d_last_push.json)
+                    if [ $? -ne 0 ]; then
+                      echo "Corrupt JSON detected. Deleting and resetting..."
+                      rm box2d_last_push.json
+                    elif [ "$last_push" == "$old_push" ]; then
+                      echo "The last push has not changed (main branch)."
+                      exit 0
+                    fi
+                  fi
+                  
+                  # Save the new push time to file
+                  echo "{\"last_push\": \"$last_push\"}" > box2d_last_push.json
+                  
+                  # Commit if it changed
+                  git config --global user.name 'github-actions'
+                  git config --global user.email 'github-actions@github.com'
+                  git add box2d_last_push.json
+                  
+                  if git diff --staged --quiet; then
+                    echo "No changes to commit."
+                    exit 0
+                  fi
+                  
+                  git commit -m "Detected change in Box2D main branch"
+                  git push
+                  
+                  echo "Changes committed and pushed. Starting deployment..."
+                  curl -X POST -H "Accept: application/vnd.github.everest-preview +json" \
+                       -H "Authorization: token ${{ secrets.PAT }}" \
+                       https://api.github.com/repos/HughPH/Box2D-dotnet-bindings/dispatches \
+                       --data '{"event_type": "publish"}'
