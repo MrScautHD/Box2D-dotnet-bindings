@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.InteropServices;
 
 namespace Box2D;
@@ -6,7 +7,7 @@ namespace Box2D;
 /// A line segment with two-sided collision.
 /// </summary>
 [StructLayout(LayoutKind.Explicit)]
-public struct Segment
+public struct Segment : IEquatable<Segment>
 {
     /// <summary>
     /// The first point
@@ -67,5 +68,11 @@ public struct Segment
     public SegmentDistanceResult SegmentDistance(in Segment segmentB) =>
         SegmentDistance(Point1, Point2, segmentB.Point1, segmentB.Point2);
 
-    
+
+    public bool Equals(Segment other) =>
+        Point1.Equals(other.Point1) && Point2.Equals(other.Point2);
+    public override bool Equals(object? obj) =>
+        obj is Segment other && Equals(other);
+    public override int GetHashCode() =>
+        HashCode.Combine(Point1, Point2);
 }

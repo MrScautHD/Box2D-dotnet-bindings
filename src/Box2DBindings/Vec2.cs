@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace Box2D;
 
 [StructLayout(LayoutKind.Explicit)]
-public struct Vec2
+public struct Vec2 : IEquatable<Vec2>
 {
     [FieldOffset(0)]
     public float X;
@@ -19,6 +19,12 @@ public struct Vec2
     public override string ToString()
     {
         return $"Vec2(X: {X}, Y: {Y}, Mag: {Magnitude}, Rad: {Angle}, Deg: {Angle * 180 / MathF.PI})";
+    }
+    
+    public Vec2(float x, float y)
+    {
+        X = x;
+        Y = y;
     }
     
     public float Magnitude => MathF.Sqrt(X * X + Y * Y);
@@ -57,6 +63,11 @@ public struct Vec2
     /// Test this point for overlap with a convex polygon in local space
     /// </summary>
     public bool TestPoint(in Polygon shape) => PointInPolygon(this, shape);
-
     
+    public bool Equals(Vec2 other) =>
+        X.Equals(other.X) && Y.Equals(other.Y);
+    public override bool Equals(object? obj) =>
+        obj is Vec2 other && Equals(other);
+    public override int GetHashCode() =>
+        HashCode.Combine(X, Y);
 }

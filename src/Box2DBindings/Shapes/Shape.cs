@@ -532,4 +532,54 @@ public struct Shape : IEquatable<Shape>
     {
         return b2Shape_GetClosestPoint(this, target);
     }
+
+    /// <summary>
+    /// Gets the local vertices of this shape
+    /// </summary>
+    public Vec2[] LocalVertices
+    {
+        get
+        {
+            {
+                switch (Type)
+                {
+                    case ShapeType.Circle:
+                        return [GetCircle().Center];
+                    case ShapeType.Segment:
+                        var segment = GetSegment();
+                        return [segment.Point1, segment.Point2];
+                    case ShapeType.Polygon:
+                        return GetPolygon().Vertices.ToArray();
+                    case ShapeType.Capsule:
+                        var capsule = GetCapsule();
+                        return [capsule.Center1, capsule.Center2];
+                    case ShapeType.ChainSegment:
+                        var chainSegment = GetChainSegment();
+                        return [chainSegment.Segment.Point1, chainSegment.Segment.Point2];
+                    default:
+                        return [];
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets the world vertices of this shape
+    /// </summary>
+    public Vec2[] WorldVertices
+    {
+        get
+        {
+            Vec2[] localVertices = LocalVertices;
+        
+            Vec2[] worldVertices = new Vec2[localVertices.Length];
+        
+            var body = Body;
+        
+            for (int i = 0; i < localVertices.Length; i++)
+                worldVertices[i] = body.GetWorldPoint(localVertices[i]);
+        
+            return worldVertices;
+        }
+    }
 }

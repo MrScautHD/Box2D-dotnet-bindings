@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace Box2D;
 
 [StructLayout(LayoutKind.Explicit)]
-public struct Rotation
+public struct Rotation : IEquatable<Rotation>
 {
     [FieldOffset(0)]
     public float Cos = 1;
@@ -18,12 +18,12 @@ public struct Rotation
     
     public static implicit operator Rotation(float radians)
     {
-        var cos = System.MathF.Cos(radians);
-        var sin = System.MathF.Sin(radians);
+        var cos = MathF.Cos(radians);
+        var sin = MathF.Sin(radians);
         return new Rotation { Cos = cos, Sin = sin };
     }
     
-    public static implicit operator float(Rotation rotation) => System.MathF.Atan2(rotation.Sin, rotation.Cos);
+    public static implicit operator float(Rotation rotation) => MathF.Atan2(rotation.Sin, rotation.Cos);
     
     public override string ToString()
     {
@@ -34,10 +34,16 @@ public struct Rotation
     {
         return MathF.Atan2(Sin, Cos);
     }
+    public bool Equals(Rotation other) =>
+        Cos.Equals(other.Cos) && Sin.Equals(other.Sin);
+    public override bool Equals(object? obj) =>
+        obj is Rotation other && Equals(other);
+    public override int GetHashCode() =>
+        HashCode.Combine(Cos, Sin);
 }
 
 [StructLayout(LayoutKind.Explicit)]
-public struct Transform
+public struct Transform : IEquatable<Transform>
 {
     [FieldOffset(0)]
     public Vec2 Position;
@@ -48,10 +54,16 @@ public struct Transform
     {
         return $"Transform(Position: {Position}, Rotation: {Rotation})";
     }
+    public bool Equals(Transform other) =>
+        Position.Equals(other.Position) && Rotation.Equals(other.Rotation);
+    public override bool Equals(object? obj) =>
+        obj is Transform other && Equals(other);
+    public override int GetHashCode() =>
+        HashCode.Combine(Position, Rotation);
 }
 
 [StructLayout(LayoutKind.Explicit)]
-public struct AABB
+public struct AABB : IEquatable<AABB>
 {
     [FieldOffset(0)]
     public Vec2 LowerBound;
@@ -65,4 +77,10 @@ public struct AABB
     {
         return $"AABB(Lower: {LowerBound}, Upper: {UpperBound}, Width: {Width}, Height: {Height})";
     }
+    public bool Equals(AABB other) =>
+        LowerBound.Equals(other.LowerBound) && UpperBound.Equals(other.UpperBound);
+    public override bool Equals(object? obj) =>
+        obj is AABB other && Equals(other);
+    public override int GetHashCode() =>
+        HashCode.Combine(LowerBound, UpperBound);
 }
