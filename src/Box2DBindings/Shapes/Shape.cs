@@ -91,31 +91,8 @@ public struct Shape : IEquatable<Shape>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_SetUserData")]
     private static extern void b2Shape_SetUserData(Shape shapeId, nint userData);
     
-    /// <summary>
-    /// Sets the user data for this shape
-    /// </summary>
-    /// <param name="userData">The user data</param>
-    /// <typeparam name="T">The user data type</typeparam>
-    [Obsolete("Use UserData property instead")]
-    public void SetUserData<T>(ref T userData)
-    {
-        UserData = userData;
-    }
-    
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetUserData")]
     private static extern nint b2Shape_GetUserData(Shape shapeId);
-    
-    /// <summary>
-    /// Gets the user data for this shape
-    /// </summary>
-    /// <returns>The user data for this shape</returns>
-    /// <remarks>This is useful when you get a shape id from an event or query</remarks>
-    /// <typeparam name="T">The user data type</typeparam>
-    [Obsolete("Use GetUserData<T> method instead")]
-    public T? GetUserData<T>()
-    {
-        return (T?)UserData;
-    }
     
     /// <summary>
     /// The user data object for this shape.

@@ -52,274 +52,6 @@ public static class Box2D
     public static extern bool IsValidRay(in RayCastInput input);
 
     /// <summary>
-    /// Make a convex polygon from a convex hull. This will assert if the hull is not valid.
-    /// </summary>
-    /// <remarks>
-    /// <b>Warning: Do not manually fill in the hull data, it must come directly from b2ComputeHull</b>
-    /// </remarks>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakePolygon")]
-    [Obsolete("Use Polygon.MakePolygon instead")]
-    public static extern Polygon MakePolygon(in Hull hull, float radius);
-
-    /// <summary>
-    /// Make an offset convex polygon from a convex hull. This will assert if the hull is not valid.
-    /// </summary>
-    /// <remarks>
-    /// <b>Warning: Do not manually fill in the hull data, it must come directly from b2ComputeHull</b>
-    /// </remarks>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakeOffsetPolygon")]
-    [Obsolete("Use Polygon.MakeOffsetPolygon instead")]
-    public static extern Polygon MakeOffsetPolygon(in Hull hull, in Vec2 position, in Rotation rotation);
-
-    /// <summary>
-    /// Make an offset convex polygon from a convex hull. This will assert if the hull is not valid.
-    /// </summary>
-    /// <remarks>
-    /// <b>Warning: Do not manually fill in the hull data, it must come directly from b2ComputeHull</b>
-    /// </remarks>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakeOffsetRoundedPolygon")]
-    [Obsolete("Use Polygon.MakeOffsetRoundedPolygon instead")]
-    public static extern Polygon MakeOffsetRoundedPolygon(in Hull hull, in Vec2 position, in Rotation rotation, float radius);
-
-    /// <summary>
-    /// Make a square polygon, bypassing the need for a convex hull.
-    /// </summary>
-    /// <param name="halfWidth">the half-width</param>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakeSquare")]
-    [Obsolete("Use Polygon.MakeSquare instead")]
-    public static extern Polygon MakeSquare(float halfWidth);
-
-    /// <summary>
-    /// Make a box (rectangle) polygon, bypassing the need for a convex hull.
-    /// </summary>
-    /// <param name="halfWidth">the half-width (x-axis)</param>
-    /// <param name="halfHeight">the half-height (y-axis)</param>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakeBox")]
-    [Obsolete("Use Polygon.MakeBox instead")]
-    public static extern Polygon MakeBox(float halfWidth, float halfHeight);
-
-    /// <summary>
-    /// Make a rounded box, bypassing the need for a convex hull.
-    /// </summary>
-    /// <param name="halfWidth">the half-width (x-axis)</param>
-    /// <param name="halfHeight">the half-height (y-axis)</param>
-    /// <param name="radius">the radius of the rounded extension</param>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakeRoundedBox")]
-    [Obsolete("Use Polygon.MakeRoundedBox instead")]
-    public static extern Polygon MakeRoundedBox(float halfWidth, float halfHeight, float radius);
-
-    /// <summary>
-    /// Make an offset box, bypassing the need for a convex hull.
-    /// </summary>
-    /// <param name="halfWidth">the half-width (x-axis)</param>
-    /// <param name="halfHeight">the half-height (y-axis)</param>
-    /// <param name="center">the local center of the box</param>
-    /// <param name="rotation">the local rotation of the box</param>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakeOffsetBox")]
-    [Obsolete("Use Polygon.MakeOffsetBox instead")]
-    public static extern Polygon MakeOffsetBox(float halfWidth, float halfHeight, in Vec2 center, in Rotation rotation);
-
-    /// <summary>
-    /// Make an offset rounded box, bypassing the need for a convex hull.
-    /// </summary>
-    /// <param name="halfWidth">the half-width (x-axis)</param>
-    /// <param name="halfHeight">the half-height (y-axis)</param>
-    /// <param name="center">the local center of the box</param>
-    /// <param name="rotation">the local rotation of the box</param>
-    /// <param name="radius">the radius of the rounded extension</param>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakeOffsetRoundedBox")]
-    [Obsolete("Use Polygon.MakeOffsetRoundedBox instead")]
-    public static extern Polygon MakeOffsetRoundedBox(float halfWidth, float halfHeight, in Vec2 center, in Rotation rotation, float radius);
-
-    /// <summary>
-    /// Transform a polygon. This is useful for transferring a shape from one body to another.
-    /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2TransformPolygon")]
-    [Obsolete("Use Polygon.Transform instead")]
-    public static extern Polygon TransformPolygon(in Transform transform, in Polygon polygon);
-
-    /// <summary>
-    /// Compute mass properties of a circle
-    /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ComputeCircleMass")]
-    [Obsolete("Use Circle.ComputeMass instead")]
-    public static extern MassData ComputeCircleMass(in Circle shape, float density);
-
-    /// <summary>
-    /// Compute mass properties of a capsule
-    /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ComputeCapsuleMass")]
-    [Obsolete("Use Capsule.ComputeMass instead")]
-    public static extern MassData ComputeCapsuleMass(in Capsule shape, float density);
-
-    /// <summary>
-    /// Compute mass properties of a polygon
-    /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ComputePolygonMass")]
-    [Obsolete("Use Polygon.ComputeMass instead")]
-    public static extern MassData ComputePolygonMass(in Polygon shape, float density);
-
-    /// <summary>
-    /// Compute the bounding box of a transformed circle
-    /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ComputeCircleAABB")]
-    [Obsolete("Use Circle.ComputeAABB instead")]
-    public static extern AABB ComputeCircleAABB(in Circle shape, in Transform transform);
-
-    /// <summary>
-    /// Compute the bounding box of a transformed capsule
-    /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ComputeCapsuleAABB")]
-    [Obsolete("Use Capsule.ComputeAABB instead")]
-    public static extern AABB ComputeCapsuleAABB(in Capsule shape, in Transform transform);
-
-    /// <summary>
-    /// Compute the bounding box of a transformed polygon
-    /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ComputePolygonAABB")]
-    [Obsolete("Use Polygon.ComputeAABB instead")]
-    public static extern AABB ComputePolygonAABB(in Polygon shape, in Transform transform);
-
-    /// <summary>
-    /// Compute the bounding box of a transformed line segment
-    /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ComputeSegmentAABB")]
-    [Obsolete("Use Segment.ComputeAABB instead")]
-    public static extern AABB ComputeSegmentAABB(in Segment shape, in Transform transform);
-
-    /// <summary>
-    /// Test a point for overlap with a circle in local space
-    /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PointInCircle")]
-    [Obsolete("Use Vec2.TestPoint or Circle.TestPoint instead")]
-    public static extern bool PointInCircle(in Vec2 point, in Circle shape);
-
-    /// <summary>
-    /// Test a point for overlap with a capsule in local space
-    /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PointInCapsule")]
-    [Obsolete("Use Vec2.TestPoint or Capsule.TestPoint instead")]
-    public static extern bool PointInCapsule(in Vec2 point, in Capsule shape);
-
-    /// <summary>
-    /// Test a point for overlap with a convex polygon in local space
-    /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PointInPolygon")]
-    [Obsolete("Use Vec2.TestPoint or Polygon.TestPoint instead")]
-    public static extern bool PointInPolygon(in Vec2 point, in Polygon shape);
-
-    /// <summary>
-    /// Ray cast versus circle shape in local space. Initial overlap is treated as a miss.
-    /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2RayCastCircle")]
-    [Obsolete("Use Circle.RayCast instead")]
-    public static extern CastOutput RayCastCircle(in RayCastInput input, in Circle shape);
-
-    /// <summary>
-    /// Ray cast versus capsule shape in local space. Initial overlap is treated as a miss.
-    /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2RayCastCapsule")]
-    [Obsolete("Use Capsule.RayCast instead")]
-    public static extern CastOutput RayCastCapsule(in RayCastInput input, in Capsule shape);
-
-    /// <summary>
-    /// Ray cast versus segment shape in local space. Optionally treat the segment as one-sided with hits from
-    /// the left side being treated as a miss.
-    /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2RayCastSegment")]
-    [Obsolete("Use Segment.RayCast instead")]
-    public static extern CastOutput RayCastSegment(in RayCastInput input, in Segment shape, bool oneSided);
-
-    /// <summary>
-    /// Ray cast versus polygon shape in local space. Initial overlap is treated as a miss.
-    /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2RayCastPolygon")]
-    [Obsolete("Use Polygon.RayCast instead")]
-    public static extern CastOutput RayCastPolygon(in RayCastInput input, in Polygon shape);
-
-    /// <summary>
-    /// Shape cast versus a circle. Initial overlap is treated as a miss.
-    /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ShapeCastCircle")]
-    private static extern CastOutput ShapeCastCircle(in ShapeCastInputInternal input, in Circle shape);
-
-    /// <summary>
-    /// Shape cast versus a circle. Initial overlap is treated as a miss.
-    /// </summary>
-    [Obsolete("Use Circle.ShapeCast instead")]
-    public static CastOutput ShapeCastCicle(ShapeCastInput input, in Circle shape) =>
-        ShapeCastCircle(input._internal, shape);
-
-    /// <summary>
-    /// Shape cast versus a capsule. Initial overlap is treated as a miss.
-    /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ShapeCastCapsule")]
-    private static extern CastOutput ShapeCastCapsule(in ShapeCastInputInternal input, in Capsule shape);
-
-    /// <summary>
-    /// Shape cast versus a capsule. Initial overlap is treated as a miss.
-    /// </summary>
-    [Obsolete("Use Capsule.ShapeCast instead")]
-    public static CastOutput ShapeCastCapsule(ShapeCastInput input, in Capsule shape) =>
-        ShapeCastCapsule(input._internal, shape);
-
-    /// <summary>
-    /// Shape cast versus a line segment. Initial overlap is treated as a miss.
-    /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ShapeCastSegment")]
-    private static extern CastOutput ShapeCastSegment(in ShapeCastInputInternal input, in Segment shape);
-
-    /// <summary>
-    /// Shape cast versus a line segment. Initial overlap is treated as a miss.
-    /// </summary>
-    [Obsolete("Use Segment.ShapeCast instead")]
-    public static CastOutput ShapeCastSegment(ShapeCastInput input, in Segment shape) =>
-        ShapeCastSegment(input._internal, shape);
-
-    /// <summary>
-    /// Shape cast versus a convex polygon. Initial overlap is treated as a miss.
-    /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ShapeCastPolygon")]
-    private static extern CastOutput ShapeCastPolygon(in ShapeCastInputInternal input, in Polygon shape);
-
-    /// <summary>
-    /// Shape cast versus a convex polygon. Initial overlap is treated as a miss.
-    /// </summary>
-    [Obsolete("Use Polygon.ShapeCast instead")]
-    public static CastOutput ShapeCastPolygon(ShapeCastInput input, in Polygon shape) =>
-        ShapeCastPolygon(input._internal, shape);
-
-    /// <summary>
-    /// Compute the convex hull of a set of points. Returns an empty hull if it fails.
-    /// Some failure cases:
-    /// <ul>
-    /// <li>all points very close together</li>
-    /// <li>all points on a line</li>
-    /// <li>less than 3 points</li>
-    /// <li>more than B2_MAX_POLYGON_VERTICES points</li>
-    /// </ul>
-    /// This welds close points and removes collinear points.
-    /// </summary>
-    /// <remarks>
-    /// <b>Warning: Do not modify a hull once it has been computed</b>
-    /// </remarks>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ComputeHull")]
-    [Obsolete("Use Hull.Compute instead")]
-    public static extern Hull ComputeHull(in Vec2 points, int count);
-
-    /// <summary>
-    /// This determines if a hull is valid. Checks for:
-    /// <ul>
-    /// <li>convexity</li>
-    /// <li>collinear points</li>
-    /// </ul>
-    /// This is expensive and should not be called at runtime.
-    /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ValidateHull")]
-    [Obsolete("Use Hull.Validate instead")]
-    public static extern bool ValidateHull(in Hull hull);
-
-    /// <summary>
     /// Compute the distance between two line segments, clamping at the end points if needed.
     /// </summary>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2SegmentDistance")]
@@ -372,19 +104,11 @@ public static class Box2D
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CollideCircles")]
     public static extern Manifold Collide(in Circle circleA, in Transform xfA, in Circle circleB, in Transform xfB);
 
-    [Obsolete("Use Collide instead")]
-    public static Manifold CollideCircles(in Circle circleA, in Transform xfA, in Circle circleB, in Transform xfB)
-        => Collide(circleA, xfA, circleB, xfB);
-
     /// <summary>
     /// Compute the contact manifold between a capsule and circle
     /// </summary>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CollideCapsuleAndCircle")]
     public static extern Manifold Collide(in Capsule capsuleA, in Transform xfA, in Circle circleB, in Transform xfB);
-
-    [Obsolete("Use Collide instead")]
-    public static Manifold CollideCapsuleAndCircle(in Capsule capsuleA, in Transform xfA, in Circle circleB, in Transform xfB)
-        => Collide(capsuleA, xfA, circleB, xfB);
 
     /// <summary>
     /// Compute the contact manifold between an segment and a circle
@@ -392,19 +116,11 @@ public static class Box2D
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CollideSegmentAndCircle")]
     public static extern Manifold Collide(in Segment segmentA, in Transform xfA, in Circle circleB, in Transform xfB);
 
-    [Obsolete("Use Collide instead")]
-    public static Manifold CollideSegmentAndCircle(in Segment segmentA, in Transform xfA, in Circle circleB, in Transform xfB)
-        => Collide(segmentA, xfA, circleB, xfB);
-
     /// <summary>
     /// Compute the contact manifold between a polygon and a circle
     /// </summary>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CollidePolygonAndCircle")]
     public static extern Manifold Collide(in Polygon polygonA, in Transform xfA, in Circle circleB, in Transform xfB);
-
-    [Obsolete("Use Collide instead")]
-    public static Manifold CollidePolygonAndCircle(in Polygon polygonA, in Transform xfA, in Circle circleB, in Transform xfB)
-        => Collide(polygonA, xfA, circleB, xfB);
 
     /// <summary>
     /// Compute the contact manifold between a capsule and circle
@@ -412,19 +128,11 @@ public static class Box2D
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CollideCapsules")]
     public static extern Manifold Collide(in Capsule capsuleA, in Transform xfA, in Capsule capsuleB, in Transform xfB);
 
-    [Obsolete("Use Collide instead")]
-    public static Manifold CollideCapsules(in Capsule capsuleA, in Transform xfA, in Capsule capsuleB, in Transform xfB)
-        => Collide(capsuleA, xfA, capsuleB, xfB);
-
     /// <summary>
     /// Compute the contact manifold between an segment and a capsule
     /// </summary>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CollideSegmentAndCapsule")]
     public static extern Manifold Collide(in Segment segmentA, in Transform xfA, in Capsule capsuleB, in Transform xfB);
-
-    [Obsolete("Use Collide instead")]
-    public static Manifold CollideSegmentAndCapsule(in Segment segmentA, in Transform xfA, in Capsule capsuleB, in Transform xfB)
-        => Collide(segmentA, xfA, capsuleB, xfB);
 
     /// <summary>
     /// Compute the contact manifold between a polygon and capsule
@@ -432,19 +140,11 @@ public static class Box2D
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CollidePolygonAndCapsule")]
     public static extern Manifold Collide(in Polygon polygonA, in Transform xfA, in Capsule capsuleB, in Transform xfB);
 
-    [Obsolete("Use Collide instead")]
-    public static Manifold CollidePolygonAndCapsule(in Polygon polygonA, in Transform xfA, in Capsule capsuleB, in Transform xfB)
-        => Collide(polygonA, xfA, capsuleB, xfB);
-
     /// <summary>
     /// Compute the contact manifold between two polygons
     /// </summary>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CollidePolygons")]
     public static extern Manifold Collide(in Polygon polygonA, in Transform xfA, in Polygon polygonB, in Transform xfB);
-
-    [Obsolete("Use Collide instead")]
-    public static Manifold CollidePolygons(in Polygon polygonA, in Transform xfA, in Polygon polygonB, in Transform xfB)
-        => Collide(polygonA, xfA, polygonB, xfB);
 
     /// <summary>
     /// Compute the contact manifold between a segment and a polygon
@@ -452,19 +152,11 @@ public static class Box2D
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CollideSegmentAndPolygon")]
     public static extern Manifold Collide(in Segment segmentA, in Transform xfA, in Polygon polygonB, in Transform xfB);
 
-    [Obsolete("Use Collide instead")]
-    public static Manifold CollideSegmentAndPolygon(in Segment segmentA, in Transform xfA, in Polygon polygonB, in Transform xfB)
-        => Collide(segmentA, xfA, polygonB, xfB);
-
     /// <summary>
     /// Compute the contact manifold between a chain segment and a circle
     /// </summary>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CollideChainSegmentAndCircle")]
     public static extern Manifold Collide(in ChainSegment segmentA, in Transform xfA, in Circle circleB, in Transform xfB);
-
-    [Obsolete("Use Collide instead")]
-    public static Manifold CollideChainSegmentAndCircle(in ChainSegment segmentA, in Transform xfA, in Circle circleB, in Transform xfB)
-        => Collide(segmentA, xfA, circleB, xfB);
 
     /// <summary>
     /// Compute the contact manifold between a chain segment and a capsule
@@ -472,33 +164,23 @@ public static class Box2D
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CollideChainSegmentAndCapsule")]
     public static extern Manifold Collide(in ChainSegment segmentA, in Transform xfA, in Capsule capsuleB, in Transform xfB, ref SimplexCache cache);
 
-    [Obsolete("Use Collide instead")]
-    public static Manifold CollideChainSegmentAndCapsule(in ChainSegment segmentA, in Transform xfA, in Capsule capsuleB, in Transform xfB, ref SimplexCache cache)
-        => Collide(segmentA, xfA, capsuleB, xfB, ref cache);
-
     /// <summary>
     /// Compute the contact manifold between a chain segment and a rounded polygon
     /// </summary>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CollideChainSegmentAndPolygon")]
     public static extern Manifold Collide(in ChainSegment segmentA, in Transform xfA, in Polygon polygonB, in Transform xfB, ref SimplexCache cache);
 
-    [Obsolete("Use Collide instead")]
-    public static Manifold CollideChainSegmentAndPolygon(in ChainSegment segmentA, in Transform xfA, in Polygon polygonB, in Transform xfB, ref SimplexCache cache)
-        => Collide(segmentA, xfA, polygonB, xfB, ref cache);
-
     /// <summary>
     /// Set LengthUnitsPerMeter. By default, 1.0 corresponds to 1 meter.
     /// </summary>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2SetLengthUnitsPerMeter")]
-    [Obsolete("Use LengthUnitsPerMeter property instead")]
-    public static extern void SetLengthUnitsPerMeter(float lengthUnitsPerMeter);
+    private static extern void SetLengthUnitsPerMeter(float lengthUnitsPerMeter);
 
     /// <summary>
     /// Get LengthUnitsPerMeter. By default, 1.0 corresponds to 1 meter.
     /// </summary>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2GetLengthUnitsPerMeter")]
-    [Obsolete("Use LengthUnitsPerMeter property instead")]
-    public static extern float GetLengthUnitsPerMeter();
+    private static extern float GetLengthUnitsPerMeter();
 
     /// <summary>
     /// Length units per meter. By default 1.0 corresponds to 1 meter.

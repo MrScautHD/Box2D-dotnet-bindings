@@ -129,29 +129,9 @@ public class Joint
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_SetUserData")]
     private static extern void b2Joint_SetUserData(JointId jointId, nint userData);
-
-    /// <summary>
-    /// Sets the user data on this joint
-    /// </summary>
-    /// <param name="userData">The user data</param>
-    [Obsolete("Use the UserData property instead")]
-    public void SetUserData<T>(ref T userData)
-    {
-        UserData = userData;
-    }
-
+    
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetUserData")]
     private static extern nint b2Joint_GetUserData(JointId jointId);
-    
-    /// <summary>
-    /// Gets the user data on this joint
-    /// </summary>
-    /// <returns>The user data on this joint</returns>
-    [Obsolete("Use the UserData property instead")]
-    public T? GetUserData<T>()
-    {
-        return (T?)UserData;
-    }
     
     /// <summary>
     /// The user data object for this joint.

@@ -80,7 +80,6 @@ public unsafe struct Polygon
     /// </summary>
     /// <param name="halfWidth">the half-width</param>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakeSquare")]
-    [Obsolete("Use Polygon.MakeSquare instead")]
     public static extern Polygon MakeSquare(float halfWidth);
 
     /// <summary>
