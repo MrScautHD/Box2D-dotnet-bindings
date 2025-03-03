@@ -17,9 +17,10 @@ jobs:
             cmake_flags: "-DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF"
             cmake_build_dir: "box2d-src/build"
             post_build_cmd: |
-              cd box2d-src/build/bin/Release
-              dir
-              ren shared.dll box2d.dll
+              echo 'Windows build complete'
+              rem -- not needed until updating to 3.1.0
+              rem cd box2d-src/build/bin/Release
+              rem ren shared.dll box2d.dll
 
           - os: ubuntu-latest
             artifact_name: box2d-linux
