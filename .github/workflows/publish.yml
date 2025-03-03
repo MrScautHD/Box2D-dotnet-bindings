@@ -18,9 +18,9 @@ jobs:
             cmake_build_dir: "box2d-src/build"
             post_build_cmd: |
               echo 'Windows build complete'
-              rem -- not needed until updating to 3.1.0
-              rem cd box2d-src/build/bin/Release
-              rem ren shared.dll box2d.dll
+              # -- not needed until updating to 3.1.0
+              # cd box2d-src/build/bin/Release
+              # ren shared.dll box2d.dll
 
           - os: ubuntu-latest
             artifact_name: box2d-linux
