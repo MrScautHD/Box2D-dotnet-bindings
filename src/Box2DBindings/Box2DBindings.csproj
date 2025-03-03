@@ -37,6 +37,11 @@
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
       <DebugType>none</DebugType>
+      <DefineConstants>TRACE;BOX2D_300</DefineConstants>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <DefineConstants>TRACE;BOX2D_300</DefineConstants>
     </PropertyGroup>
     
     <PropertyGroup>
@@ -51,6 +56,8 @@
         <None Include="native/win-x64/box2d.dll" Pack="true" PackagePath="runtimes/win-x64/native/" />
         <!-- Linux SO -->
         <None Include="native/linux-x64/libbox2d.so" Pack="true" PackagePath="runtimes/linux-x64/native/" />
+        <!-- OSX DYLIB -->
+        <None Include="native/osx-x64/libbox2d.dylib" Pack="true" PackagePath="runtimes/osx-x64/native/" Condition="Exists('native/osx-x64/libbox2d.dylib')" />
             
         <!-- XMLDoc -->
         <None Include="bin/$(Configuration)/netstandard2.1/Box2DBindings.xml" Pack="true" PackagePath="lib/netstandard2.1/" />

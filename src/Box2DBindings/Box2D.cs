@@ -15,24 +15,47 @@ public static class Box2D
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2GetVersion")]
     public static extern Box2DVersion GetVersion();
 
+#if BOX2D_300
+    //B2_API b2Timer b2CreateTimer( void );
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateTimer")]
+    public static extern Timer CreateTimer();
+    
+    //B2_API int64_t b2GetTicks( b2Timer* timer );
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2GetTicks")]
+    public static extern long GetTicks(Timer timer);
+    
+    //B2_API float b2GetMilliseconds( const b2Timer* timer );
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2GetMilliseconds")]
+    public static extern float GetMilliseconds(Timer timer);
+    
+    //B2_API float b2GetMillisecondsAndReset( b2Timer* timer );
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2GetMillisecondsAndReset")]
+    public static extern float GetMillisecondsAndReset(ref Timer timer);
+    
+    //B2_API void b2SleepMilliseconds( int milliseconds );
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2SleepMilliseconds")]
+    public static extern void SleepMilliseconds(int milliseconds);
+
+#else
     /// <summary>
     /// Get the absolute number of system ticks. The value is platform specific.
     /// </summary>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2GetTicks")]
     public static extern ulong GetTicks();
-
+    
     /// <summary>
     /// Get the milliseconds passed from an initial tick value.
     /// </summary>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2GetMilliseconds")]
     public static extern float GetMilliseconds(ulong ticks);
-
+    
     /// <summary>
     /// Get the milliseconds passed from an initial tick value.
     /// </summary>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2GetMillisecondsAndReset")]
     public static extern float GetMillisecondsAndReset(ref ulong ticks);
-
+    
+#endif    
     /// <summary>
     /// Yield to be used in a busy loop.
     /// </summary>

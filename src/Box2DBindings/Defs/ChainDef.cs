@@ -112,4 +112,13 @@ public class ChainDef
         get => _internal.IsLoop;
         set => _internal.IsLoop = value;
     }
+    
+    /// <summary>
+    /// Enable sensors to detect this chain. False by default.
+    /// </summary>
+    public bool EnableSensorEvents
+    {
+        get => _internal.EnableSensorEvents;
+        set => _internal.EnableSensorEvents = value;
+    }
 }

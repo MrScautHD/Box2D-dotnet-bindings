@@ -106,17 +106,26 @@ public class ShapeDef
     
     /// <summary>
     /// A sensor shape generates overlap events but never generates a collision response.
-    /// Sensors do not collide with other sensors and do not have continuous collision.
-    /// Instead, use a ray or shape cast for those scenarios.
+    /// Sensors do not have continuous collision. Instead, use a ray or shape cast for those scenarios.
+    /// <i>Note: Sensor events are disabled by default.</i>
     /// </summary>
     public bool IsSensor
     {
         get => _internal.IsSensor;
         set => _internal.IsSensor = value;
     }
+    
+    /// <summary>
+    /// Enable sensor events for this shape. This applies to sensors and non-sensors. False by default, even for sensors.
+    /// </summary>
+    public bool EnableSensorEvents
+    {
+        get => _internal.EnableSensorEvents;
+        set => _internal.EnableSensorEvents = value;
+    }
 
     /// <summary>
-    /// Enable contact events for this shape. Only applies to kinematic and dynamic bodies. Ignored for sensors.
+    /// Enable contact events for this shape. Only applies to kinematic and dynamic bodies. Ignored for sensors. False by default.
     /// </summary>
     public bool EnableContactEvents
     {
@@ -125,7 +134,7 @@ public class ShapeDef
     }
 
     /// <summary>
-    /// Enable hit events for this shape. Only applies to kinematic and dynamic bodies. Ignored for sensors.
+    /// Enable hit events for this shape. Only applies to kinematic and dynamic bodies. Ignored for sensors. False by default.
     /// </summary>
     public bool EnableHitEvents
     {

@@ -26,8 +26,7 @@ struct ChainDefInternal
     /// </summary>
     [FieldOffset(28)]
     internal int MaterialCount;
-
-
+    
     [FieldOffset(32)]
     internal Filter Filter; // 20 bytes
 
@@ -35,6 +34,10 @@ struct ChainDefInternal
     [FieldOffset(52)]
     internal bool IsLoop;
 
+    [MarshalAs(UnmanagedType.U1)]
+    [FieldOffset(53)]
+    internal bool EnableSensorEvents;
+    
     /// <summary>
     /// Used internally to detect a valid definition. DO NOT SET.
     /// </summary>

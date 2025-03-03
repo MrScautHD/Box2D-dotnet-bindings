@@ -17,9 +17,28 @@ public struct Shape : IEquatable<Shape>
     public override bool Equals(object? obj) => obj is Shape other && Equals(other);
     public override int GetHashCode() => HashCode.Combine(index1, world0, generation);
     
+    
+#if BOX2D_300    
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DestroyShape")]
+    private static extern void b2DestroyShape(Shape shapeId);
+    
+    /// <summary>
+    /// Destroys this shape
+    /// </summary>
+    /// <param name="updateBodyMass">Option to defer the body mass update</param>
+    /// <remarks>You may defer the body mass update which can improve performance if several shapes on a body are destroyed at once</remarks>
+    public void Destroy()
+    {
+        // dealloc user data
+        nint userDataPtr = b2Shape_GetUserData(this);
+        Box2D.FreeHandle(userDataPtr);
+        
+        b2DestroyShape(this);
+    }
+#else
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DestroyShape")]
     private static extern void b2DestroyShape(Shape shapeId, bool updateBodyMass);
-    
+
     /// <summary>
     /// Destroys this shape
     /// </summary>
@@ -33,6 +52,8 @@ public struct Shape : IEquatable<Shape>
         
         b2DestroyShape(this, updateBodyMass);
     }
+    
+#endif
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_IsValid")]
     private static extern bool b2Shape_IsValid(Shape shapeId);
@@ -66,16 +87,14 @@ public struct Shape : IEquatable<Shape>
 
     public Body Body => GetBody();
     
+#if !BOX2D_300
+    
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetWorld")]
     private static extern World b2Shape_GetWorld(Shape shapeId);
     
-    /// <summary>
-    /// Gets the world that owns this shape
-    /// </summary>
-    /// <returns>The world that owns this shape</returns>
-    public World GetWorld() => b2Shape_GetWorld(this);
+    public World World => b2Shape_GetWorld(this);
 
-    public World World => GetWorld();
+#endif
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_IsSensor")]
     private static extern bool b2Shape_IsSensor(Shape shapeId);
@@ -87,6 +106,21 @@ public struct Shape : IEquatable<Shape>
     public bool IsSensor() => b2Shape_IsSensor(this);
 
     public bool Sensor => IsSensor();
+    
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_EnableSensorEvents")]
+    private static extern void b2Shape_EnableSensorEvents(Shape shapeId, bool flag);
+    
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_AreSensorEventsEnabled")]
+    private static extern bool b2Shape_AreSensorEventsEnabled(Shape shapeId);
+    
+    /// <summary>
+    /// Sensor enabled state for this shape
+    /// </summary>
+    private bool SensorEventsEnabled
+    {
+        get => b2Shape_AreSensorEventsEnabled(this);
+        set => b2Shape_EnableSensorEvents(this, value);
+    }
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_SetUserData")]
     private static extern void b2Shape_SetUserData(Shape shapeId, nint userData);
@@ -103,6 +137,24 @@ public struct Shape : IEquatable<Shape>
         set => Box2D.SetObjectAtPointer(b2Shape_GetUserData, b2Shape_SetUserData, this, value);
     }
     
+#if BOX2D_300
+
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_SetDensity")]
+    private static extern void b2Shape_SetDensity(Shape shapeId, float density);
+    
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetDensity")]
+    private static extern float b2Shape_GetDensity(Shape shapeId);
+    
+    /// <summary>
+    /// The mass density of this shape
+    /// </summary>
+    public float Density
+    {
+        get => b2Shape_GetDensity(this);
+        set => b2Shape_SetDensity(this, value);
+    }
+#else
+    
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_SetDensity")]
     private static extern void b2Shape_SetDensity(Shape shapeId, float density, bool updateBodyMass);
     
@@ -118,174 +170,123 @@ public struct Shape : IEquatable<Shape>
     private static extern float b2Shape_GetDensity(Shape shapeId);
     
     /// <summary>
-    /// Gets the mass density of this shape
+    /// The mass density of this shape
     /// </summary>
-    /// <returns>The mass density of this shape</returns>
-    public float GetDensity() => b2Shape_GetDensity(this);
-
+    /// <remarks>This will update the mass properties on the parent body. To avoid this, use <see cref="SetDensity(float,bool)"/></remarks>
     public float Density
     {
-        get => GetDensity();
-        set => SetDensity(value, true);
+        get => b2Shape_GetDensity(this);
+        set => b2Shape_SetDensity(this, value, true);
     }
 
+#endif
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_SetFriction")]
     private static extern void b2Shape_SetFriction(Shape shapeId, float friction);
     
-    /// <summary>
-    /// Sets the friction on this shape
-    /// </summary>
-    /// <param name="friction">The friction</param>
-    public void SetFriction(float friction) => b2Shape_SetFriction(this, friction);
-
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetFriction")]
     private static extern float b2Shape_GetFriction(Shape shapeId);
     
     /// <summary>
-    /// Gets the friction on this shape
+    /// The friction on this shape
     /// </summary>
-    /// <returns>The friction on this shape</returns>
-    public float GetFriction() => b2Shape_GetFriction(this);
-
     public float Friction
     {
-        get => GetFriction();
-        set => SetFriction(value);
+        get => b2Shape_GetFriction(this);
+        set => b2Shape_SetFriction(this, value);
     }
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_SetRestitution")]
     private static extern void b2Shape_SetRestitution(Shape shapeId, float restitution);
     
-    /// <summary>
-    /// Sets the shape restitution (bounciness)
-    /// </summary>
-    /// <param name="restitution">The restitution</param>
-    public void SetRestitution(float restitution) => b2Shape_SetRestitution(this, restitution);
-
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetRestitution")]
     private static extern float b2Shape_GetRestitution(Shape shapeId);
     
-    /// <summary>
-    /// Gets the shape restitution (bounciness)
-    /// </summary>
-    /// <returns>The restitution</returns>
-    public float GetRestitution() => b2Shape_GetRestitution(this);
-
     public float Restitution
     {
-        get => GetRestitution();
-        set => SetRestitution(value);
+        get => b2Shape_GetRestitution(this);
+        set => b2Shape_SetRestitution(this, value);
     }
+    
+#if !BOX2D_300
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_SetMaterial")]
     private static extern void b2Shape_SetMaterial(Shape shapeId, int material);
     
-    /// <summary>
-    /// Sets the shape material identifier
-    /// </summary>
-    /// <param name="material">The material identifier</param>
-    public void SetMaterial(int material) => b2Shape_SetMaterial(this, material);
-
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetMaterial")]
     private static extern int b2Shape_GetMaterial(Shape shapeId);
     
-    /// <summary>
-    /// Gets the shape material identifier
-    /// </summary>
-    /// <returns>The material identifier</returns>
-    public int GetMaterial() => b2Shape_GetMaterial(this);
-
+/// <summary>
+/// The material for this shape
+/// </summary>
     public int Material
     {
-        get => GetMaterial();
-        set => SetMaterial(value);
+        get =>  b2Shape_GetMaterial(this);
+        set => b2Shape_SetMaterial(this, value);
     }
-    
+
+#endif
+
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetFilter")]
     private static extern Filter b2Shape_GetFilter(Shape shapeId);
     
-    /// <summary>
-    /// Gets the shape filter
-    /// </summary>
-    /// <returns>The filter</returns>
-    public Filter GetFilter() => b2Shape_GetFilter(this);
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_SetFilter")]
     private static extern void b2Shape_SetFilter(Shape shapeId, Filter filter);
     
     /// <summary>
-    /// Sets the current filter
+    /// The filter for this shape
     /// </summary>
-    /// <param name="filter">The filter</param>
-    /// <remarks>This is almost as expensive as recreating the shape. This may cause contacts to be immediately destroyed. However contacts are not created until the next world step. Sensor overlap state is also not updated until the next world step</remarks>
-    public void SetFilter(Filter filter) => b2Shape_SetFilter(this, filter);
-
+    /// <remarks>Setting this is almost as expensive as recreating the shape. This may cause contacts to be immediately destroyed. However contacts are not created until the next world step. Sensor overlap state is also not updated until the next world step</remarks>
+    public Filter Filter
+    {
+        get => b2Shape_GetFilter(this);
+        set => b2Shape_SetFilter(this, value);
+    }
+    
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_EnableContactEvents")]
     private static extern void b2Shape_EnableContactEvents(Shape shapeId, bool flag);
     
-    /// <summary>
-    /// Enable contact events for this shape
-    /// </summary>
-    /// <param name="flag">Option to enable contact events for this shape</param>
-    /// <remarks>Only applies to kinematic and dynamic bodies. Ignored for sensors.
-    /// <br/><br/><b>Warning: Changing this at run-time may lead to lost begin/end events</b></remarks>
-    public void EnableContactEvents(bool flag) => b2Shape_EnableContactEvents(this, flag);
-
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_AreContactEventsEnabled")]
     private static extern bool b2Shape_AreContactEventsEnabled(Shape shapeId);
     
     /// <summary>
-    /// Checks if contact events are enabled for this shape
+    /// Contact enabled state for this shape
     /// </summary>
-    /// <returns>true if contact events are enabled for this shape</returns>
-    public bool AreContactEventsEnabled() => b2Shape_AreContactEventsEnabled(this);
-
-    public bool ContactEventsEnabled => AreContactEventsEnabled();
+    public bool ContactEventsEnabled
+    {
+        get => b2Shape_AreContactEventsEnabled(this);
+        set => b2Shape_EnableContactEvents(this, value);
+    }
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_EnablePreSolveEvents")]
     private static extern void b2Shape_EnablePreSolveEvents(Shape shapeId, bool flag);
     
-    /// <summary>
-    /// Enables pre-solve contact events for this shape
-    /// </summary>
-    /// <param name="flag">Option to enable pre-solve contact events for this shape</param>
-    /// <remarks>Only applies to dynamic bodies. <br/><br/><b>Waring: These are expensive and must be carefully handled due to multithreading.</b><br/><br/>Ignored for sensors</remarks>
-    public void EnablePreSolveEvents(bool flag) => b2Shape_EnablePreSolveEvents(this, flag);
-
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_ArePreSolveEventsEnabled")]
     private static extern bool b2Shape_ArePreSolveEventsEnabled(Shape shapeId);
-    
-    /// <summary>
-    /// Checks if pre-solve events are enabled for this shape
-    /// </summary>
-    /// <returns>true if pre-solve events are enabled for this shape</returns>
-    public bool ArePreSolveEventsEnabled() => b2Shape_ArePreSolveEventsEnabled(this);
 
-    public bool PreSolveEventsEnabled => ArePreSolveEventsEnabled();
+    /// <summary>
+    /// The pre-solve contact enabled state for this shape
+    /// </summary>
+    /// <remarks>Only applies to dynamic bodies. <br/><br/><b>Warning: These are expensive and must be carefully handled due to multithreading.</b><br/><br/>Ignored for sensors</remarks>
+    public bool PreSolveEventsEnabled
+    {
+        get => b2Shape_ArePreSolveEventsEnabled(this);
+        set => b2Shape_EnablePreSolveEvents(this, value);
+    }
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_EnableHitEvents")]
     private static extern void b2Shape_EnableHitEvents(Shape shapeId, bool flag);
     
-    /// <summary>
-    /// Enable contact hit events for this shape
-    /// </summary>
-    /// <param name="flag">Option to enable contact hit events for this shape</param>
-    /// <remarks>Ignored for sensors.</remarks>
-    public void EnableHitEvents(bool flag) => b2Shape_EnableHitEvents(this, flag);
-
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_AreHitEventsEnabled")]
     private static extern bool b2Shape_AreHitEventsEnabled(Shape shapeId);
     
     /// <summary>
-    /// Checks if hit events are enabled for this shape
+    /// Hit events enabled state for this shape
     /// </summary>
-    /// <returns>true if hit events are enabled for this shape</returns>
-    public bool AreHitEventsEnabled() => b2Shape_AreHitEventsEnabled(this);
-
     public bool HitEventsEnabled
     {
-        get => AreHitEventsEnabled();
-        set => EnableHitEvents(value);
+        get => b2Shape_AreHitEventsEnabled(this);
+        set => b2Shape_EnableHitEvents(this, value);
     }
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_TestPoint")]
@@ -409,68 +410,53 @@ public struct Shape : IEquatable<Shape>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetContactCapacity")]
     private static extern int b2Shape_GetContactCapacity(Shape shapeId);
     
-    /// <summary>
-    /// Gets the maximum capacity required for retrieving all the touching contacts on this shape
-    /// </summary>
-    /// <returns>The maximum capacity required for retrieving all the touching contacts on this shape</returns>
-    /// <remarks>This is the maximum number of contacts that can be retrieved for this shape</remarks>
-    public int GetContactCapacity() => b2Shape_GetContactCapacity(this);
-
-    public int ContactCapacity => GetContactCapacity();
- 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetContactData")]
     private static extern int b2Shape_GetContactData(Shape shapeId, nint contactData, int capacity);
-    
-    /// <summary>
-    /// Gets the touching contact data for this shape, up to the provided capacity
-    /// </summary>
-    /// <param name="contactData">The contact data array</param>
-    /// <returns>The number of elements filled in the provided array</returns>
-    /// <remarks>The provided shapeId will be either shapeIdA or shapeIdB on the contact data.<br/><br/>
-    /// <i>Note: Box2D uses speculative collision so some contact points may be separated.</i><br/>
-    /// <b>Warning: Do not ignore the return value, it specifies the valid number of elements</b></remarks>
-    public int GetContactData(ContactData[] contactData)
+
+    public ContactData[] ContactData
     {
-        GCHandle handle = GCHandle.Alloc(contactData, GCHandleType.Pinned);
-        nint contactDataPtr = handle.AddrOfPinnedObject();
-        int capacity = contactData.Length;
-        int count = b2Shape_GetContactData(this, contactDataPtr, capacity);
-        handle.Free();
-        return count;
+        get
+        {
+            int capacity = b2Shape_GetContactCapacity(this);
+            ContactData[] contactData = new ContactData[capacity];
+            GCHandle handle = GCHandle.Alloc(contactData, GCHandleType.Pinned);
+            nint contactDataPtr = handle.AddrOfPinnedObject();
+            int count = b2Shape_GetContactData(this, contactDataPtr, capacity);
+            handle.Free();
+            Array.Resize(ref contactData, count);
+            return contactData;
+        }
     }
+    
+    
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetSensorCapacity")]
     private static extern int b2Shape_GetSensorCapacity(Shape shapeId);
     
-    /// <summary>
-    /// Gets the maximum capacity required for retrieving all the overlapped shapes on a sensor shape
-    /// </summary>
-    /// <returns>The required capacity to get all the overlaps in <see cref="GetSensorOverlaps"/></returns>
-    public int GetSensorCapacity() => b2Shape_GetSensorCapacity(this);
-
-    public int SensorCapacity => GetSensorCapacity();
-
+    
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetSensorOverlaps")]
     private static extern int b2Shape_GetSensorOverlaps(Shape shapeId, nint overlaps, int capacity);
     
     /// <summary>
     /// Gets the overlapped shapes for this sensor shape, up to the provided capacity
     /// </summary>
-    /// <param name="overlaps">The overlapped shapes array</param>
     /// <returns>The number of elements filled in the provided array</returns>
     /// <remarks>
     /// Overlaps may contain destroyed shapes so use <see cref="IsValid"/> to confirm each overlap.<br/><br/>
-    /// <b>Warning: Do not ignore the return value, it specifies the valid number of elements</b><br/>
-    /// <b>Warning: Do not call this method during the contact callbacks</b>
+    /// <b>Warning: Do not fetch this property during the contact callbacks</b>
     /// </remarks>
-    public int GetSensorOverlaps(Shape[] overlaps)
+    public Shape[] SensorOverlaps
     {
-        GCHandle handle = GCHandle.Alloc(overlaps, GCHandleType.Pinned);
-        nint overlapsPtr = handle.AddrOfPinnedObject();
-        int capacity = overlaps.Length;
-        int count = b2Shape_GetSensorOverlaps(this, overlapsPtr, capacity);
-        handle.Free();
-        return count;
+        get
+        {
+            int capacity = b2Shape_GetSensorCapacity(this);
+            Shape[] overlaps = new Shape[capacity];
+            GCHandle handle = GCHandle.Alloc(overlaps, GCHandleType.Pinned);
+            nint overlapsPtr = handle.AddrOfPinnedObject();
+            int count = b2Shape_GetSensorOverlaps(this, overlapsPtr, capacity);
+            handle.Free();
+            return overlaps;
+        }
     }
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetAABB")]
@@ -485,16 +471,14 @@ public struct Shape : IEquatable<Shape>
 
     public AABB AABB => GetAABB();
 
+#if !BOX2D_300
+    
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetMassData")]
     private static extern MassData b2Shape_GetMassData(Shape shapeId);
     
-    /// <summary>
-    /// Gets the mass data for this shape
-    /// </summary>
-    /// <returns>The mass data for this shape</returns>
-    public MassData GetMassData() => b2Shape_GetMassData(this);
+    public MassData MassData => b2Shape_GetMassData(this);
 
-    public MassData MassData => GetMassData();
+#endif
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetClosestPoint")]
     private static extern Vec2 b2Shape_GetClosestPoint(Shape shapeId, Vec2 target);

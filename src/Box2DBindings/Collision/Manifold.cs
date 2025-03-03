@@ -10,6 +10,23 @@ namespace Box2D;
 [StructLayout(LayoutKind.Explicit, Size = 116)]
 public unsafe struct Manifold
 {
+#if BOX2D_300
+    [FieldOffset(0)]
+    private nint* _points;
+        
+    /// <summary>
+    /// The unit normal vector in world space, points from shape A to bodyB
+    /// </summary>
+    [FieldOffset(100)]
+    public Vec2 Normal;
+    
+    /// <summary>
+    /// The number of contacts points, will be 0, 1, or 2
+    /// </summary>
+    [FieldOffset(108)]
+    public int PointCount;
+    
+#else
     /// <summary>
     /// The unit normal vector in world space, points from shape A to bodyB
     /// </summary>
@@ -24,15 +41,16 @@ public unsafe struct Manifold
 
     [FieldOffset(12)]
     private nint* _points;
-    
-    /// <summary>
-    /// The manifold points, up to two are possible in 2D
-    /// </summary>
-    public ReadOnlySpan<ManifoldPoint> Points => new(_points, 2);
-    
+
     /// <summary>
     /// The number of contacts points, will be 0, 1, or 2
     /// </summary>
     [FieldOffset(112)]
     public int PointCount;
+#endif
+    
+    /// <summary>
+    /// The manifold points, up to two are possible in 2D
+    /// </summary>
+    public ReadOnlySpan<ManifoldPoint> Points => new(_points, 2);
 }

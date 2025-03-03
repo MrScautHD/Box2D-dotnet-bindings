@@ -1,6 +1,6 @@
 using Box2D;
 
-namespace TestProject1;
+namespace UnitTests;
 
 public class CreationTests
 {
@@ -39,6 +39,5 @@ public class CreationTests
         jointDef.LocalAnchorB = (0f, 0f);
         
         Joint joint = world.CreateJoint(jointDef);
-        
     }
 }

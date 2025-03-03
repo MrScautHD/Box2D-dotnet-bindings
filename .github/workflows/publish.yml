@@ -28,17 +28,18 @@ jobs:
             post_build_cmd: |
               rm box2d-src/build/src/bin/libbox2d.so
               mv box2d-src/build/src/bin/libbox2d.so.3.1.0 box2d-src/build/src/bin/libbox2d.so
+                
+          - os: macos-latest
+            artifact_name: box2d-macos
+            artifact_path: box2d-src/build/src/bin/libbox2d.dylib
+            cmake_flags: "-DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin"
+            post_build_cmd: "echo 'macOS build complete'"
     
     steps:
       - name: Clone Box2D
-        run: git clone --depth 1 https://github.com/erincatto/box2d.git box2d-src
+        run: git clone --depth 1 --branch $(git ls-remote --tags --sort=-v:refname https://github.com/erincatto/box2d.git | head -n 1 | sed 's/.*refs\/tags\///') https://github.com/erincatto/box2d.git box2d-src
 
-      - name: Setup MSBuild (Windows)
-        if: matrix.os == 'windows-latest'
-        uses: microsoft/setup-msbuild@v1.3
-
-      - name: Setup CMake (Linux)
-        if: matrix.os == 'ubuntu-latest'
+      - name: Setup CMake
         uses: jwlawson/actions-setup-cmake@v2
         with:
           cmake-version: 3.22.x
@@ -60,7 +61,9 @@ jobs:
           name: ${{ matrix.artifact_name }}
           path: ${{ matrix.artifact_path }}
           if-no-files-found: error
-
+              
+  continue-on-error: ${{ matrix.os == 'macos-latest' }}
+          
   build-and-deploy-bindings:
     needs: build-box2d
     runs-on: ubuntu-latest
@@ -82,10 +85,26 @@ jobs:
           name: box2d-linux
           path: src/Box2DBindings/native/linux-x64
 
-      - name: Setup .NET
+      - name: Get macOS artefacts (if exists)
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: box2d-macos
+          path: src/native/osx-x64
+
+      - name: Setup dotnet
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 9.0.x
+
+      - name: Build UnitTests project
+        run: dotnet build src/UnitTests --configuration Release
+
+      - name: Copy Linux shared library to UnitTests output
+        run: cp src/native/linux-x64/libbox2d.so src/UnitTests/bin/Release/net9.0/
+
+      - name: Run UnitTests
+        run: dotnet test src/UnitTests --configuration Release --no-build --logger trx --results-directory TestResults
 
       - name: Build and pack
         run: dotnet pack src/Box2DBindings --configuration Release --output ./artefacts

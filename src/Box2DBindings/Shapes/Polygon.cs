@@ -56,6 +56,27 @@ public unsafe struct Polygon
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakePolygon")]
     public static extern Polygon MakePolygon(in Hull hull, float radius);
     
+#if BOX2D_300
+
+    /*
+     * 
+       /// Make an offset convex polygon from a convex hull. This will assert if the hull is not valid.
+       /// @warning Do not manually fill in the hull data, it must come directly from b2ComputeHull
+       B2_API b2Polygon b2MakeOffsetPolygon( const b2Hull* hull, float radius, b2Transform transform );
+       
+     */
+    
+    /// <summary>
+    /// Make an offset convex polygon from a convex hull. This will assert if the hull is not valid.
+    /// </summary>
+    /// <remarks>
+    /// <b>Warning: Do not manually fill in the hull data, it must come directly from b2ComputeHull</b>
+    /// </remarks>
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakeOffsetPolygon")]
+    public static extern Polygon MakeOffsetPolygon(in Hull hull, float radius, in Transform transform);
+    
+#else
+    
     /// <summary>
     /// Make an offset convex polygon from a convex hull. This will assert if the hull is not valid.
     /// </summary>
@@ -65,7 +86,6 @@ public unsafe struct Polygon
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakeOffsetPolygon")]
     public static extern Polygon MakeOffsetPolygon(in Hull hull, in Vec2 position, in Rotation rotation);
     
-    
     /// <summary>
     /// Make an offset convex polygon from a convex hull. This will assert if the hull is not valid.
     /// </summary>
@@ -74,7 +94,7 @@ public unsafe struct Polygon
     /// </remarks>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakeOffsetRoundedPolygon")]
     public static extern Polygon MakeOffsetRoundedPolygon(in Hull hull, in Vec2 position, in Rotation rotation, float radius);
-
+#endif
     /// <summary>
     /// Make a square polygon, bypassing the need for a convex hull.
     /// </summary>
@@ -99,6 +119,19 @@ public unsafe struct Polygon
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakeRoundedBox")]
     public static extern Polygon MakeRoundedBox(float halfWidth, float halfHeight, float radius);
 
+#if BOX2D_300
+    
+    /// <summary>
+    /// Make an offset box, bypassing the need for a convex hull.
+    /// </summary>
+    /// <param name="halfWidth">the half-width (x-axis)</param>
+    /// <param name="halfHeight">the half-height (y-axis)</param>
+    /// <param name="center">the local center of the box</param>
+    /// <param name="angle">the local rotation of the box</param>
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakeOffsetBox")]
+    public static extern Polygon MakeOffsetBox(float halfWidth, float halfHeight, in Vec2 center, in float angle);
+    
+#else
     /// <summary>
     /// Make an offset box, bypassing the need for a convex hull.
     /// </summary>
@@ -119,7 +152,7 @@ public unsafe struct Polygon
     /// <param name="radius">the radius of the rounded extension</param>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakeOffsetRoundedBox")]
     public static extern Polygon MakeOffsetRoundedBox(float halfWidth, float halfHeight, in Vec2 center, in Rotation rotation, float radius);
-
+#endif
     /// <summary>
     /// Transform a polygon. This is useful for transferring a shape from one body to another.
     /// </summary>

@@ -58,6 +58,27 @@ public static class Collision
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CollideSegmentAndPolygon")]
     public static extern Manifold Collide(in Segment segmentA, in Transform xfA, in Polygon polygonB, in Transform xfB);
 
+#if BOX2D_300
+    /// <summary>
+    /// Compute the contact manifold between a chain segment and a circle
+    /// </summary>
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CollideSmoothSegmentAndCircle")]
+    public static extern Manifold Collide(in ChainSegment segmentA, in Transform xfA, in Circle circleB, in Transform xfB);
+
+    /// <summary>
+    /// Compute the contact manifold between a chain segment and a capsule
+    /// </summary>
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CollideSmoothSegmentAndCapsule")]
+    public static extern Manifold Collide(in ChainSegment segmentA, in Transform xfA, in Capsule capsuleB, in Transform xfB, ref SimplexCache cache);
+
+    /// <summary>
+    /// Compute the contact manifold between a chain segment and a rounded polygon
+    /// </summary>
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CollideSmoothSegmentAndPolygon")]
+    public static extern Manifold Collide(in ChainSegment segmentA, in Transform xfA, in Polygon polygonB, in Transform xfB, ref SimplexCache cache);
+    
+#else
+    
     /// <summary>
     /// Compute the contact manifold between a chain segment and a circle
     /// </summary>
@@ -75,4 +96,6 @@ public static class Collision
     /// </summary>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CollideChainSegmentAndPolygon")]
     public static extern Manifold Collide(in ChainSegment segmentA, in Transform xfA, in Polygon polygonB, in Transform xfB, ref SimplexCache cache);
+
+#endif
 }

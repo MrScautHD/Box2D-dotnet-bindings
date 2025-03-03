@@ -75,18 +75,22 @@ struct ShapeDefInternal
     [FieldOffset(60)]
     internal bool IsSensor;
 
+    [MarshalAs(UnmanagedType.U1)]
+    [FieldOffset(61)]
+    internal bool EnableSensorEvents;
+
     /// <summary>
     /// Enable contact events for this shape. Only applies to kinematic and dynamic bodies. Ignored for sensors.
     /// </summary>
     [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(61)]
+    [FieldOffset(62)]
     internal bool EnableContactEvents;
 
     /// <summary>
     /// Enable hit events for this shape. Only applies to kinematic and dynamic bodies. Ignored for sensors.
     /// </summary>
     [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(62)]
+    [FieldOffset(63)]
     internal bool EnableHitEvents;
 
     /// <summary>
@@ -94,7 +98,7 @@ struct ShapeDefInternal
     /// and must be carefully handled due to threading. Ignored for sensors.
     /// </summary>
     [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(63)]
+    [FieldOffset(64)]
     internal bool EnablePreSolveEvents;
 
     /// <summary>
@@ -104,14 +108,14 @@ struct ShapeDefInternal
     /// This is implicitly always true for sensors, dynamic bodies, and kinematic bodies.
     /// </summary>
     [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(64)]
+    [FieldOffset(65)]
     internal bool InvokeContactCreation;
 
     /// <summary>
     /// Should the body update the mass properties when this shape is created. Default is true.
     /// </summary>
     [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(65)]
+    [FieldOffset(66)]
     internal bool UpdateBodyMass;
 
     /// <summary>

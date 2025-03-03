@@ -102,7 +102,7 @@ public struct DebugDraw
     /// </summary>
     [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(92)]
-    public bool DrawAABBs;
+    public bool DrawBounds;
 
     /// <summary>
     /// Option to draw the mass and center of mass of dynamic bodies
@@ -146,13 +146,24 @@ public struct DebugDraw
     [FieldOffset(98)]
     public bool DrawContactImpulses;
 
+    [MarshalAs(UnmanagedType.U1)]
+    [FieldOffset(99)]
+    public bool DrawContactFeatures;
+    
     /// <summary>
     /// Option to draw contact friction impulses
     /// </summary>
     [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(99)]
+    [FieldOffset(100)]
     public bool DrawFrictionImpulses;
 
+    /// <summary>
+    /// Option to draw contact friction impulses
+    /// </summary>
+    [MarshalAs(UnmanagedType.U1)]
+    [FieldOffset(101)]
+    public bool DrawIslands;
+    
     /// <summary>
     /// User context that is passed as an argument to drawing callback functions
     /// </summary>

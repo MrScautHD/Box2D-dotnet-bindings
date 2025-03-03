@@ -71,6 +71,8 @@ public class Joint
     public Body GetBodyB() => b2Joint_GetBodyB(_id);
 
     public Body BodyB => GetBodyB();
+
+#if !BOX2D_300
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetWorld")]
     private static extern World b2Joint_GetWorld(JointId jointId);
@@ -78,9 +80,9 @@ public class Joint
     /// <summary>
     /// Gets the world that owns this joint
     /// </summary>
-    /// <returns>The world that owns this joint</returns>
-    public World GetWorld() => b2Joint_GetWorld(_id);
+    public World World => b2Joint_GetWorld(_id);
     
+#endif
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetLocalAnchorA")]
     private static extern Vec2 b2Joint_GetLocalAnchorA(JointId jointId);
     
@@ -106,25 +108,13 @@ public class Joint
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_SetCollideConnected")]
     private static extern void b2Joint_SetCollideConnected(JointId jointId, bool shouldCollide);
     
-    /// <summary>
-    /// Toggles collision between connected bodies
-    /// </summary>
-    /// <param name="shouldCollide">Option to toggle collision between connected bodies</param>
-    public void SetCollideConnected(bool shouldCollide) => b2Joint_SetCollideConnected(_id, shouldCollide);
-
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetCollideConnected")]
     private static extern bool b2Joint_GetCollideConnected(JointId jointId);
     
-    /// <summary>
-    /// Checks if collision is allowed between connected bodies
-    /// </summary>
-    /// <returns>true if collision is allowed between connected bodies</returns>
-    public bool GetCollideConnected() => b2Joint_GetCollideConnected(_id);
-
     public bool CollideConnected
     {
-        get => GetCollideConnected();
-        set => SetCollideConnected(value);
+        get => b2Joint_GetCollideConnected(_id);
+        set => b2Joint_SetCollideConnected(_id, value);
     }
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_SetUserData")]

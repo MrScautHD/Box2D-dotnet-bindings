@@ -42,9 +42,11 @@ public struct World
         // dealloc user data
         foreach (var body in _bodies[index1].Values)
             body.Destroy();
-        
+
+#if !BOX2D_300
         nint userDataPtr = b2World_GetUserData(this);
         Box2D.FreeHandle(userDataPtr);
+#endif
         
         b2DestroyWorld(this);
         _bodies.Remove(index1);
@@ -104,6 +106,204 @@ public struct World
     /// </summary>
     /// <returns>The contact events</returns>
     public ContactEvents GetContactEvents() => b2World_GetContactEvents(this);
+
+
+#if BOX2D_300
+    /*
+     * /// Overlap test for all shapes that *potentially* overlap the provided AABB
+       B2_API void b2World_OverlapAABB( b2WorldId worldId, b2AABB aabb, b2QueryFilter filter, b2OverlapResultFcn* fcn, void* context );
+       
+     */
+    
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_OverlapAABB")]
+    private static extern void b2World_OverlapAABB(World worldId, AABB aabb, QueryFilter filter, OverlapResultCallback fcn, nint context);
+    
+    /// <summary>
+    /// Overlap test for all shapes that *potentially* overlap the provided AABB
+    /// </summary>
+    /// <param name="aabb">The AABB</param>
+    /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
+    /// <param name="fcn">A user implemented callback function</param>
+    /// <param name="context">The context</param>
+    public void OverlapAABB(AABB aabb, QueryFilter filter, OverlapResultCallback fcn, nint context) =>
+        b2World_OverlapAABB(this, aabb, filter, fcn, context);
+    
+    /*
+     * /// Overlap test for for all shapes that overlap the provided circle
+       B2_API void b2World_OverlapCircle( b2WorldId worldId, const b2Circle* circle, b2Transform transform, b2QueryFilter filter,
+       								   b2OverlapResultFcn* fcn, void* context );
+     */
+    
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_OverlapCircle")]
+    private static extern void b2World_OverlapCircle(World worldId, in Circle circle, Transform transform, QueryFilter filter, OverlapResultCallback fcn, nint context);
+    
+    /// <summary>
+    /// Overlap test for all shapes that overlap the provided circle. A zero radius may be used for a point query.
+    /// </summary>
+    /// <param name="circle">The circle</param>
+    /// <param name="transform">The transform</param>
+    /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
+    /// <param name="fcn">A user implemented callback function</param>
+    /// <param name="context">The context</param>
+    public void OverlapCircle(in Circle circle, Transform transform, QueryFilter filter, OverlapResultCallback fcn, nint context) =>
+        b2World_OverlapCircle(this, circle, transform, filter, fcn, context);
+    
+    /*
+     * /// Overlap test for all shapes that overlap the provided capsule
+       B2_API void b2World_OverlapCapsule( b2WorldId worldId, const b2Capsule* capsule, b2Transform transform, b2QueryFilter filter,
+       									b2OverlapResultFcn* fcn, void* context );
+     */
+    
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_OverlapCapsule")]
+    private static extern void b2World_OverlapCapsule(World worldId, in Capsule capsule, Transform transform, QueryFilter filter, OverlapResultCallback fcn, nint context);
+    
+    /// <summary>
+    /// Overlap test for all shapes that overlap the provided capsule
+    /// </summary>
+    /// <param name="capsule">The capsule</param>
+    /// <param name="transform">The transform</param>
+    /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
+    /// <param name="fcn">A user implemented callback function</param>
+    /// <param name="context">The context</param>
+    public void OverlapCapsule(in Capsule capsule, Transform transform, QueryFilter filter, OverlapResultCallback fcn, nint context) =>
+        b2World_OverlapCapsule(this, capsule, transform, filter, fcn, context);
+    
+    
+    /*
+     * /// Overlap test for all shapes that overlap the provided polygon
+       B2_API void b2World_OverlapPolygon( b2WorldId worldId, const b2Polygon* polygon, b2Transform transform, b2QueryFilter filter,
+       									b2OverlapResultFcn* fcn, void* context );
+     */
+    
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_OverlapPolygon")]
+    private static extern void b2World_OverlapPolygon(World worldId, in Polygon polygon, Transform transform, QueryFilter filter, OverlapResultCallback fcn, nint context);
+    
+    /// <summary>
+    /// Overlap test for all shapes that overlap the provided polygon
+    /// </summary>
+    /// <param name="polygon">The polygon</param>
+    /// <param name="transform">The transform</param>
+    /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
+    /// <param name="fcn">A user implemented callback function</param>
+    /// <param name="context">The context</param>
+    public void OverlapPolygon(in Polygon polygon, Transform transform, QueryFilter filter, OverlapResultCallback fcn, nint context) =>
+        b2World_OverlapPolygon(this, polygon, transform, filter, fcn, context);
+    
+    /*
+     * /// Cast a ray into the world to collect shapes in the path of the ray.
+       /// Your callback function controls whether you get the closest point, any point, or n-points.
+       /// The ray-cast ignores shapes that contain the starting point.
+       ///	@param worldId The world to cast the ray against
+       ///	@param origin The start point of the ray
+       ///	@param translation The translation of the ray from the start point to the end point
+       ///	@param filter Contains bit flags to filter unwanted shapes from the results
+       /// @param fcn A user implemented callback function
+       /// @param context A user context that is passed along to the callback function
+       ///	@note The callback function may receive shapes in any order
+       B2_API void b2World_CastRay( b2WorldId worldId, b2Vec2 origin, b2Vec2 translation, b2QueryFilter filter, b2CastResultFcn* fcn,
+   							     void* context );
+     */
+
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_CastRay")]
+    private static extern void b2World_CastRay(World worldId, Vec2 origin, Vec2 translation, QueryFilter filter, CastResultCallback fcn, nint context);
+    
+    /// <summary>
+    /// Cast a ray into the world to collect shapes in the path of the ray.
+    /// </summary>
+    /// <param name="origin">The start point of the ray</param>
+    /// <param name="translation">The translation of the ray from the start point to the end point</param>
+    /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
+    /// <param name="fcn">A user implemented callback function</param>
+    /// <param name="context">A user context that is passed along to the callback function</param>
+    /// <remarks>Your callback function controls whether you get the closest point, any point, or n-points. The ray-cast ignores shapes that contain the starting point.<br/>
+    /// <i>Note: The callback function may receive shapes in any order</i></remarks>
+    public void CastRay(Vec2 origin, Vec2 translation, QueryFilter filter, CastResultCallback fcn, nint context) =>
+        b2World_CastRay(this, origin, translation, filter, fcn, context);
+
+    /*
+     * /// Cast a ray into the world to collect the closest hit. This is a convenience function.
+       /// This is less general than b2World_CastRay() and does not allow for custom filtering.
+       B2_API b2RayResult b2World_CastRayClosest( b2WorldId worldId, b2Vec2 origin, b2Vec2 translation, b2QueryFilter filter );
+     */
+    
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_CastRayClosest")]
+    private static extern RayResult b2World_CastRayClosest(World worldId, Vec2 origin, Vec2 translation, QueryFilter filter);
+    
+    /// <summary>
+    /// Cast a ray into the world to collect the closest hit. This is a convenience function.
+    /// </summary>
+    /// <param name="origin">The start point of the ray</param>
+    /// <param name="translation">The translation of the ray from the start point to the end point</param>
+    /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
+    /// <returns>The ray result</returns>
+    /// <remarks>This is less general than b2World_CastRay() and does not allow for custom filtering</remarks>
+    public RayResult CastRayClosest(Vec2 origin, Vec2 translation, QueryFilter filter) =>
+        b2World_CastRayClosest(this, origin, translation, filter);
+    
+    /*
+     * /// Cast a circle through the world. Similar to a cast ray except that a circle is cast instead of a point.
+       B2_API void b2World_CastCircle( b2WorldId worldId, const b2Circle* circle, b2Transform originTransform, b2Vec2 translation,
+       								b2QueryFilter filter, b2CastResultFcn* fcn, void* context );
+     */
+    
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_CastCircle")]
+    private static extern void b2World_CastCircle(World worldId, in Circle circle, Transform originTransform, Vec2 translation, QueryFilter filter, CastResultCallback fcn, nint context);
+    
+    /// <summary>
+    /// Cast a circle through the world. Similar to a cast ray except that a circle is cast instead of a point.
+    /// </summary>
+    /// <param name="circle">The circle</param>
+    /// <param name="originTransform">The origin transform</param>
+    /// <param name="translation">The translation</param>
+    /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
+    /// <param name="fcn">A user implemented callback function</param>
+    /// <param name="context">The context</param>
+    public void CastCircle(in Circle circle, Transform originTransform, Vec2 translation, QueryFilter filter, CastResultCallback fcn, nint context) =>
+        b2World_CastCircle(this, circle, originTransform, translation, filter, fcn, context);
+    
+    /*
+     * /// Cast a capsule through the world. Similar to a cast ray except that a capsule is cast instead of a point.
+       B2_API void b2World_CastCapsule( b2WorldId worldId, const b2Capsule* capsule, b2Transform originTransform, b2Vec2 translation,
+       								 b2QueryFilter filter, b2CastResultFcn* fcn, void* context );
+     */
+    
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_CastCapsule")]
+    private static extern void b2World_CastCapsule(World worldId, in Capsule capsule, Transform originTransform, Vec2 translation, QueryFilter filter, CastResultCallback fcn, nint context);
+    
+    /// <summary>
+    /// Cast a capsule through the world. Similar to a cast ray except that a capsule is cast instead of a point.
+    /// </summary>
+    /// <param name="capsule">The capsule</param>
+    /// <param name="originTransform">The origin transform</param>
+    /// <param name="translation">The translation</param>
+    /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
+    /// <param name="fcn">A user implemented callback function</param>
+    /// <param name="context">The context</param>
+    public void CastCapsule(in Capsule capsule, Transform originTransform, Vec2 translation, QueryFilter filter, CastResultCallback fcn, nint context) =>
+        b2World_CastCapsule(this, capsule, originTransform, translation, filter, fcn, context);
+    
+    /*
+     * /// Cast a polygon through the world. Similar to a cast ray except that a polygon is cast instead of a point.
+       B2_API void b2World_CastPolygon( b2WorldId worldId, const b2Polygon* polygon, b2Transform originTransform, b2Vec2 translation,
+       								 b2QueryFilter filter, b2CastResultFcn* fcn, void* context );
+     */
+    
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_CastPolygon")]
+    private static extern void b2World_CastPolygon(World worldId, in Polygon polygon, Transform originTransform, Vec2 translation, QueryFilter filter, CastResultCallback fcn, nint context);
+    
+    /// <summary>
+    /// Cast a polygon through the world. Similar to a cast ray except that a polygon is cast instead of a point.
+    /// </summary>
+    /// <param name="polygon">The polygon</param>
+    /// <param name="originTransform">The origin transform</param>
+    /// <param name="translation">The translation</param>
+    /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
+    /// <param name="fcn">A user implemented callback function</param>
+    /// <param name="context">The context</param>
+    public void CastPolygon(in Polygon polygon, Transform originTransform, Vec2 translation, QueryFilter filter, CastResultCallback fcn, nint context) =>
+        b2World_CastPolygon(this, polygon, originTransform, translation, filter, fcn, context);
+    
+#else
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_OverlapAABB")]
     private static extern TreeStats b2World_OverlapAABB(World worldId, AABB aabb, QueryFilter filter, OverlapResultCallback fcn, nint context);
@@ -179,6 +379,7 @@ public struct World
     public TreeStats OverlapPolygon(in Polygon polygon, Transform transform, QueryFilter filter, OverlapResultCallback fcn, nint context) =>
         b2World_OverlapPolygon(this, polygon, transform, filter, fcn, context);
 
+    
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_CastRay")]
     private static extern TreeStats b2World_CastRay(World worldId, Vec2 origin, Vec2 translation, QueryFilter filter, CastResultCallback fcn, nint context);
 
@@ -257,6 +458,8 @@ public struct World
     public TreeStats CastPolygon(in Polygon polygon, Transform originTransform, Vec2 translation, QueryFilter filter, CastResultCallback fcn, nint context) =>
         b2World_CastPolygon(this, polygon, originTransform, translation, filter, fcn, context);
 
+#endif
+
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_EnableSleeping")]
     private static extern void b2World_EnableSleeping(World worldId, bool flag);
 
@@ -297,51 +500,31 @@ public struct World
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetRestitutionThreshold")]
     private static extern void b2World_SetRestitutionThreshold(World worldId, float value);
 
-    /// <summary>
-    /// Adjust the restitution threshold.
-    /// </summary>
-    /// <param name="value">The restitution threshold, usually in meters per second</param>
-    /// <remarks>It is recommended not to make this value very small because it will prevent bodies from sleeping</remarks>
-    public void SetRestitutionThreshold(float value) => b2World_SetRestitutionThreshold(this, value);
-
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetRestitutionThreshold")]
     private static extern float b2World_GetRestitutionThreshold(World worldId);
 
     /// <summary>
-    /// Get the restitution speed threshold.
+    /// The restitution speed threshold.
     /// </summary>
-    /// <returns>The restitution speed threshold, usually in meters per second</returns>
-    public float GetRestitutionThreshold() => b2World_GetRestitutionThreshold(this);
-
     public float RestitutionThreshold
     {
-        get => GetRestitutionThreshold();
-        set => SetRestitutionThreshold(value);
+        get => b2World_GetRestitutionThreshold(this);
+        set => b2World_SetRestitutionThreshold(this, value);
     }
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetHitEventThreshold")]
     private static extern void b2World_SetHitEventThreshold(World worldId, float value);
-
-    /// <summary>
-    /// Adjust the hit event threshold.
-    /// </summary>
-    /// <param name="value">The hit event threshold, usually in meters per second</param>
-    /// <remarks>This controls the collision speed needed to generate a ContactHitEvent</remarks>
-    public void SetHitEventThreshold(float value) => b2World_SetHitEventThreshold(this, value);
-
+    
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetHitEventThreshold")]
     private static extern float b2World_GetHitEventThreshold(World worldId);
 
     /// <summary>
-    /// Get the hit event threshold.
+    /// The hit event threshold in meters per second.
     /// </summary>
-    /// <returns>The hit event threshold, usually in meters per second</returns>
-    public float GetHitEventThreshold() => b2World_GetHitEventThreshold(this);
-
     public float HitEventThreshold
     {
-        get => GetHitEventThreshold();
-        set => SetHitEventThreshold(value);
+        get => b2World_GetHitEventThreshold(this);
+        set => b2World_SetHitEventThreshold(this, value);
     }
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetCustomFilterCallback")]
@@ -369,30 +552,36 @@ public struct World
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetGravity")]
     private static extern void b2World_SetGravity(World worldId, Vec2 gravity);
 
-    /// <summary>
-    /// Set the gravity vector for the entire world. Box2D has no concept of an up direction and this is left as a decision for the application.
-    /// </summary>
-    /// <param name="gravity">The gravity vector, usually in m/s²</param>
-    public void SetGravity(Vec2 gravity) => b2World_SetGravity(this, gravity);
-
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetGravity")]
     private static extern Vec2 b2World_GetGravity(World worldId);
 
     /// <summary>
-    /// Get the gravity vector
+    /// The gravity vector
     /// </summary>
-    /// <returns>The gravity vector</returns>
-    public Vec2 GetGravity() => b2World_GetGravity(this);
-
     public Vec2 Gravity
     {
-        get => GetGravity();
-        set => SetGravity(value);
+        get => b2World_GetGravity(this);
+        set => b2World_SetGravity(this, value);
     }
 
+#if BOX2D_300
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_Explode")]
+    private static extern void b2World_Explode(World worldId, Vec2 position, float radius, float impulse);
+    
+    /// <summary>
+    /// Apply a radial explosion
+    /// </summary>
+    /// <param name="position">The center of the explosion</param>
+    /// <param name="radius">The radius of the explosion</param>
+    /// <param name="impulse">The impulse of the explosion, typically in kg * m / s or N * s</param>
+    /// <remarks>Explosions are modeled as a force, not as a collision event</remarks>
+    public void Explode(Vec2 position, float radius, float impulse) => b2World_Explode(this, position, radius, impulse);
+    
+#else
+    
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_Explode")]
     private static extern void b2World_Explode(World worldId, in ExplosionDef explosionDef);
-
+    
     /// <summary>
     /// Apply a radial explosion
     /// </summary>
@@ -400,9 +589,11 @@ public struct World
     /// <remarks>Explosions are modeled as a force, not as a collision event</remarks>
     public void Explode(in ExplosionDef explosionDef) => b2World_Explode(this, explosionDef);
 
+#endif
+
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetContactTuning")]
     private static extern void b2World_SetContactTuning(World worldId, float hertz, float dampingRatio, float pushSpeed);
-
+    
     /// <summary>
     /// Adjust contact tuning parameters
     /// </summary>
@@ -412,6 +603,8 @@ public struct World
     /// <remarks><i>Note: Advanced feature</i></remarks>
     public void SetContactTuning(float hertz, float dampingRatio, float pushSpeed) =>
         b2World_SetContactTuning(this, hertz, dampingRatio, pushSpeed);
+
+#if !BOX2D_300
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetJointTuning")]
     private static extern void b2World_SetJointTuning(World worldId, float hertz, float dampingRatio);
@@ -427,51 +620,42 @@ public struct World
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetMaximumLinearSpeed")]
     private static extern void b2World_SetMaximumLinearSpeed(World worldId, float maximumLinearSpeed);
 
-    /// <summary>
-    /// Set the maximum linear speed.
-    /// </summary>
-    /// <param name="maximumLinearSpeed">The maximum linear speed, usually in m/s</param>
-    public void SetMaximumLinearSpeed(float maximumLinearSpeed) => b2World_SetMaximumLinearSpeed(this, maximumLinearSpeed);
-
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetMaximumLinearSpeed")]
     private static extern float b2World_GetMaximumLinearSpeed(World worldId);
 
-    /// <summary>
-    /// Get the maximum linear speed.
-    /// </summary>
-    /// <returns>The maximum linear speed, usually in m/s</returns>
-    public float GetMaximumLinearSpeed() => b2World_GetMaximumLinearSpeed(this);
-
+/// <summary>
+/// The maximum linear speed.
+/// </summary>
     public float MaximumLinearSpeed
     {
-        get => GetMaximumLinearSpeed();
-        set => SetMaximumLinearSpeed(value);
+        get => b2World_GetMaximumLinearSpeed(this);
+        set => b2World_SetMaximumLinearSpeed(this, value);
     }
+
+#endif
+
+#if BOX2D_300
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_EnableWarmStarting")]
     private static extern void b2World_EnableWarmStarting(World worldId, bool flag);
-
-    /// <summary>
-    /// Enable/disable constraint warm starting.
-    /// </summary>
-    /// <param name="flag">True to enable warm starting, false to disable warm starting</param>
-    /// <remarks>Advanced feature for testing. Disabling sleeping greatly reduces stability and provides no performance gain</remarks>
+    
     public void EnableWarmStarting(bool flag) => b2World_EnableWarmStarting(this, flag);
+    
+#else
+    
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_EnableWarmStarting")]
+    private static extern void b2World_EnableWarmStarting(World worldId, bool flag);
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_IsWarmStartingEnabled")]
     private static extern bool b2World_IsWarmStartingEnabled(World worldId);
 
-    /// <summary>
-    /// Is constraint warm starting enabled?
-    /// </summary>
-    /// <returns>True if constraint warm starting is enabled</returns>
-    /// <remarks>Advanced feature for testing. Disabling sleeping greatly reduces stability and provides no performance gain</remarks>
-    public bool IsWarmStartingEnabled() => b2World_IsWarmStartingEnabled(this);
-
+/// <summary>
+/// The warm starting state of the world.
+/// </summary>
     public bool WarmStartingEnabled
     {
-        get => IsWarmStartingEnabled();
-        set => EnableWarmStarting(value);
+        get => b2World_IsWarmStartingEnabled(this);
+        set => b2World_EnableWarmStarting(this, value);
     }
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetAwakeBodyCount")]
@@ -482,6 +666,8 @@ public struct World
     /// </summary>
     /// <returns>The number of awake bodies</returns>
     public int GetAwakeBodyCount() => b2World_GetAwakeBodyCount(this);
+
+#endif
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetProfile")]
     private static extern Profile b2World_GetProfile(World worldId);
@@ -501,6 +687,8 @@ public struct World
     /// <returns>The world counters and sizes</returns>
     public Counters GetCounters() => b2World_GetCounters(this);
 
+#if !BOX2D_300
+    
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetUserData")]
     private static extern void b2World_SetUserData(World worldId, nint userData);
 
@@ -535,6 +723,8 @@ public struct World
     /// <param name="callback">The restitution callback</param>
     /// <remarks>Passing NULL resets to default</remarks>
     public void SetRestitutionCallback(RestitutionCallback callback) => b2World_SetRestitutionCallback(this, callback);
+
+#endif
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_DumpMemoryStats")]
     private static extern void b2World_DumpMemoryStats(World worldId);
@@ -590,6 +780,8 @@ public struct World
     /// <returns>The mouse joint</returns>
     public MouseJoint CreateJoint(MouseJointDef def) => new(b2CreateMouseJoint(this, def._internal));
     
+#if !BOX2D_300
+    
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateNullJoint")]
     private static extern JointId b2CreateNullJoint(World worldId, in NullJointDefInternal def);
 
@@ -599,6 +791,8 @@ public struct World
     /// <param name="def">The null joint definition</param>
     /// <returns>The null joint</returns>
     public Joint CreateJoint(NullJointDef def) => new(b2CreateNullJoint(this, def._internal));
+
+#endif
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreatePrismaticJoint")]
     private static extern JointId b2CreatePrismaticJoint(World worldId, in PrismaticJointDefInternal def);
