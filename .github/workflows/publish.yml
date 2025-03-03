@@ -62,7 +62,7 @@ jobs:
           path: ${{ matrix.artifact_path }}
           if-no-files-found: error
               
-  continue-on-error: ${{ matrix.os == 'macos-latest' }}
+    continue-on-error: ${{ matrix.os == 'macos-latest' }}
           
   build-and-deploy-bindings:
     needs: build-box2d
