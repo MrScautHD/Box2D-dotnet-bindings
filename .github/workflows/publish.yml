@@ -27,7 +27,7 @@ jobs:
             cmake_build_dir: "box2d-src/build"
             post_build_cmd: |
               rm box2d-src/build/src/bin/libbox2d.so
-              mv box2d-src/build/src/bin/libbox2d.so.3.1.0 box2d-src/build/src/bin/libbox2d.so
+              mv box2d-src/build/src/bin/libbox2d.so.3.0.0 box2d-src/build/src/bin/libbox2d.so
                 
           - os: macos-latest
             artifact_name: box2d-macos
