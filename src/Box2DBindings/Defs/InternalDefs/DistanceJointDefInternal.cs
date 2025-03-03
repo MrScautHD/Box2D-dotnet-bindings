@@ -100,18 +100,17 @@ struct DistanceJointDefInternal
     [FieldOffset(72)]
     internal bool CollideConnected;
 
+   
     /// <summary>
     /// User data pointer
     /// </summary>
     [FieldOffset(76)]
     internal nint UserData;
-
-
     
     /// <summary>
     /// Used internally to detect a valid definition. DO NOT SET.
     /// </summary>
-    [FieldOffset(80)]
+    [FieldOffset(84)]
     private readonly int internalValue;
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultDistanceJointDef")]

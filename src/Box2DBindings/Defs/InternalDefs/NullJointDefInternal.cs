@@ -1,3 +1,5 @@
+#if !BOX2D_300
+
 using System.Runtime.InteropServices;
 
 namespace Box2D;
@@ -45,3 +47,4 @@ struct NullJointDefInternal
         this = Default;
     }
 }
+#endif

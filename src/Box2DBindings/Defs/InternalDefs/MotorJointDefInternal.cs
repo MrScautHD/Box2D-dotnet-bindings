@@ -65,7 +65,7 @@ struct MotorJointDefInternal
     /// </summary>
     [FieldOffset(52)]
     internal readonly int internalValue;
-    
+
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultMotorJointDef")]
     internal static extern MotorJointDefInternal GetDefault();
     

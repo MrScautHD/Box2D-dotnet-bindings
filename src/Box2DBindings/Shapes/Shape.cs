@@ -436,7 +436,10 @@ public struct Shape : IEquatable<Shape>
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetSensorOverlaps")]
     private static extern int b2Shape_GetSensorOverlaps(Shape shapeId, nint overlaps, int capacity);
+
+#if BOX2D_300
     
+#else
     /// <summary>
     /// Gets the overlapped shapes for this sensor shape, up to the provided capacity
     /// </summary>
@@ -458,6 +461,7 @@ public struct Shape : IEquatable<Shape>
             return overlaps;
         }
     }
+#endif
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetAABB")]
     private static extern AABB b2Shape_GetAABB(Shape shapeId);

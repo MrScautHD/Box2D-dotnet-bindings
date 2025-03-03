@@ -503,6 +503,7 @@ public struct World
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetRestitutionThreshold")]
     private static extern float b2World_GetRestitutionThreshold(World worldId);
 
+#if !BOX2D_300
     /// <summary>
     /// The restitution speed threshold.
     /// </summary>
@@ -512,12 +513,23 @@ public struct World
         set => b2World_SetRestitutionThreshold(this, value);
     }
 
+#else
+
+    /// <summary>
+    /// Adjust the restitution threshold. This controls the restitution velocity threshold needed to generate a b2ContactRestitutionEvent.
+    /// </summary>
+    public void SetRestitutionThreshold(float value) => b2World_SetRestitutionThreshold(this, value);
+    
+    
+#endif
+
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetHitEventThreshold")]
     private static extern void b2World_SetHitEventThreshold(World worldId, float value);
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetHitEventThreshold")]
     private static extern float b2World_GetHitEventThreshold(World worldId);
 
+#if !BOX2D_300
     /// <summary>
     /// The hit event threshold in meters per second.
     /// </summary>
@@ -526,6 +538,15 @@ public struct World
         get => b2World_GetHitEventThreshold(this);
         set => b2World_SetHitEventThreshold(this, value);
     }
+#else
+
+    /// <summary>
+    /// Adjust the hit event threshold. This controls the collision velocity needed to generate a b2ContactHitEvent.
+    /// Typically in meters per second.
+    /// </summary>
+    public void SetHitEventThreshold(float value) => b2World_SetHitEventThreshold(this, value);
+
+#endif
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetCustomFilterCallback")]
     private static extern void b2World_SetCustomFilterCallback(World worldId, CustomFilterCallback fcn, nint context);

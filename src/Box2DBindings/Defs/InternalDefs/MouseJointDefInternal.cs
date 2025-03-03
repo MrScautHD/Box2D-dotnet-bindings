@@ -60,8 +60,6 @@ struct MouseJointDefInternal
     [FieldOffset(40)]
     internal nint UserData;
 
-
-
     /// <summary>
     /// Used internally to detect a valid definition. DO NOT SET.
     /// </summary>

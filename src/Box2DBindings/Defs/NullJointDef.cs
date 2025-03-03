@@ -1,3 +1,4 @@
+#if !BOX2D_300
 using System.Runtime.InteropServices;
 
 namespace Box2D;
@@ -46,3 +47,5 @@ public class NullJointDef
         set => Box2D.SetObjectAtPointer(ref _internal.UserData, value);
     }
 }
+
+#endif
