@@ -172,7 +172,9 @@ public struct DebugDraw
 
     public DebugDraw()
     {
+#if !BOX2D_300
         this = DefaultDebugDraw();
+#endif
     }
 #if !BOX2D_300
     /// <summary>
