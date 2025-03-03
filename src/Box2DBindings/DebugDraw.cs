@@ -174,14 +174,55 @@ public struct DebugDraw
     {
         this = DefaultDebugDraw();
     }
-    
+#if !BOX2D_300
     /// <summary>
     /// The default debug draw settings.
     /// </summary>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultDebugDraw")]
     public static extern DebugDraw DefaultDebugDraw();
+#else
+    /// <summary>
+    /// The default debug draw settings.
+    /// </summary>
+    public static unsafe DebugDraw DefaultDebugDraw()
+    {
+        return new DebugDraw
+        {
+            DrawPolygon = (_, _, _, _) => { },
+            DrawSolidPolygon = (_, _, _, _, _, _) => { },
+            DrawCircle = (_, _, _, _) => { },
+            DrawSolidCircle = (_, _, _, _) => { },
+            DrawSolidCapsule = (_, _, _, _, _) => { },
+            DrawSegment = (_, _, _, _) => { },
+            DrawTransform = (_, _) => { },
+            DrawPoint = (_, _, _, _) => { },
+            DrawString = (_, _, _, _) => { },
+            DrawingBounds = new AABB(),
+            UseDrawingBounds = false,
+            DrawShapes = true,
+            DrawJoints = true,
+            DrawJointExtras = false,
+            DrawBounds = false,
+            DrawMass = false,
+            DrawBodyNames = false,
+            DrawContacts = false,
+            DrawGraphColors = false,
+            DrawContactNormals = false,
+            DrawContactImpulses = false,
+            DrawContactFeatures = false,
+            DrawFrictionImpulses = false,
+            DrawIslands = false,
+            context = 0
+        };
+        
+    }
+
+#endif
+
     
-    #region Delegates
+
+
+#region Delegates
     
     /// <summary>
     /// Draw a circle.
