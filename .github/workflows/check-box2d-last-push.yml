@@ -17,7 +17,7 @@ jobs:
                   echo "Last push on main branch: $last_push"
                   
                   # If we failed to retrieve last_push (or it's literally "null"), exit early
-                  if [ -z "$last_push" ] || [ "$last_push" = "null" ]; then
+                  if [ -z "$last_push" ] || [ "$last_push" = "null" ] || [ "$last_push" = "" ]; then
                     echo "No valid last push data received. Exiting."
                     echo "changed=false" >> $GITHUB_OUTPUT
                     exit 0
