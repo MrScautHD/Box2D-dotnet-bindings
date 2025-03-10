@@ -9,6 +9,6 @@ jobs:
   trigger:
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger another pipeline
+      - name: Trigger the publish pipeline
         run: |
             curl -X POST -H "Accept: application/vnd.github.everest-preview +json" -H "Authorization: token ${{ secrets.PAT }}" https://api.github.com/repos/HughPH/Box2D-dotnet-bindings/dispatches --data '{"event_type": "publish"}'
