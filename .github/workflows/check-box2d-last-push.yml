@@ -32,16 +32,17 @@ jobs:
                     exit 0
                   fi                  
                   
-                  echo "Previously recorded date/time: old_push"
+                  echo "Previously recorded date/time: $old_push"
                   
                   # 3. Compare
-                  if [ "$last_push" = "old_push" ]; then
+                  if [ "$last_push" = "$old_push" ]; then
                     echo "No changes since last recorded push."
                     echo "changed=false" >> $GITHUB_OUTPUT
                   else
                     echo "Remote has changed since last recorded push."
                     # Indicate to subsequent steps that a change was detected
                     echo "changed=true" >> $GITHUB_OUTPUT
+                    echo "lastpush=$last_push" >> $GITHUB_OUTPUT
                   fi
 
             - name: Checkout repository
@@ -52,9 +53,9 @@ jobs:
 
             - name: Update last_push file, commit & push
               if: steps.compare_push.outputs.changed == 'true'
-              run: |
+              run: |                  
                   # Save the new push time to file
-                  echo "{\"last_push\": \"$last_push\"}" > box2d_last_push.json
+                  echo "{\"last_push\": \"${{ steps.compare_push.outputs.lastpush }}\"}" > box2d_last_push.json
                   
                   # Commit if it changed
                   git config --global user.name 'github-actions'
