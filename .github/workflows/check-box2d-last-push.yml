@@ -20,6 +20,12 @@ jobs:
                   last_push=$(curl -s https://api.github.com/repos/erincatto/box2d/branches/main | jq -r '.commit.commit.committer.date')
                   echo "Last push on main branch: $last_push"
                   
+                  # If we failed to retrieve last_push (or it's literally "null"), exit early
+                  if [ -z "$last_push" ] || [ "$last_push" = "null" ]; then
+                    echo "No valid last push data received. Exiting."
+                    exit 0
+                  fi
+                  
                   # If we already have a record, compare. If it's the same, exit. If it doesn't parse, reset.
                   if [ -f box2d_last_push.json ]; then
                     old_push=$(jq -r '.last_push' box2d_last_push.json)
