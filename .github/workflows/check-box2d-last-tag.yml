@@ -1,0 +1,70 @@
+name: Check Box2D Last Tag
+
+on:
+    schedule:
+        - cron: '0 * * * *' # Runs every hour
+
+jobs:
+    check_last_tag:
+        runs-on: ubuntu-latest
+        
+        steps:
+            - name: Fetch latest tag from Box2D
+              id: compare_tag
+              run: |
+                  latest_tag=$(curl -s https://api.github.com/repos/erincatto/box2d/tags | jq -r '.[0].name')
+                  echo "Latest tag: $latest_tag"
+                  
+                  if [ -z "$latest_tag" ] || [ "$latest_tag" = "null" ]; then
+                    echo "No valid tag found. Exiting."
+                    echo "changed=false" >> $GITHUB_OUTPUT
+                    exit 0
+                  fi
+                  
+                  recorded_tag=$(curl -s https://raw.githubusercontent.com/HughPH/Box2D-dotnet-bindings/main/box2d_last_tag.json | jq -r '.last_tag')
+                  if [ $? -ne 0 ]; then
+                    echo "No previous tag data found. Assuming first run."
+                    echo "changed=true" >> $GITHUB_OUTPUT
+                    echo "latest_tag=$latest_tag" >> $GITHUB_OUTPUT
+                    exit 0
+                  fi
+                  
+                  echo "Previously recorded tag: $recorded_tag"
+                  
+                  if [ "$latest_tag" = "$recorded_tag" ]; then
+                    echo "No new tag found."
+                    echo "changed=false" >> $GITHUB_OUTPUT
+                  else
+                    echo "New tag detected!"
+                    echo "changed=true" >> $GITHUB_OUTPUT
+                    echo "latest_tag=$latest_tag" >> $GITHUB_OUTPUT
+                  fi
+
+            - name: Checkout repository
+              if: steps.compare_tag.outputs.changed == 'true'
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 1
+
+            - name: Update last_tag file, commit & push
+              if: steps.compare_tag.outputs.changed == 'true'
+              run: |
+                  echo "{\"last_tag\": \"${{ steps.compare_tag.outputs.latest_tag }}\"}" > box2d_last_tag.json
+                  
+                  git config --global user.name 'github-actions'
+                  git config --global user.email 'github-actions@github.com'
+                  git add box2d_last_tag.json
+                  
+                  if git diff --staged --quiet; then
+                    echo "No changes to commit."
+                    exit 0
+                  fi
+                  
+                  git commit -m "Detected new Box2D tag: ${{ steps.compare_tag.outputs.latest_tag }}"
+                  git push
+                  
+                  echo "New tag committed. Triggering publish..."
+                  curl -X POST -H "Accept: application/vnd.github.everest-preview+json" \
+                       -H "Authorization: token ${{ secrets.PAT }}" \
+                       https://api.github.com/repos/HughPH/Box2D-dotnet-bindings/dispatches \
+                       --data '{"event_type": "publish"}'

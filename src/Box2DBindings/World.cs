@@ -780,7 +780,7 @@ public struct World
     /// <param name="def">The distance joint definition</param>
     /// <returns>The distance joint</returns>
     public DistanceJoint CreateJoint(DistanceJointDef def) => new(b2CreateDistanceJoint(this, def._internal));
-    
+
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateMotorJoint")]
     private static extern JointId b2CreateMotorJoint(World worldId, in MotorJointDefInternal def);
 
@@ -831,7 +831,7 @@ public struct World
     /// <summary>
     /// Creates a revolute joint
     /// </summary>
-    /// <param name="def">The revolute joint definition</param>
+    /// <param name="def">The <see cref="RevoluteJointDef"/></param>
     /// <returns>The revolute joint</returns>
     public RevoluteJoint CreateJoint(RevoluteJointDef def) => new(b2CreateRevoluteJoint(this, def._internal));
     
@@ -854,4 +854,6 @@ public struct World
     /// Gets the bodies in this world
     /// </summary>
     public IEnumerable<Body> Bodies => _bodies[index1].Values;
+    
+    
 }

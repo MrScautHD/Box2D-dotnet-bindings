@@ -1,6 +1,12 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
+
+using System.Runtime.CompilerServices;
+
+[assembly:InternalsVisibleTo("UnitTests")]
+
+
 namespace Box2D;
 
 public static class Box2D
@@ -16,23 +22,18 @@ public static class Box2D
     public static extern Box2DVersion GetVersion();
 
 #if BOX2D_300
-    //B2_API b2Timer b2CreateTimer( void );
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateTimer")]
     public static extern Timer CreateTimer();
     
-    //B2_API int64_t b2GetTicks( b2Timer* timer );
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2GetTicks")]
     public static extern long GetTicks(Timer timer);
     
-    //B2_API float b2GetMilliseconds( const b2Timer* timer );
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2GetMilliseconds")]
     public static extern float GetMilliseconds(Timer timer);
     
-    //B2_API float b2GetMillisecondsAndReset( b2Timer* timer );
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2GetMillisecondsAndReset")]
     public static extern float GetMillisecondsAndReset(ref Timer timer);
     
-    //B2_API void b2SleepMilliseconds( int milliseconds );
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2SleepMilliseconds")]
     public static extern void SleepMilliseconds(int milliseconds);
 
@@ -130,6 +131,15 @@ public static class Box2D
         set => SetLengthUnitsPerMeter(value);
     }
 
+    /// <summary>
+    /// Set assert function
+    /// </summary>
+    /// <param name="assertFcn">Pointer to the assert function</param>
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2SetAssertFcn")]
+    public static extern void SetAssertFunction(AssertFunction assertFcn);
+    
+    public delegate int AssertFunction(string condition, string fileName, int lineNumber);
+    
     internal static object? GetObjectAtPointer(nint ptr)
     {
         if (ptr == 0) return null;

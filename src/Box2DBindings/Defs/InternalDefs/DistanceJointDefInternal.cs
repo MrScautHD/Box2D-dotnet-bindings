@@ -111,7 +111,7 @@ struct DistanceJointDefInternal
     /// Used internally to detect a valid definition. DO NOT SET.
     /// </summary>
     [FieldOffset(84)]
-    private readonly int internalValue;
+    internal readonly int internalValue;
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultDistanceJointDef")]
     private static extern DistanceJointDefInternal GetDefault();
