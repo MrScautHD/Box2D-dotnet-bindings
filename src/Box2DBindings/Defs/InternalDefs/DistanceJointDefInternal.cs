@@ -106,7 +106,7 @@ struct DistanceJointDefInternal
     /// </summary>
     [FieldOffset(76)]
     internal nint UserData;
-    
+
     /// <summary>
     /// Used internally to detect a valid definition. DO NOT SET.
     /// </summary>
@@ -120,7 +120,7 @@ struct DistanceJointDefInternal
     /// The default distance joint definition.
     /// </summary>
     internal static DistanceJointDefInternal Default => GetDefault();
-    
+
     /// <summary>
     /// Creates a distance joint definition with the default values.
     /// </summary>
