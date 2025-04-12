@@ -73,67 +73,6 @@ struct BodyDefInternal
     [FieldOffset(44)]
     public float SleepThreshold;
 
-#if BOX2D_300
-    
-    /// <summary>
-    /// Use this to store application specific body data.
-    /// </summary>
-    [FieldOffset(48)]
-    public nint UserData;
-
-    /// <summary>
-    /// Set this flag to false if this body should never fall asleep.
-    /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(56)]
-    public bool EnableSleep;
-
-    /// <summary>
-    /// Is this body initially awake or sleeping?
-    /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(57)]
-    public bool IsAwake;
-
-    /// <summary>
-    /// Should this body be prevented from rotating? Useful for characters.
-    /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(58)]
-    public bool FixedRotation;
-
-    /// <summary>
-    /// Treat this body as high speed object that performs continuous collision detection
-    /// against dynamic and kinematic bodies, but not other bullet bodies.
-    /// <b>Warning: Bullets should be used sparingly. They are not a solution for general dynamic-versus-dynamic</b>
-    /// continuous collision. They may interfere with joint constraints.
-    /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(59)]
-    public bool IsBullet;
-
-    /// <summary>
-    /// Used to disable a body. A disabled body does not move or collide.
-    /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(60)]
-    public bool IsEnabled;
-
-    /// <summary>
-    /// This allows this body to bypass rotational speed limits. Should only be used
-    /// for circular objects, like wheels.
-    /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(61)]
-    public bool AllowFastRotation;
-
-    /// <summary>
-    /// Used internally to detect a valid definition. DO NOT SET.
-    /// </summary>
-    [FieldOffset(64)]
-    private readonly int internalValue;
-    
-#else
     
     [FieldOffset(48)]
     internal nint Name;
@@ -195,8 +134,6 @@ struct BodyDefInternal
     /// </summary>
     [FieldOffset(72)]
     private readonly int internalValue;
-#endif
-    
     
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultBodyDef")]

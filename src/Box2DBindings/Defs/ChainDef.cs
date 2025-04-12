@@ -36,10 +36,8 @@ public class ChainDef
     {
         if (_internal.Points != 0)
             Marshal.FreeHGlobal(_internal.Points);
-#if !BOX2D_300
         if (_internal.Materials != 0)
             Marshal.FreeHGlobal(_internal.Materials);
-#endif        
         if (_internal.UserData != 0)
             Marshal.FreeHGlobal(_internal.UserData);
     }
@@ -75,8 +73,6 @@ public class ChainDef
         }
     }
 
-#if !BOX2D_300            
-
     /// <summary>
     /// Surface materials for each segment. These are cloned.
     /// </summary>
@@ -98,7 +94,6 @@ public class ChainDef
             }
         }
     }
-#endif
     
     /// <summary>
     /// Contact filtering data.
@@ -118,7 +113,6 @@ public class ChainDef
         set => _internal.IsLoop = value;
     }
 
-#if !BOX2D_300
     /// <summary>
     /// Enable sensors to detect this chain. False by default.
     /// </summary>
@@ -127,26 +121,5 @@ public class ChainDef
         get => _internal.EnableSensorEvents;
         set => _internal.EnableSensorEvents = value;
     }
-#endif
-    
-#if BOX2D_300
-    /// <summary>
-    /// The friction coefficient, usually in the range [0,1].
-    /// </summary>
-    public float Friction
-    {
-        get => _internal.Friction;
-        set => _internal.Friction = value;
-    }
-    
-    /// <summary>
-    /// The restitution (elasticity) usually in the range [0,1].
-    /// </summary>
-    public float Restitution
-    {
-        get => _internal.Restitution;
-        set => _internal.Restitution = value;
-    }
-#endif    
     
 }

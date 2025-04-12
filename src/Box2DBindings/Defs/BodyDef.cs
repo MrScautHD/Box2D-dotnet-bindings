@@ -19,13 +19,11 @@ public class BodyDef
     
     ~BodyDef()
     {
-#if !BOX2D_300
         if (_internal.Name != 0)
         {
             Marshal.FreeHGlobal(_internal.Name);
             _internal.Name = 0;
         }
-#endif
     }
     
     /// <summary>
@@ -118,8 +116,6 @@ public class BodyDef
         set => _internal.SleepThreshold = value;
     }
     
-#if !BOX2D_300
-
     /// <summary>
     /// Optional body name for debugging. Up to 31 characters (excluding null termination)
     /// </summary>
@@ -141,7 +137,6 @@ public class BodyDef
             }
         }
     }
-#endif
     
     /// <summary>
     /// Use this to store application specific body data.

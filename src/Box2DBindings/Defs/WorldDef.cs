@@ -18,9 +18,7 @@ public class WorldDef
     
     ~WorldDef()
     {
-#if !BOX2D_300
         Box2D.FreeHandle(_internal.UserData);
-#endif
         Box2D.FreeHandle(_internal.UserTaskContext);
     }
     
@@ -43,18 +41,6 @@ public class WorldDef
         set => _internal.RestitutionThreshold = value;
     }
 
-#if BOX2D_300
-    /// <summary>
-    /// This parameter controls how fast overlap is resolved and has units of meters per second
-    /// </summary>
-    public float ContactPushoutVelocity
-    {
-        get => _internal.ContactPushoutVelocity;
-        set => _internal.ContactPushoutVelocity = value;
-    }
-#endif
-    
-    
     /// <summary>
     /// Threshold speed for hit events. Usually meters per second.
     /// </summary>
@@ -83,18 +69,16 @@ public class WorldDef
         set => _internal.ContactDampingRatio = value;
     }
 
-#if !BOX2D_300
     /// <summary>
     /// This parameter controls how fast overlap is resolved and usually has units of meters per second. This only
     /// puts a cap on the resolution speed. The resolution speed is increased by increasing the hertz and/or
     /// decreasing the damping ratio.
     /// </summary>
-    public float ContactPushMaxSpeed
+    public float MaxContactPushSpeed
     {
         get => _internal.MaxContactPushSpeed;
         set => _internal.MaxContactPushSpeed = value;
     }
-#endif
     
     /// <summary>
     /// Joint stiffness. Cycles per second.
@@ -123,7 +107,6 @@ public class WorldDef
         set => _internal.MaximumLinearSpeed = value;
     }
 
-#if !BOX2D_300
     /// <summary>
     /// Optional mixing callback for friction. The default uses sqrt(frictionA * frictionB).
     /// </summary>
@@ -141,7 +124,7 @@ public class WorldDef
         get => _internal.RestitutionCallback;
         set => _internal.RestitutionCallback = value;
     }
-#endif
+
     /// <summary>
     /// Can bodies go to sleep to improve performance
     /// </summary>
@@ -193,7 +176,6 @@ public class WorldDef
         set => _internal.FinishTask = value;
     }
     
-#if !BOX2D_300
     /// <summary>
     /// User data pointer
     /// </summary>
@@ -202,7 +184,6 @@ public class WorldDef
         get => Box2D.GetObjectAtPointer(_internal.UserData);
         set => Box2D.SetObjectAtPointer(ref _internal.UserData, value);
     }
-#endif
     
     /// <summary>
     /// User context that is provided to enqueueTask and finishTask

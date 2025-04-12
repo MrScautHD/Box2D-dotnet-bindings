@@ -52,11 +52,7 @@ public class DistanceJoint : Joint
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_SetSpringHertz")]
     private static extern void b2DistanceJoint_SetSpringHertz(JointId jointId, float hertz);
     
-#if BOX2D_300
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_GetHertz")]
-#else    
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_GetSpringHertz")]
-#endif
     private static extern float b2DistanceJoint_GetSpringHertz(JointId jointId);
     
     /// <summary>
@@ -71,11 +67,7 @@ public class DistanceJoint : Joint
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_SetSpringDampingRatio")]
     private static extern void b2DistanceJoint_SetSpringDampingRatio(JointId jointId, float dampingRatio);
     
-#if BOX2D_300
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_GetDampingRatio")]
-#else    
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_GetSpringDampingRatio")]
-#endif
     private static extern float b2DistanceJoint_GetSpringDampingRatio(JointId jointId);
     
     /// <summary>

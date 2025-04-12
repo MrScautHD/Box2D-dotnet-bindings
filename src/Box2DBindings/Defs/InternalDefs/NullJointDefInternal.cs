@@ -1,5 +1,3 @@
-#if !BOX2D_300
-
 using System.Runtime.InteropServices;
 
 namespace Box2D;
@@ -8,7 +6,7 @@ namespace Box2D;
 /// A null joint is used to disable collision between two specific bodies.
 /// </summary>
 [StructLayout(LayoutKind.Explicit)]
-struct NullJointDefInternal
+struct FilterJointDefInternal
 {
     /// <summary>
     /// The first attached body.
@@ -35,16 +33,15 @@ struct NullJointDefInternal
     private readonly int internalValue;
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultNullJointDef")]
-    private static extern NullJointDefInternal GetDefault();
+    private static extern FilterJointDefInternal GetDefault();
     
     /// <summary>
     /// The default null joint definition.
     /// </summary>
-    public static NullJointDefInternal Default => GetDefault();
+    public static FilterJointDefInternal Default => GetDefault();
     
-    public NullJointDefInternal()
+    public FilterJointDefInternal()
     {
         this = Default;
     }
 }
-#endif

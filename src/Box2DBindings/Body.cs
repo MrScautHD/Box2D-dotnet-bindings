@@ -65,8 +65,6 @@ public struct Body
         set => b2Body_SetType(this, value);
     }
     
-#if !BOX2D_300
-    
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetName")]
     private static extern void b2Body_SetName(Body bodyId, string name);
     
@@ -81,7 +79,6 @@ public struct Body
         get => b2Body_GetName(this);
         set => b2Body_SetName(this, value);
     }
-#endif
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetUserData")]
     private static extern void b2Body_SetUserData(Body bodyId, nint userData);
@@ -205,7 +202,17 @@ public struct Body
         set => b2Body_SetAngularVelocity(this, value);
     }
 
-#if !BOX2D_300
+    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetKinematicTarget")]
+    private static extern void b2Body_SetKinematicTarget(Body bodyId, Transform target, float timeStep);
+    
+    /// <summary>
+    /// Set the velocity to reach the given transform after a given time step.
+    /// The result will be close but maybe not exact. This is meant for kinematic bodies.
+    /// This will automatically wake the body if asleep.
+    /// </summary>
+    /// <param name="target">The target transform</param>
+    /// <param name="timeStep">The time step</param>
+    public void SetKinematicTarget(Transform target, float timeStep) => b2Body_SetKinematicTarget(this, target, timeStep);
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetLocalPointVelocity")]
     private static extern Vec2 b2Body_GetLocalPointVelocity(Body bodyId, Vec2 localPoint);
@@ -228,8 +235,6 @@ public struct Body
     /// <returns>The linear velocity of the world point attached to the body, usually in meters per second</returns>
     /// <remarks>Usually in meters per second</remarks>
     public Vec2 GetWorldPointVelocity(Vec2 worldPoint) => b2Body_GetWorldPointVelocity(this, worldPoint);
-
-#endif
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ApplyForce")]
     private static extern void b2Body_ApplyForce(Body bodyId, Vec2 force, Vec2 point, bool wake);
@@ -311,22 +316,6 @@ public struct Body
     /// </summary>
     public float Mass => b2Body_GetMass(this);
 
-#if BOX2D_300
-    
-    /*
-     * /// Get the inertia tensor of the body, typically in kg*m^2
-       B2_API float b2Body_GetInertiaTensor( b2BodyId bodyId );
-     */
-    
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetInertiaTensor")]
-    private static extern float b2Body_GetInertiaTensor(Body bodyId);
-    
-    /// <summary>
-    /// The inertia tensor of the body, typically in kg*m².
-    /// </summary>
-    public float InertiaTensor => b2Body_GetInertiaTensor(this);
-
-#else
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetRotationalInertia")]
     private static extern float b2Body_GetRotationalInertia(Body bodyId);
@@ -335,8 +324,6 @@ public struct Body
     /// The rotational inertia of the body, usually in kg*m².
     /// </summary>
     public float RotationalInertia => b2Body_GetRotationalInertia(this);
-
-#endif
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetLocalCenterOfMass")]
     private static extern Vec2 b2Body_GetLocalCenterOfMass(Body bodyId);
@@ -371,35 +358,6 @@ public struct Body
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ApplyMassFromShapes")]
     private static extern void b2Body_ApplyMassFromShapes(Body bodyId);
-    
-#if BOX2D_300
-    
-    /*
-     * /// Set the automatic mass setting. Normally this is set in b2BodyDef before creation.
-       ///	@see b2BodyDef::automaticMass
-       B2_API void b2Body_SetAutomaticMass( b2BodyId bodyId, bool automaticMass );
-       */
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetAutomaticMass")]
-    private static extern void b2Body_SetAutomaticMass(Body bodyId, bool automaticMass);
-    
-    /*
-       /// Get the automatic mass setting
-       B2_API bool b2Body_GetAutomaticMass( b2BodyId bodyId );
-     */
-    
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetAutomaticMass")]
-    private static extern bool b2Body_GetAutomaticMass(Body bodyId);
-    
-    /// <summary>
-    /// The automatic mass setting.
-    /// </summary>
-    public bool AutomaticMass
-    {
-        get => b2Body_GetAutomaticMass(this);
-        set => b2Body_SetAutomaticMass(this, value);
-    }
-
-#endif
     
     /// <summary>
     /// This updates the mass properties to the sum of the mass properties of the shapes
@@ -563,8 +521,6 @@ public struct Body
         set => b2Body_SetBullet(this, value);
     }
     
-#if !BOX2D_300
-    
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_EnableContactEvents")]
     private static extern void b2Body_EnableContactEvents(Body bodyId, bool flag);
 
@@ -575,8 +531,6 @@ public struct Body
     /// <remarks><b>Warning: Changing this at runtime may cause mismatched begin/end touch events.</b></remarks>
     public void EnableContactEvents(bool flag) => b2Body_EnableContactEvents(this, flag);
 
-#endif
-
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_EnableHitEvents")]
     private static extern void b2Body_EnableHitEvents(Body bodyId, bool flag);
     
@@ -585,8 +539,6 @@ public struct Body
     /// </summary>
     /// <param name="flag">Option to enable or disable hit events on all shapes</param>
     public void EnableHitEvents(bool flag) => b2Body_EnableHitEvents(this, flag);
-
-#if !BOX2D_300
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetWorld")]
     private static extern World b2Body_GetWorld(Body bodyId);
@@ -595,8 +547,6 @@ public struct Body
     /// The world that owns this body.
     /// </summary>
     public World World => b2Body_GetWorld(this);
-    
-#endif
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetShapeCount")]
     private static extern int b2Body_GetShapeCount(Body bodyId);
@@ -649,6 +599,9 @@ public struct Body
     /// <summary>
     /// The touching contact data for this body.
     /// </summary>
+    /// <remarks>
+    /// <i>Note: Box2D uses speculative collision so some contact points may be separated.</i>
+    /// </remarks>
     public ContactData[] Contacts
     {
         get

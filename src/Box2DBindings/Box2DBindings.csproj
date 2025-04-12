@@ -36,11 +36,11 @@
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
       <DebugType>none</DebugType>
-      <DefineConstants>TRACE;BOX2D_300</DefineConstants>
+      <DefineConstants>TRACE;BOX2D_310</DefineConstants>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-      <DefineConstants>TRACE;BOX2D_300</DefineConstants>
+      <DefineConstants>TRACE;BOX2D_310</DefineConstants>
     </PropertyGroup>
     
     <PropertyGroup>

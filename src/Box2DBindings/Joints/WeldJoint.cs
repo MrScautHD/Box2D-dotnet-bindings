@@ -13,38 +13,35 @@ public class WeldJoint : Joint
 {
     internal WeldJoint(JointId id) : base(id)
     { }
-    
-#if !BOX2D_300
-    
+
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WeldJoint_GetReferenceAngle")]
     private static extern float b2WeldJoint_GetReferenceAngle(JointId jointId);
-    
+
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WeldJoint_SetReferenceAngle")]
     private static extern void b2WeldJoint_SetReferenceAngle(JointId jointId, float angleInRadians);
-    
+
     public float ReferenceAngle
     {
         get => b2WeldJoint_GetReferenceAngle(_id);
-        set {
-float angleInRadians = value;
-        while(angleInRadians < -MathF.PI)
-            angleInRadians += MathF.PI * 2;
-        
-        while(angleInRadians > MathF.PI)
-            angleInRadians -= MathF.PI * 2;
-        
-        b2WeldJoint_SetReferenceAngle(_id, angleInRadians);
-}
-    }
+        set
+        {
+            float angleInRadians = value;
+            while (angleInRadians < -MathF.PI)
+                angleInRadians += MathF.PI * 2;
 
-#endif
+            while (angleInRadians > MathF.PI)
+                angleInRadians -= MathF.PI * 2;
+
+            b2WeldJoint_SetReferenceAngle(_id, angleInRadians);
+        }
+    }
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WeldJoint_SetLinearHertz")]
     private static extern void b2WeldJoint_SetLinearHertz(JointId jointId, float hertz);
-    
+
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WeldJoint_GetLinearHertz")]
     private static extern float b2WeldJoint_GetLinearHertz(JointId jointId);
-    
+
     /// <summary>
     /// The weld joint linear stiffness in Hertz.
     /// </summary>
@@ -53,28 +50,28 @@ float angleInRadians = value;
         get => b2WeldJoint_GetLinearHertz(_id);
         set => b2WeldJoint_SetLinearHertz(_id, value);
     }
-    
+
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WeldJoint_SetLinearDampingRatio")]
     private static extern void b2WeldJoint_SetLinearDampingRatio(JointId jointId, float dampingRatio);
-    
+
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WeldJoint_GetLinearDampingRatio")]
     private static extern float b2WeldJoint_GetLinearDampingRatio(JointId jointId);
-    
+
     /// <summary>
     /// The weld joint linear damping ratio.
     /// </summary>
     public float LinearDampingRatio
     {
         get => b2WeldJoint_GetLinearDampingRatio(_id);
-        set =>  b2WeldJoint_SetLinearDampingRatio(_id, value);
+        set => b2WeldJoint_SetLinearDampingRatio(_id, value);
     }
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WeldJoint_SetAngularHertz")]
     private static extern void b2WeldJoint_SetAngularHertz(JointId jointId, float hertz);
-    
+
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WeldJoint_GetAngularHertz")]
     private static extern float b2WeldJoint_GetAngularHertz(JointId jointId);
-    
+
     /// <summary>
     /// The weld joint angular stiffness in Hertz.
     /// </summary>
@@ -83,13 +80,13 @@ float angleInRadians = value;
         get => b2WeldJoint_GetAngularHertz(_id);
         set => b2WeldJoint_SetAngularHertz(_id, value);
     }
-    
+
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WeldJoint_SetAngularDampingRatio")]
     private static extern void b2WeldJoint_SetAngularDampingRatio(JointId jointId, float dampingRatio);
-    
+
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WeldJoint_GetAngularDampingRatio")]
     private static extern float b2WeldJoint_GetAngularDampingRatio(JointId jointId);
-    
+
     /// <summary>
     /// The weld joint angular damping ratio.
     /// </summary>

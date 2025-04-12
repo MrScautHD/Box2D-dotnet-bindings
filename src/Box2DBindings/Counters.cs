@@ -8,9 +8,6 @@ namespace Box2D;
 [StructLayout(LayoutKind.Sequential)]
 public unsafe struct Counters
 {
-#if BOX2D_300
-    public int StaticBodyCount;
-#endif
     public int BodyCount;
     public int ShapeCount;
     public int ContactCount;

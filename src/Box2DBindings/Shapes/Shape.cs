@@ -17,25 +17,6 @@ public struct Shape : IEquatable<Shape>
     public override bool Equals(object? obj) => obj is Shape other && Equals(other);
     public override int GetHashCode() => HashCode.Combine(index1, world0, generation);
     
-    
-#if BOX2D_300    
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DestroyShape")]
-    private static extern void b2DestroyShape(Shape shapeId);
-    
-    /// <summary>
-    /// Destroys this shape
-    /// </summary>
-    /// <param name="updateBodyMass">Option to defer the body mass update</param>
-    /// <remarks>You may defer the body mass update which can improve performance if several shapes on a body are destroyed at once</remarks>
-    public void Destroy()
-    {
-        // dealloc user data
-        nint userDataPtr = b2Shape_GetUserData(this);
-        Box2D.FreeHandle(userDataPtr);
-        
-        b2DestroyShape(this);
-    }
-#else
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DestroyShape")]
     private static extern void b2DestroyShape(Shape shapeId, bool updateBodyMass);
 
@@ -52,8 +33,6 @@ public struct Shape : IEquatable<Shape>
         
         b2DestroyShape(this, updateBodyMass);
     }
-    
-#endif
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_IsValid")]
     private static extern bool b2Shape_IsValid(Shape shapeId);
@@ -87,14 +66,10 @@ public struct Shape : IEquatable<Shape>
 
     public Body Body => GetBody();
     
-#if !BOX2D_300
-    
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetWorld")]
     private static extern World b2Shape_GetWorld(Shape shapeId);
     
     public World World => b2Shape_GetWorld(this);
-
-#endif
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_IsSensor")]
     private static extern bool b2Shape_IsSensor(Shape shapeId);
@@ -103,6 +78,9 @@ public struct Shape : IEquatable<Shape>
     /// Checks if this shape is a sensor
     /// </summary>
     /// <returns>true if this shape is a sensor</returns>
+    /// <remarks>It is not possible to change a shape
+    /// from sensor to solid dynamically because this breaks the contract for
+    /// sensor events.</remarks>
     public bool IsSensor() => b2Shape_IsSensor(this);
 
     public bool Sensor => IsSensor();
@@ -137,24 +115,7 @@ public struct Shape : IEquatable<Shape>
         set => Box2D.SetObjectAtPointer(b2Shape_GetUserData, b2Shape_SetUserData, this, value);
     }
     
-#if BOX2D_300
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_SetDensity")]
-    private static extern void b2Shape_SetDensity(Shape shapeId, float density);
-    
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetDensity")]
-    private static extern float b2Shape_GetDensity(Shape shapeId);
-    
-    /// <summary>
-    /// The mass density of this shape
-    /// </summary>
-    public float Density
-    {
-        get => b2Shape_GetDensity(this);
-        set => b2Shape_SetDensity(this, value);
-    }
-#else
-    
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_SetDensity")]
     private static extern void b2Shape_SetDensity(Shape shapeId, float density, bool updateBodyMass);
     
@@ -179,7 +140,6 @@ public struct Shape : IEquatable<Shape>
         set => b2Shape_SetDensity(this, value, true);
     }
 
-#endif
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_SetFriction")]
     private static extern void b2Shape_SetFriction(Shape shapeId, float friction);
     
@@ -207,24 +167,20 @@ public struct Shape : IEquatable<Shape>
         set => b2Shape_SetRestitution(this, value);
     }
     
-#if !BOX2D_300
-    
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_SetMaterial")]
     private static extern void b2Shape_SetMaterial(Shape shapeId, int material);
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetMaterial")]
     private static extern int b2Shape_GetMaterial(Shape shapeId);
     
-/// <summary>
-/// The material for this shape
-/// </summary>
+    /// <summary>
+    /// The material for this shape
+    /// </summary>
     public int Material
     {
         get =>  b2Shape_GetMaterial(this);
         set => b2Shape_SetMaterial(this, value);
     }
-
-#endif
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetFilter")]
     private static extern Filter b2Shape_GetFilter(Shape shapeId);
@@ -236,7 +192,9 @@ public struct Shape : IEquatable<Shape>
     /// <summary>
     /// The filter for this shape
     /// </summary>
-    /// <remarks>Setting this is almost as expensive as recreating the shape. This may cause contacts to be immediately destroyed. However contacts are not created until the next world step. Sensor overlap state is also not updated until the next world step</remarks>
+    /// <remarks>This may cause
+    /// contacts to be immediately destroyed. However contacts are not created until the next world step.
+    /// Sensor overlap state is also not updated until the next world step.</remarks>
     public Filter Filter
     {
         get => b2Shape_GetFilter(this);
@@ -428,8 +386,6 @@ public struct Shape : IEquatable<Shape>
         }
     }
     
-    
-    
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetSensorCapacity")]
     private static extern int b2Shape_GetSensorCapacity(Shape shapeId);
     
@@ -437,9 +393,6 @@ public struct Shape : IEquatable<Shape>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetSensorOverlaps")]
     private static extern int b2Shape_GetSensorOverlaps(Shape shapeId, nint overlaps, int capacity);
 
-#if BOX2D_300
-    
-#else
     /// <summary>
     /// Gets the overlapped shapes for this sensor shape, up to the provided capacity
     /// </summary>
@@ -461,7 +414,6 @@ public struct Shape : IEquatable<Shape>
             return overlaps;
         }
     }
-#endif
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetAABB")]
     private static extern AABB b2Shape_GetAABB(Shape shapeId);
@@ -475,14 +427,13 @@ public struct Shape : IEquatable<Shape>
 
     public AABB AABB => GetAABB();
 
-#if !BOX2D_300
-    
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetMassData")]
     private static extern MassData b2Shape_GetMassData(Shape shapeId);
     
+    /// <summary>
+    /// Gets the mass data for this shape
+    /// </summary>
     public MassData MassData => b2Shape_GetMassData(this);
-
-#endif
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetClosestPoint")]
     private static extern Vec2 b2Shape_GetClosestPoint(Shape shapeId, Vec2 target);

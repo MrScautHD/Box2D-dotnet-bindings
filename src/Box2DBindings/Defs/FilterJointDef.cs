@@ -1,21 +1,20 @@
-#if !BOX2D_300
 using System.Runtime.InteropServices;
 
 namespace Box2D;
 
 /// <summary>
-/// A null joint is used to disable collision between two specific bodies.
+/// The filter joint is used to disable collision between two bodies. As a side effect of being a joint, it also keeps the two bodies in the same simulation island.
 /// </summary>
-public class NullJointDef
+public class FilterJointDef
 {
-    internal NullJointDefInternal _internal;
+    internal FilterJointDefInternal _internal;
 
-    public NullJointDef()
+    public FilterJointDef()
     {
-        _internal = NullJointDefInternal.Default;
+        _internal = FilterJointDefInternal.Default;
     }
 
-    ~NullJointDef()
+    ~FilterJointDef()
     {
         Box2D.FreeHandle(_internal.UserData);
     }
@@ -47,5 +46,3 @@ public class NullJointDef
         set => Box2D.SetObjectAtPointer(ref _internal.UserData, value);
     }
 }
-
-#endif

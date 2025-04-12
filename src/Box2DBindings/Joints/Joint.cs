@@ -72,8 +72,6 @@ public class Joint
 
     public Body BodyB => GetBodyB();
 
-#if !BOX2D_300
-    
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetWorld")]
     private static extern World b2Joint_GetWorld(JointId jointId);
     
@@ -82,7 +80,6 @@ public class Joint
     /// </summary>
     public World World => b2Joint_GetWorld(_id);
     
-#endif
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetLocalAnchorA")]
     private static extern Vec2 b2Joint_GetLocalAnchorA(JointId jointId);
     

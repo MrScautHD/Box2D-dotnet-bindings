@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-
 using System.Runtime.CompilerServices;
 
 [assembly:InternalsVisibleTo("UnitTests")]
@@ -20,24 +19,7 @@ public static class Box2D
     /// </summary>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2GetVersion")]
     public static extern Box2DVersion GetVersion();
-
-#if BOX2D_300
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateTimer")]
-    public static extern Timer CreateTimer();
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2GetTicks")]
-    public static extern long GetTicks(Timer timer);
-    
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2GetMilliseconds")]
-    public static extern float GetMilliseconds(Timer timer);
-    
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2GetMillisecondsAndReset")]
-    public static extern float GetMillisecondsAndReset(ref Timer timer);
-    
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2SleepMilliseconds")]
-    public static extern void SleepMilliseconds(int milliseconds);
-
-#else
     /// <summary>
     /// Get the absolute number of system ticks. The value is platform specific.
     /// </summary>
@@ -55,8 +37,6 @@ public static class Box2D
     /// </summary>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2GetMillisecondsAndReset")]
     public static extern float GetMillisecondsAndReset(ref ulong ticks);
-    
-#endif    
     /// <summary>
     /// Yield to be used in a busy loop.
     /// </summary>

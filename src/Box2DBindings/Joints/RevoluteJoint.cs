@@ -22,8 +22,6 @@ public class RevoluteJoint : Joint
     /// <param name="enableSpring">True to enable the spring, false to disable the spring</param>
     public void EnableSpring(bool enableSpring) => b2RevoluteJoint_EnableSpring(_id, enableSpring);
 
-#if !BOX2D_300
-    
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2RevoluteJoint_IsSpringEnabled")]
     private static extern bool b2RevoluteJoint_IsSpringEnabled(JointId jointId);
     
@@ -32,7 +30,6 @@ public class RevoluteJoint : Joint
         get => b2RevoluteJoint_IsSpringEnabled(_id);
         set => EnableSpring(value);
     }
-#endif
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2RevoluteJoint_SetSpringHertz")]
     private static extern void b2RevoluteJoint_SetSpringHertz(JointId jointId, float hertz);

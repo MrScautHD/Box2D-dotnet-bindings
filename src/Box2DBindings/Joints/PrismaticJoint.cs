@@ -152,8 +152,6 @@ public class PrismaticJoint : Joint
     /// </summary>
     public float MotorForce => b2PrismaticJoint_GetMotorForce(_id);
 
-#if !BOX2D_300
-
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_GetTranslation")]
     private static extern float b2PrismaticJoint_GetTranslation(JointId jointId);
 
@@ -169,6 +167,4 @@ public class PrismaticJoint : Joint
     /// The current joint translation speed
     /// </summary>
     public float Speed => b2PrismaticJoint_GetSpeed(_id);
-
-#endif
 }
