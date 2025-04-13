@@ -1,4 +1,4 @@
-using System.Runtime.InteropServices;
+using System;
 
 namespace Box2D;
 
@@ -17,11 +17,6 @@ public class PrismaticJointDef
     public PrismaticJointDef()
     {
         _internal = new PrismaticJointDefInternal();
-    }
-
-    ~PrismaticJointDef()
-    {
-        Box2D.FreeHandle(_internal.UserData);
     }
 
     /// <summary>

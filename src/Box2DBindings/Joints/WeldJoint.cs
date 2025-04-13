@@ -25,13 +25,7 @@ public class WeldJoint : Joint
         get => b2WeldJoint_GetReferenceAngle(_id);
         set
         {
-            float angleInRadians = value;
-            while (angleInRadians < -MathF.PI)
-                angleInRadians += MathF.PI * 2;
-
-            while (angleInRadians > MathF.PI)
-                angleInRadians -= MathF.PI * 2;
-
+            float angleInRadians = MathF.IEEERemainder(value, MathF.PI * 2);
             b2WeldJoint_SetReferenceAngle(_id, angleInRadians);
         }
     }

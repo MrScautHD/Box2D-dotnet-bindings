@@ -14,5 +14,5 @@ public struct ContactData
     [FieldOffset(8)]
     public Shape ShapeB;
     [FieldOffset(16)]
-    public Manifold manifold;
+    public Manifold Manifold;
 }

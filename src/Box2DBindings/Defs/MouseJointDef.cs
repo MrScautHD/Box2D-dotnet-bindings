@@ -1,4 +1,4 @@
-using System.Runtime.InteropServices;
+using System;
 
 namespace Box2D;
 
@@ -16,12 +16,7 @@ public class MouseJointDef
     {
         _internal = MouseJointDefInternal.Default;
     }
-    
-    ~MouseJointDef()
-    {
-        Box2D.FreeHandle(_internal.UserData);
-    }
-    
+
     /// <summary>
     /// The first attached body. This is assumed to be static.
     /// </summary>

@@ -1,4 +1,3 @@
-using System;
 using System.Runtime.InteropServices;
 
 namespace Box2D;
@@ -35,13 +34,17 @@ public class ChainDef
     ~ChainDef()
     {
         if (_internal.Points != 0)
+        {
             Marshal.FreeHGlobal(_internal.Points);
-        if (_internal.Materials != 0)
+            _internal.Points = 0;
+        }
+        if (_internal.Materials != 0 && materialsAllocated)
+        {
             Marshal.FreeHGlobal(_internal.Materials);
-        if (_internal.UserData != 0)
-            Marshal.FreeHGlobal(_internal.UserData);
+            _internal.Materials = 0;
+        }
     }
-    
+
     /// <summary>
     /// Use this to store application specific shape data.
     /// </summary>
@@ -73,13 +76,15 @@ public class ChainDef
         }
     }
 
+    private bool materialsAllocated = false;
+    
     /// <summary>
     /// Surface materials for each segment. These are cloned.
     /// </summary>
     public unsafe SurfaceMaterial[] Materials
     {
         set {
-            if (_internal.Materials != 0)
+            if (_internal.Materials != 0 && materialsAllocated)
             {
                 Marshal.FreeHGlobal(_internal.Materials);
                 _internal.Materials = 0;
@@ -91,6 +96,7 @@ public class ChainDef
                 for (int i = 0; i < value.Length; i++)
                     ((SurfaceMaterial*)_internal.Materials)[i] = value[i];
                 _internal.MaterialCount = value.Length;
+                materialsAllocated = true;
             }
         }
     }

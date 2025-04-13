@@ -29,7 +29,8 @@ public struct Shape : IEquatable<Shape>
     {
         // dealloc user data
         nint userDataPtr = b2Shape_GetUserData(this);
-        Box2D.FreeHandle(userDataPtr);
+        Box2D.FreeHandle(ref userDataPtr);
+        b2Shape_SetUserData(this, 0);
         
         b2DestroyShape(this, updateBodyMass);
     }
@@ -114,7 +115,6 @@ public struct Shape : IEquatable<Shape>
         get => Box2D.GetObjectAtPointer(b2Shape_GetUserData,this);
         set => Box2D.SetObjectAtPointer(b2Shape_GetUserData, b2Shape_SetUserData, this, value);
     }
-    
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_SetDensity")]
     private static extern void b2Shape_SetDensity(Shape shapeId, float density, bool updateBodyMass);

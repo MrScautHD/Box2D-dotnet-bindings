@@ -1,4 +1,4 @@
-using System.Runtime.InteropServices;
+using System;
 
 namespace Box2D;
 
@@ -14,11 +14,6 @@ public class MotorJointDef
     public MotorJointDef()
     {
         _internal = new MotorJointDefInternal();
-    }
-    
-    ~MotorJointDef()
-    {
-        Box2D.FreeHandle(_internal.UserData);
     }
 
     /// <summary>

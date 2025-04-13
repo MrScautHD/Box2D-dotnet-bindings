@@ -1,4 +1,4 @@
-using System.Runtime.InteropServices;
+using System;
 
 namespace Box2D;
 
@@ -12,11 +12,6 @@ public class FilterJointDef
     public FilterJointDef()
     {
         _internal = FilterJointDefInternal.Default;
-    }
-
-    ~FilterJointDef()
-    {
-        Box2D.FreeHandle(_internal.UserData);
     }
     
     /// <summary>

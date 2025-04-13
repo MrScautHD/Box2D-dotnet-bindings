@@ -141,13 +141,14 @@ public static class Box2D
         ptr = GCHandle.ToIntPtr(newHandle);
     }
 
-    internal static void FreeHandle(nint ptr)
+    internal static void FreeHandle(ref nint ptr)
     {
         if (ptr != 0)
         {
             var hnd = GCHandle.FromIntPtr(ptr);
             if (hnd.IsAllocated)
                 hnd.Free();
+            ptr = 0;
         }
     }
 

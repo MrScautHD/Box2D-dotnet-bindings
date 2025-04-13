@@ -44,7 +44,8 @@ public struct World
             body.Destroy();
 
         nint userDataPtr = b2World_GetUserData(this);
-        Box2D.FreeHandle(userDataPtr);
+        Box2D.FreeHandle(ref userDataPtr);
+        b2World_SetUserData(this, 0);
         
         b2DestroyWorld(this);
         _bodies.Remove(index1);
@@ -104,9 +105,6 @@ public struct World
     /// </summary>
     /// <returns>The contact events</returns>
     public ContactEvents GetContactEvents() => b2World_GetContactEvents(this);
-
-
-
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_OverlapAABB")]
     private static extern TreeStats b2World_OverlapAABB(World worldId, AABB aabb, QueryFilter filter, OverlapResultCallback fcn, nint context);

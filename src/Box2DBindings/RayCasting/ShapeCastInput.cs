@@ -19,7 +19,10 @@ public class ShapeCastInput
     ~ShapeCastInput()
     {
         if (_internal.Points != 0)
+        {
             Marshal.FreeHGlobal(_internal.Points);
+            _internal.Points = 0;
+        }
     }
 
     public unsafe Vec2[] Points

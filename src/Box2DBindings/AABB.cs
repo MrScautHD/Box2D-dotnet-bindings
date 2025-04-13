@@ -1,0 +1,28 @@
+using System;
+using System.Runtime.InteropServices;
+
+namespace Box2D
+{
+    [StructLayout(LayoutKind.Explicit)]
+    public struct AABB : IEquatable<AABB>
+    {
+        [FieldOffset(0)]
+        public Vec2 LowerBound;
+        [FieldOffset(8)]
+        public Vec2 UpperBound;
+    
+        public float Width => UpperBound.X - LowerBound.X;
+        public float Height => UpperBound.Y - LowerBound.Y;
+    
+        public override string ToString()
+        {
+            return $"AABB(Lower: {LowerBound}, Upper: {UpperBound}, Width: {Width}, Height: {Height})";
+        }
+        public bool Equals(AABB other) =>
+            LowerBound.Equals(other.LowerBound) && UpperBound.Equals(other.UpperBound);
+        public override bool Equals(object? obj) =>
+            obj is AABB other && Equals(other);
+        public override int GetHashCode() =>
+            HashCode.Combine(LowerBound, UpperBound);
+    }
+}

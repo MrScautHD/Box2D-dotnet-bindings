@@ -1,5 +1,3 @@
-using System.Runtime.InteropServices;
-
 namespace Box2D;
 
 /// <summary>
@@ -22,11 +20,6 @@ public class DistanceJointDef
         _internal = new DistanceJointDefInternal();
     }
     
-    ~DistanceJointDef()
-    {
-        Box2D.FreeHandle(_internal.UserData);
-    }
-
     /// <summary>
     /// The first attached body
     /// </summary>

@@ -1,4 +1,4 @@
-using System.Runtime.InteropServices;
+using System;
 
 namespace Box2D;
 
@@ -18,11 +18,6 @@ public class RevoluteJointDef
     public RevoluteJointDef()
     {
         _internal = new RevoluteJointDefInternal();
-    }
-    
-    ~RevoluteJointDef()
-    {
-        Box2D.FreeHandle(_internal.UserData);
     }
     
     /// <summary>

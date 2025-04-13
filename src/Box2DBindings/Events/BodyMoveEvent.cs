@@ -17,17 +17,29 @@ namespace Box2D;
 [StructLayout(LayoutKind.Explicit)]
 public struct BodyMoveEvent
 {
+    /// <summary>
+    /// The transform of the body
+    /// </summary>
     [FieldOffset(0)]
     public Transform Transform; // 16 bytes
     
+    /// <summary>
+    /// The body that moved
+    /// </summary>
     [FieldOffset(16)]
     public Body Body;
     
     [FieldOffset(24)]
     private nint userData;
     
+    /// <summary>
+    /// The user data associated with the body
+    /// </summary>
     public object? UserData => Box2D.GetObjectAtPointer(userData);
 
+    /// <summary>
+    /// The body went to sleep
+    /// </summary>
     [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(32)]
     public bool FellAsleep;

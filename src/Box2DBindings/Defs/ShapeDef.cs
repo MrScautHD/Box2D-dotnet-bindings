@@ -1,4 +1,4 @@
-using System.Runtime.InteropServices;
+using System;
 
 namespace Box2D;
 
@@ -15,12 +15,7 @@ public class ShapeDef
     {
         _internal = ShapeDefInternal.Default;
     }
-    
-    ~ShapeDef()
-    {
-        Box2D.FreeHandle(_internal.UserData);
-    }
-    
+
     /// <summary>
     /// Use this to store application specific shape data.
     /// </summary>

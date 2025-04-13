@@ -1,4 +1,4 @@
-using System.Runtime.InteropServices;
+using System;
 
 namespace Box2D;
 
@@ -18,12 +18,7 @@ public class WheelJointDef
     {
         _internal = new WheelJointDefInternal();
     }
-    
-    ~WheelJointDef()
-    {
-        Box2D.FreeHandle(_internal.UserData);
-    }
-    
+
     /// <summary>
     /// The first attached body
     /// </summary>
@@ -168,5 +163,5 @@ public class WheelJointDef
         set => Box2D.SetObjectAtPointer(ref _internal.UserData, value);
     }
 
-    
+
 }

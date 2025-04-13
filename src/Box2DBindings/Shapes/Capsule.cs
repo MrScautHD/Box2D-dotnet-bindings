@@ -36,29 +36,29 @@ public struct Capsule
     /// <summary>
     /// Compute mass properties of this capsule
     /// </summary>
-    public MassData ComputeMass(float density) => ComputeCapsuleMass(this, density);
+    public MassData ComputeMass(float density) => ComputeCapsuleMass(in this, density);
     
     /// <summary>
     /// Compute the bounding box of a transformed capsule
     /// </summary>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ComputeCapsuleAABB")]
-    private static extern AABB ComputeCapsuleAABB(in Capsule shape, in Transform transform);
+    private static extern AABB ComputeCapsuleAABB(in Capsule shape, Transform transform);
     
     /// <summary>
     /// Compute the bounding box of this transformed capsule
     /// </summary>
-    public AABB ComputeAABB(in Transform transform) => ComputeCapsuleAABB(this, transform);
+    public AABB ComputeAABB(in Transform transform) => ComputeCapsuleAABB(in this, transform);
     
     /// <summary>
     /// Test a point for overlap with a capsule in local space
     /// </summary>
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PointInCapsule")]
-    private static extern bool PointInCapsule(in Vec2 point, in Capsule shape);
+    private static extern bool PointInCapsule(Vec2 point, in Capsule shape);
     
     /// <summary>
     /// Test a point for overlap with this capsule in local space
     /// </summary>
-    public bool TestPoint(in Vec2 point) => PointInCapsule(point, this);
+    public bool TestPoint(in Vec2 point) => PointInCapsule(point, in this);
     
     /// <summary>
     /// Ray cast versus capsule shape in local space. Initial overlap is treated as a miss.
@@ -69,7 +69,7 @@ public struct Capsule
     /// <summary>
     /// Ray cast versus this capsule shape in local space. Initial overlap is treated as a miss.
     /// </summary>
-    public CastOutput RayCast(in RayCastInput input) => RayCastCapsule(input, this);
+    public CastOutput RayCast(in RayCastInput input) => RayCastCapsule(in input, in this);
 
     /// <summary>
     /// Shape cast versus a capsule. Initial overlap is treated as a miss.
@@ -80,6 +80,6 @@ public struct Capsule
     /// <summary>
     /// Shape cast versus this capsule. Initial overlap is treated as a miss.
     /// </summary>
-    public CastOutput ShapeCast(in ShapeCastInput input) => ShapeCastCapsule(input._internal, this);
+    public CastOutput ShapeCast(in ShapeCastInput input) => ShapeCastCapsule(in input._internal, in this);
 
 }

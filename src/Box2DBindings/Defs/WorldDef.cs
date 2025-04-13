@@ -1,4 +1,4 @@
-using System.Runtime.InteropServices;
+using System;
 
 namespace Box2D;
 
@@ -15,12 +15,6 @@ public class WorldDef
     }
     
     public static WorldDef Default => new ();
-    
-    ~WorldDef()
-    {
-        Box2D.FreeHandle(_internal.UserData);
-        Box2D.FreeHandle(_internal.UserTaskContext);
-    }
     
     /// <summary>
     /// Gravity vector. Box2D has no up-vector defined.

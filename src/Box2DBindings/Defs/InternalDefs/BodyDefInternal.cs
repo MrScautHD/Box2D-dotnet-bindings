@@ -72,7 +72,6 @@ struct BodyDefInternal
     /// </summary>
     [FieldOffset(44)]
     public float SleepThreshold;
-
     
     [FieldOffset(48)]
     internal nint Name;
@@ -134,7 +133,6 @@ struct BodyDefInternal
     /// </summary>
     [FieldOffset(72)]
     private readonly int internalValue;
-    
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultBodyDef")]
     private static extern BodyDefInternal GetDefault();

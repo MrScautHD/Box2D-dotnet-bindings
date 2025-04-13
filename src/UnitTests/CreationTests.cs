@@ -66,4 +66,50 @@ public class CreationTests
         
         if (error is not null) Assert.Fail(error);
     }
+    
+    [Fact]
+    void CreateChainShape()
+    {
+        string? error = null;
+        Box2D.Box2D.SetAssertFunction((condition, name, number) =>
+        {
+            error = condition;
+            return 0;
+        });
+        
+        WorldDef worldDf = new WorldDef();
+        World world = World.CreateWorld(worldDf);
+
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.Type = BodyType.Static;
+        bodyDef.Position = (0f, 0f);
+        Body bodyA = world.CreateBody(bodyDef);
+
+        Vec2[] vertices =
+        {
+            (-5f, -10),
+            (-3.2f, 10),
+            (-3.2f, 0),
+            (3.2f, 0),
+            (3.2f, 10),
+            (5f, -10),
+            (-5f, -10)
+        };
+
+        ChainDef chainDef = new ChainDef()
+            {
+                Points = vertices,
+                IsLoop = true
+            };
+        
+        ChainShape chainShape = bodyA.CreateChain(chainDef);
+
+        // Materials is set by Box2D, and so it has a pointer that we didn't create.
+        // We should have a check in the Materials property and the finalizer to
+        // make sure the one we're trying to Free is our own. If this fails, then
+        // that would be the first place to look.
+        chainDef.Materials = [];
+        
+        if (error is not null) Assert.Fail(error);
+    }
 }

@@ -25,7 +25,7 @@ public class BodyDef
             _internal.Name = 0;
         }
     }
-    
+
     /// <summary>
     /// The body type: static, kinematic, or dynamic.
     /// </summary>

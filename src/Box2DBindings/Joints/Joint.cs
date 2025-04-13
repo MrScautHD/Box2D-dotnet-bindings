@@ -24,7 +24,8 @@ public class Joint
     public void Destroy()
     {
         nint userDataPtr = b2Joint_GetUserData(_id);
-        Box2D.FreeHandle(userDataPtr);
+        Box2D.FreeHandle(ref userDataPtr);
+        b2Joint_SetUserData(_id, 0);
         
         b2DestroyJoint(_id);
     }

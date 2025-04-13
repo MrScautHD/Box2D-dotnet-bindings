@@ -35,7 +35,8 @@ public struct Body
         
         // dealloc user data
         nint userDataPtr = b2Body_GetUserData(this);
-        Box2D.FreeHandle(userDataPtr);
+        Box2D.FreeHandle(ref userDataPtr);
+        b2Body_SetUserData(this, 0);
         
         b2DestroyBody(this);
     }
@@ -94,7 +95,6 @@ public struct Body
         get => Box2D.GetObjectAtPointer(b2Body_GetUserData,this);
         set => Box2D.SetObjectAtPointer(b2Body_GetUserData, b2Body_SetUserData, this, value);
     }
-    
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetPosition")]
     private static extern Vec2 b2Body_GetPosition(Body bodyId);
@@ -633,7 +633,7 @@ public struct Body
     /// <param name="circle">The circle</param>
     /// <returns>The shape</returns>
     /// <remarks>The shape definition and geometry are fully cloned. Contacts are not created until the next time step</remarks>
-    public Shape CreateShape(ShapeDef def, in Circle circle) => b2CreateCircleShape(this, def._internal, circle);
+    public Shape CreateShape(ShapeDef def, in Circle circle) => b2CreateCircleShape(this, in def._internal, circle);
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateSegmentShape")]
     private static extern Shape b2CreateSegmentShape(Body bodyId, in ShapeDefInternal def, in Segment segment);
@@ -645,7 +645,7 @@ public struct Body
     /// <param name="segment">The segment</param>
     /// <returns>The shape</returns>
     /// <remarks>The shape definition and geometry are fully cloned. Contacts are not created until the next time step</remarks>
-    public Shape CreateShape(ShapeDef def, in Segment segment) => b2CreateSegmentShape(this, def._internal, segment);
+    public Shape CreateShape(ShapeDef def, in Segment segment) => b2CreateSegmentShape(this, in def._internal, segment);
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateCapsuleShape")]
     private static extern Shape b2CreateCapsuleShape(Body bodyId, in ShapeDefInternal def, in Capsule capsule);
@@ -657,7 +657,7 @@ public struct Body
     /// <param name="capsule">The capsule</param>
     /// <returns>The shape</returns>
     /// <remarks>The shape definition and geometry are fully cloned. Contacts are not created until the next time step</remarks>
-    public Shape CreateShape(ShapeDef def, in Capsule capsule) => b2CreateCapsuleShape(this, def._internal, capsule);
+    public Shape CreateShape(ShapeDef def, in Capsule capsule) => b2CreateCapsuleShape(this, in def._internal, capsule);
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreatePolygonShape")]
     private static extern Shape b2CreatePolygonShape(Body bodyId, in ShapeDefInternal def, in Polygon polygon);
@@ -669,7 +669,7 @@ public struct Body
     /// <param name="polygon">The polygon</param>
     /// <returns>The shape</returns>
     /// <remarks>The shape definition and geometry are fully cloned. Contacts are not created until the next time step</remarks>
-    public Shape CreateShape(ShapeDef def, in Polygon polygon) => b2CreatePolygonShape(this, def._internal, polygon);
+    public Shape CreateShape(ShapeDef def, in Polygon polygon) => b2CreatePolygonShape(this, in def._internal, polygon);
 
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateChain")]
     private static extern ChainShape b2CreateChain(Body bodyId, in ChainDefInternal def);
@@ -679,6 +679,6 @@ public struct Body
     /// </summary>
     /// <param name="def">The chain definition</param>
     /// <returns>The chain shape</returns>
-    public ChainShape CreateChain(ChainDef def) => b2CreateChain(this, def._internal);
+    public ChainShape CreateChain(ChainDef def) => b2CreateChain(this, in def._internal);
 
 }

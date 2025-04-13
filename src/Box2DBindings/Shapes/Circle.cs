@@ -74,7 +74,4 @@ public struct Circle
     /// Shape cast versus this circle. Initial overlap is treated as a miss.
     /// </summary>
     public CastOutput ShapeCast(in ShapeCastInput input) => ShapeCastCircle(input._internal, this);
-    
-    
-    
 }

@@ -1,4 +1,4 @@
-using System.Runtime.InteropServices;
+using System;
 
 namespace Box2D;
 
@@ -16,11 +16,6 @@ public class WeldJointDef
     public WeldJointDef()
     {
         _internal = new WeldJointDefInternal();
-    }
-    
-    ~WeldJointDef()
-    {
-        Box2D.FreeHandle(_internal.UserData);
     }
     
     /// <summary>

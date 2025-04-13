@@ -18,8 +18,7 @@ public unsafe struct BodyEvents
     /// Array of move events
     /// </summary>
     public ReadOnlySpan<BodyMoveEvent> MoveEvents => new((BodyMoveEvent*)moveEvents, moveCount);
-
-    /// Number of move events
+    
     [FieldOffset(8)]
     private int moveCount;
 }

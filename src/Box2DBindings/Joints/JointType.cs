@@ -6,11 +6,9 @@ namespace Box2D;
 public enum JointType
 {
     Distance,
+    Filter,
     Motor,
     Mouse,
-#if !BOX2D_300    
-    Null,
-#endif
     Prismatic,
     Revolute,
     Weld,
