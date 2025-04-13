@@ -1,4 +1,5 @@
 using Box2D;
+using System.Numerics;
 
 namespace UnitTests;
 
@@ -50,17 +51,17 @@ public class CreationTests
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.Type = BodyType.Dynamic;
-        bodyDef.Position = (-10f, 0f);
+        bodyDef.Position = new(-10f, 0f);
         Body bodyA = world.CreateBody(bodyDef);
 
-        bodyDef.Position = (10f, 0f);
+        bodyDef.Position = new(10f, 0f);
         Body bodyB = world.CreateBody(bodyDef);
 
         DistanceJointDef jointDef = new DistanceJointDef();
         jointDef.BodyA = bodyA;
         jointDef.BodyB = bodyB;
-        jointDef.LocalAnchorA = (0f, 0f);
-        jointDef.LocalAnchorB = (0f, 0f);
+        jointDef.LocalAnchorA = new(0f, 0f);
+        jointDef.LocalAnchorB = new(0f, 0f);
         
         Joint joint = world.CreateJoint(jointDef);
         
@@ -82,18 +83,18 @@ public class CreationTests
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.Type = BodyType.Static;
-        bodyDef.Position = (0f, 0f);
+        bodyDef.Position = new(0f, 0f);
         Body bodyA = world.CreateBody(bodyDef);
 
-        Vec2[] vertices =
+        Vector2[] vertices =
         {
-            (-5f, -10),
-            (-3.2f, 10),
-            (-3.2f, 0),
-            (3.2f, 0),
-            (3.2f, 10),
-            (5f, -10),
-            (-5f, -10)
+            new(-5f, -10),
+            new(-3.2f, 10),
+            new(-3.2f, 0),
+            new(3.2f, 0),
+            new(3.2f, 10),
+            new(5f, -10),
+            new(-5f, -10)
         };
 
         ChainDef chainDef = new ChainDef()

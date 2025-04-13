@@ -562,12 +562,25 @@ public struct Body
         get
         {
             int shapeCount = b2Body_GetShapeCount(this);
+            if (shapeCount == 0)
+                return Array.Empty<Shape>();
+
             Shape[] shapes = new Shape[shapeCount];
-            nint shapeArrayPtr = Marshal.UnsafeAddrOfPinnedArrayElement(shapes, 0);
-            b2Body_GetShapes(this, shapeArrayPtr, shapeCount);
+            GCHandle handle = GCHandle.Alloc(shapes, GCHandleType.Pinned);
+            try
+            {
+                IntPtr shapeArrayPtr = handle.AddrOfPinnedObject();
+                b2Body_GetShapes(this, shapeArrayPtr, shapeCount);
+            }
+            finally
+            {
+                handle.Free();
+            }
+
             return shapes;
         }
     }
+
     
     [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetJointCount")]
     private static extern int b2Body_GetJointCount(Body bodyId);
@@ -583,9 +596,21 @@ public struct Body
         get
         {
             int jointCount = b2Body_GetJointCount(this);
+            if (jointCount == 0)
+                return Array.Empty<Joint>();
+            
             Joint[] joints = new Joint[jointCount];
-            nint jointArrayPtr = Marshal.UnsafeAddrOfPinnedArrayElement(joints, 0);
-            b2Body_GetJoints(this, jointArrayPtr, jointCount);
+            GCHandle handle = GCHandle.Alloc(joints, GCHandleType.Pinned);
+            try
+            {
+                IntPtr jointArrayPtr = handle.AddrOfPinnedObject();
+                b2Body_GetJoints(this, jointArrayPtr, jointCount);
+            }
+            finally
+            {
+                handle.Free();
+            }
+            
             return joints;
         }
     }
@@ -607,9 +632,21 @@ public struct Body
         get
         {
             int contactCapacity = b2Body_GetContactCapacity(this);
+            if (contactCapacity == 0)
+                return Array.Empty<ContactData>();
+            
             ContactData[] contactData = new ContactData[contactCapacity];
-            nint contactDataPtr = Marshal.UnsafeAddrOfPinnedArrayElement(contactData, 0);
-            b2Body_GetContactData(this, contactDataPtr, contactCapacity);
+            GCHandle handle = GCHandle.Alloc(contactData, GCHandleType.Pinned);
+            try
+            {
+                IntPtr contactDataPtr = handle.AddrOfPinnedObject();
+                b2Body_GetContactData(this, contactDataPtr, contactCapacity);
+            }
+            finally
+            {
+                handle.Free();
+            }
+            
             return contactData;
         }
     }
