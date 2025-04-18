@@ -113,7 +113,7 @@ struct DistanceJointDefInternal
     [FieldOffset(84)]
     internal readonly int internalValue;
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultDistanceJointDef")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultDistanceJointDef")]
     private static extern DistanceJointDefInternal GetDefault();
     
     /// <summary>

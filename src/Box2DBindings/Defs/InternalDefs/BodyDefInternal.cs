@@ -134,7 +134,7 @@ struct BodyDefInternal
     [FieldOffset(72)]
     private readonly int internalValue;
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultBodyDef")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultBodyDef")]
     private static extern BodyDefInternal GetDefault();
     
     /// <summary>

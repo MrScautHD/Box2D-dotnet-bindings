@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace Box2D;
@@ -16,7 +13,7 @@ public struct World
 
     internal static readonly Dictionary<int, Dictionary<int, Body>> _bodies = new();
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateWorld")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateWorld")]
     private static extern World b2CreateWorld(in WorldDefInternal def);
 
     /// <summary>
@@ -31,7 +28,7 @@ public struct World
         return world;
     }
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DestroyWorld")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DestroyWorld")]
     private static extern void b2DestroyWorld(World worldId);
 
     /// <summary>
@@ -44,14 +41,14 @@ public struct World
             body.Destroy();
 
         nint userDataPtr = b2World_GetUserData(this);
-        Box2D.FreeHandle(ref userDataPtr);
+        Core.FreeHandle(ref userDataPtr);
         b2World_SetUserData(this, 0);
         
         b2DestroyWorld(this);
         _bodies.Remove(index1);
     }
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_IsValid")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_IsValid")]
     private static extern bool b2World_IsValid(World worldId);
 
     /// <summary>
@@ -60,7 +57,7 @@ public struct World
     /// <returns>True if the world id is valid</returns>
     public bool IsValid() => b2World_IsValid(this);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_Step")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_Step")]
     private static extern void b2World_Step(World worldId, float timeStep, int subStepCount);
 
     /// <summary>
@@ -70,7 +67,7 @@ public struct World
     /// <param name="subStepCount">The number of sub-steps, increasing the sub-step count can increase accuracy. Usually 4.</param>
     public void Step(float timeStep, int subStepCount) => b2World_Step(this, timeStep, subStepCount);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_Draw")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_Draw")]
     private static extern void b2World_Draw(World worldId, in DebugDraw draw);
 
     /// <summary>
@@ -79,7 +76,7 @@ public struct World
     /// <param name="draw">The debug draw implementation</param>
     public void Draw(in DebugDraw draw) => b2World_Draw(this, draw);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetBodyEvents")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetBodyEvents")]
     private static extern BodyEvents b2World_GetBodyEvents(World worldId);
 
     /// <summary>
@@ -88,7 +85,7 @@ public struct World
     /// <returns>The body events</returns>
     public BodyEvents GetBodyEvents() => b2World_GetBodyEvents(this);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetSensorEvents")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetSensorEvents")]
     private static extern SensorEvents b2World_GetSensorEvents(World worldId);
 
     /// <summary>
@@ -97,7 +94,7 @@ public struct World
     /// <returns>The sensor events</returns>
     public SensorEvents GetSensorEvents() => b2World_GetSensorEvents(this);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetContactEvents")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetContactEvents")]
     private static extern ContactEvents b2World_GetContactEvents(World worldId);
 
     /// <summary>
@@ -106,7 +103,7 @@ public struct World
     /// <returns>The contact events</returns>
     public ContactEvents GetContactEvents() => b2World_GetContactEvents(this);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_OverlapAABB")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_OverlapAABB")]
     private static extern TreeStats b2World_OverlapAABB(World worldId, AABB aabb, QueryFilter filter, OverlapResultCallback fcn, nint context);
 
     /// <summary>
@@ -120,7 +117,7 @@ public struct World
     public TreeStats OverlapAABB(AABB aabb, QueryFilter filter, OverlapResultCallback fcn, nint context) =>
         b2World_OverlapAABB(this, aabb, filter, fcn, context);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_OverlapShape")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_OverlapShape")]
     private static extern TreeStats b2World_OverlapShape(World worldId, in ShapeProxy proxy, QueryFilter filter, OverlapResultCallback fcn, nint context);
 
     /// <summary>
@@ -133,7 +130,7 @@ public struct World
     public TreeStats OverlapShape(in ShapeProxy proxy, QueryFilter filter, OverlapResultCallback fcn, nint context) =>
         b2World_OverlapShape(this, in proxy, filter, fcn, context);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_CastRay")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_CastRay")]
     private static extern TreeStats b2World_CastRay(World worldId, Vec2 origin, Vec2 translation, QueryFilter filter, CastResultCallback fcn, nint context);
 
     /// <summary>
@@ -149,7 +146,7 @@ public struct World
     public TreeStats CastRay(Vec2 origin, Vec2 translation, QueryFilter filter, CastResultCallback fcn, nint context) =>
         b2World_CastRay(this, origin, translation, filter, fcn, context);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_CastRayClosest")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_CastRayClosest")]
     private static extern RayResult b2World_CastRayClosest(World worldId, Vec2 origin, Vec2 translation, QueryFilter filter);
 
     /// <summary>
@@ -163,7 +160,34 @@ public struct World
     public RayResult CastRayClosest(Vec2 origin, Vec2 translation, QueryFilter filter) =>
         b2World_CastRayClosest(this, origin, translation, filter);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_CastShape")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_CastMover")]
+    private static extern float b2World_CastMover(World worldId, in Capsule mover, Vec2 translation, QueryFilter filter);
+    
+    /// <summary>
+    /// Cast a capsule mover through the world. This is a special shape cast that handles sliding along other shapes while reducing clipping.
+    /// </summary>
+    /// <param name="mover">The capsule mover</param>
+    /// <param name="translation">The translation of the capsule from the start point to the end point</param>
+    /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
+    /// <returns>The fraction of the translation that was completed before a collision occurred</returns>
+    public float CastMover(in Capsule mover, Vec2 translation, QueryFilter filter) =>
+        b2World_CastMover(this, in mover, translation, filter);
+    
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_CollideMover")]
+    private static extern void b2World_CollideMover(World worldId, in Capsule mover, QueryFilter filter, PlaneResultCallback fcn, nint context);
+    
+    /// <summary>
+    /// Collide a capsule mover with the world, gathering collision planes that can be fed to b2SolvePlanes. Useful for kinematic character movement.
+    /// </summary>
+    /// <param name="mover">The capsule mover</param>
+    /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
+    /// <param name="fcn">A user implemented callback function</param>
+    /// <param name="context">A user context that is passed along to the callback function</param>
+    public void CollideMover(in Capsule mover, QueryFilter filter, PlaneResultCallback fcn, nint context) =>
+        b2World_CollideMover(this, in mover, filter, fcn, context);
+    
+    
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_CastShape")]
     private static extern TreeStats b2World_CastShape(World worldId, in ShapeProxy proxy, Vec2 translation, QueryFilter filter, CastResultCallback fcn, nint context);
     
     /// <summary>
@@ -178,7 +202,7 @@ public struct World
     public TreeStats CastShape(in ShapeProxy proxy, Vec2 translation, QueryFilter filter, CastResultCallback fcn, nint context) =>
         b2World_CastShape(this, in proxy, translation, filter, fcn, context);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_EnableSleeping")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_EnableSleeping")]
     private static extern void b2World_EnableSleeping(World worldId, bool flag);
 
     /// <summary>
@@ -187,7 +211,7 @@ public struct World
     /// <param name="flag">True to enable sleep, false to disable sleep</param>
     public void EnableSleeping(bool flag) => b2World_EnableSleeping(this, flag);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_IsSleepingEnabled")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_IsSleepingEnabled")]
     private static extern bool b2World_IsSleepingEnabled(World worldId);
 
     /// <summary>
@@ -196,7 +220,7 @@ public struct World
     /// <returns>True if body sleeping is enabled</returns>
     public bool IsSleepingEnabled() => b2World_IsSleepingEnabled(this);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_EnableContinuous")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_EnableContinuous")]
     private static extern void b2World_EnableContinuous(World worldId, bool flag);
 
     /// <summary>
@@ -206,7 +230,7 @@ public struct World
     /// <remarks>Generally you should keep continuous collision enabled to prevent fast moving objects from going through static objects. The performance gain from disabling continuous collision is minor</remarks>
     public void EnableContinuous(bool flag) => b2World_EnableContinuous(this, flag);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_IsContinuousEnabled")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_IsContinuousEnabled")]
     private static extern bool b2World_IsContinuousEnabled(World worldId);
 
     /// <summary>
@@ -215,10 +239,10 @@ public struct World
     /// <returns>True if continuous collision is enabled</returns>
     public bool IsContinuousEnabled() => b2World_IsContinuousEnabled(this);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetRestitutionThreshold")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetRestitutionThreshold")]
     private static extern void b2World_SetRestitutionThreshold(World worldId, float value);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetRestitutionThreshold")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetRestitutionThreshold")]
     private static extern float b2World_GetRestitutionThreshold(World worldId);
 
     /// <summary>
@@ -230,10 +254,10 @@ public struct World
         set => b2World_SetRestitutionThreshold(this, value);
     }
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetHitEventThreshold")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetHitEventThreshold")]
     private static extern void b2World_SetHitEventThreshold(World worldId, float value);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetHitEventThreshold")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetHitEventThreshold")]
     private static extern float b2World_GetHitEventThreshold(World worldId);
 
     /// <summary>
@@ -245,7 +269,7 @@ public struct World
         set => b2World_SetHitEventThreshold(this, value);
     }
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetCustomFilterCallback")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetCustomFilterCallback")]
     private static extern void b2World_SetCustomFilterCallback(World worldId, CustomFilterCallback fcn, nint context);
 
     /// <summary>
@@ -256,7 +280,7 @@ public struct World
     public void SetCustomFilterCallback(CustomFilterCallback fcn, nint context) =>
         b2World_SetCustomFilterCallback(this, fcn, context);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetPreSolveCallback")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetPreSolveCallback")]
     private static extern void b2World_SetPreSolveCallback(World worldId, PreSolveCallback fcn, nint context);
 
     /// <summary>
@@ -267,10 +291,10 @@ public struct World
     public void SetPreSolveCallback(PreSolveCallback fcn, nint context) =>
         b2World_SetPreSolveCallback(this, fcn, context);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetGravity")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetGravity")]
     private static extern void b2World_SetGravity(World worldId, Vec2 gravity);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetGravity")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetGravity")]
     private static extern Vec2 b2World_GetGravity(World worldId);
 
     /// <summary>
@@ -282,7 +306,7 @@ public struct World
         set => b2World_SetGravity(this, value);
     }
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_Explode")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_Explode")]
     private static extern void b2World_Explode(World worldId, in ExplosionDef explosionDef);
     
     /// <summary>
@@ -292,7 +316,7 @@ public struct World
     /// <remarks>Explosions are modeled as a force, not as a collision event</remarks>
     public void Explode(in ExplosionDef explosionDef) => b2World_Explode(this, explosionDef);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetContactTuning")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetContactTuning")]
     private static extern void b2World_SetContactTuning(World worldId, float hertz, float dampingRatio, float pushSpeed);
     
     /// <summary>
@@ -306,7 +330,7 @@ public struct World
         b2World_SetContactTuning(this, hertz, dampingRatio, pushSpeed);
 
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetJointTuning")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetJointTuning")]
     private static extern void b2World_SetJointTuning(World worldId, float hertz, float dampingRatio);
 
     /// <summary>
@@ -317,10 +341,10 @@ public struct World
     /// <remarks>Advanced feature</remarks>
     public void SetJointTuning(float hertz, float dampingRatio) => b2World_SetJointTuning(this, hertz, dampingRatio);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetMaximumLinearSpeed")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetMaximumLinearSpeed")]
     private static extern void b2World_SetMaximumLinearSpeed(World worldId, float maximumLinearSpeed);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetMaximumLinearSpeed")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetMaximumLinearSpeed")]
     private static extern float b2World_GetMaximumLinearSpeed(World worldId);
 
     /// <summary>
@@ -333,10 +357,10 @@ public struct World
     }
 
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_EnableWarmStarting")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_EnableWarmStarting")]
     private static extern void b2World_EnableWarmStarting(World worldId, bool flag);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_IsWarmStartingEnabled")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_IsWarmStartingEnabled")]
     private static extern bool b2World_IsWarmStartingEnabled(World worldId);
 
     /// <summary>
@@ -348,7 +372,7 @@ public struct World
         set => b2World_EnableWarmStarting(this, value);
     }
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetAwakeBodyCount")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetAwakeBodyCount")]
     private static extern int b2World_GetAwakeBodyCount(World worldId);
 
     /// <summary>
@@ -357,7 +381,7 @@ public struct World
     /// <returns>The number of awake bodies</returns>
     public int GetAwakeBodyCount() => b2World_GetAwakeBodyCount(this);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetProfile")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetProfile")]
     private static extern Profile b2World_GetProfile(World worldId);
 
     /// <summary>
@@ -366,7 +390,7 @@ public struct World
     /// <returns>The world performance profile</returns>
     public Profile GetProfile() => b2World_GetProfile(this);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetCounters")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetCounters")]
     private static extern Counters b2World_GetCounters(World worldId);
 
     /// <summary>
@@ -375,10 +399,10 @@ public struct World
     /// <returns>The world counters and sizes</returns>
     public Counters GetCounters() => b2World_GetCounters(this);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetUserData")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetUserData")]
     private static extern void b2World_SetUserData(World worldId, nint userData);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetUserData")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetUserData")]
     private static extern nint b2World_GetUserData(World worldId);
 
     /// <summary>
@@ -386,11 +410,11 @@ public struct World
     /// </summary>
     public object? UserData
     {
-        get => Box2D.GetObjectAtPointer(b2World_GetUserData, this);
-        set => Box2D.SetObjectAtPointer(b2World_GetUserData, b2World_SetUserData, this, value);
+        get => Core.GetObjectAtPointer(b2World_GetUserData, this);
+        set => Core.SetObjectAtPointer(b2World_GetUserData, b2World_SetUserData, this, value);
     }
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetFrictionCallback")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetFrictionCallback")]
     private static extern void b2World_SetFrictionCallback(World worldId, FrictionCallback callback);
 
     /// <summary>
@@ -400,7 +424,7 @@ public struct World
     /// <remarks>Passing NULL resets to default</remarks>
     public void SetFrictionCallback(FrictionCallback callback) => b2World_SetFrictionCallback(this, callback);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetRestitutionCallback")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetRestitutionCallback")]
     private static extern void b2World_SetRestitutionCallback(World worldId, RestitutionCallback callback);
 
     /// <summary>
@@ -410,7 +434,7 @@ public struct World
     /// <remarks>Passing NULL resets to default</remarks>
     public void SetRestitutionCallback(RestitutionCallback callback) => b2World_SetRestitutionCallback(this, callback);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_DumpMemoryStats")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_DumpMemoryStats")]
     private static extern void b2World_DumpMemoryStats(World worldId);
 
     /// <summary>
@@ -419,7 +443,7 @@ public struct World
     /// <remarks>Memory stats are dumped to box2d_memory.txt</remarks>
     public void DumpMemoryStats() => b2World_DumpMemoryStats(this);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateBody")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateBody")]
     private static extern Body b2CreateBody(World worldId, in BodyDefInternal def);
 
     /// <summary>
@@ -434,7 +458,7 @@ public struct World
         return body;
     }
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateDistanceJoint")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateDistanceJoint")]
     private static extern JointId b2CreateDistanceJoint(World worldId, in DistanceJointDefInternal def);
 
     /// <summary>
@@ -444,7 +468,7 @@ public struct World
     /// <returns>The distance joint</returns>
     public DistanceJoint CreateJoint(DistanceJointDef def) => new(b2CreateDistanceJoint(this, def._internal));
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateMotorJoint")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateMotorJoint")]
     private static extern JointId b2CreateMotorJoint(World worldId, in MotorJointDefInternal def);
 
     /// <summary>
@@ -454,7 +478,7 @@ public struct World
     /// <returns>The motor joint</returns>
     public MotorJoint CreateJoint(MotorJointDef def) => new(b2CreateMotorJoint(this, def._internal));
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateMouseJoint")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateMouseJoint")]
     private static extern JointId b2CreateMouseJoint(World worldId, in MouseJointDefInternal def);
 
     /// <summary>
@@ -464,18 +488,18 @@ public struct World
     /// <returns>The mouse joint</returns>
     public MouseJoint CreateJoint(MouseJointDef def) => new(b2CreateMouseJoint(this, def._internal));
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateFilterJoint")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateFilterJoint")]
     private static extern JointId b2CreateFilterJoint(World worldId, in FilterJointDefInternal def);
 
     /// <summary>
-    /// Creates a filter joint
+    /// Creates a filter joint. See <see cref="FilterJointDef"/> for details.
     /// </summary>
     /// <param name="def">The filter joint definition</param>
     /// <returns>The filter joint</returns>
     /// <remarks>The filter joint is used to disable collision between two bodies. As a side effect of being a joint, it also keeps the two bodies in the same simulation island.</remarks>
     public Joint CreateJoint(FilterJointDef def) => new(b2CreateFilterJoint(this, def._internal));
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreatePrismaticJoint")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreatePrismaticJoint")]
     private static extern JointId b2CreatePrismaticJoint(World worldId, in PrismaticJointDefInternal def);
 
     /// <summary>
@@ -485,7 +509,7 @@ public struct World
     /// <returns>The prismatic joint</returns>
     public PrismaticJoint CreateJoint(PrismaticJointDef def) => new(b2CreatePrismaticJoint(this, def._internal));
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateRevoluteJoint")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateRevoluteJoint")]
     private static extern JointId b2CreateRevoluteJoint(World worldId, in RevoluteJointDefInternal def);
 
     /// <summary>
@@ -495,7 +519,7 @@ public struct World
     /// <returns>The revolute joint</returns>
     public RevoluteJoint CreateJoint(RevoluteJointDef def) => new(b2CreateRevoluteJoint(this, def._internal));
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateWeldJoint")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateWeldJoint")]
     private static extern JointId b2CreateWeldJoint(World worldId, in WeldJointDefInternal def);
 
     /// <summary>
@@ -505,7 +529,7 @@ public struct World
     /// <returns>The weld joint</returns>
     public WeldJoint CreateJoint(WeldJointDef def) => new(b2CreateWeldJoint(this, def._internal));
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateWheelJoint")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateWheelJoint")]
     private static extern JointId b2CreateWheelJoint(World worldId, in WheelJointDefInternal def);
 
     /// <summary>

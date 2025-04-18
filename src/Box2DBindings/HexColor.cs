@@ -6,6 +6,9 @@ namespace Box2D;
 /// https://johndecember.com/html/spec/colorsvg.html
 /// https://upload.wikimedia.org/wikipedia/commons/2/2b/SVG_Recognized_color_keyword_names.svg
 /// </summary>
+/// <remarks>
+/// You can cast any uint to HexColor.
+/// </remarks>
 public enum HexColor : uint
 {
     AliceBlue = 0xF0F8FF,

@@ -16,44 +16,40 @@ public class ShapeCastInput
         _internal = new ShapeCastInputInternal();
     }
     
-    ~ShapeCastInput()
+    /// <summary>
+    /// A generic shape
+    /// </summary>
+    public ShapeProxy Proxy
     {
-        if (_internal.Points != 0)
-        {
-            Marshal.FreeHGlobal(_internal.Points);
-            _internal.Points = 0;
-        }
-    }
-
-    public unsafe Vec2[] Points
-    {
-        set
-        {
-            if (_internal.Points != 0)
-                Marshal.FreeHGlobal(_internal.Points);
-            _internal.Points = Marshal.AllocHGlobal(value.Length * sizeof(Vec2));
-            for (int i = 0; i < value.Length; i++)
-                ((Vec2*)_internal.Points)[i] = value[i];
-            _internal.Count = value.Length;
-        }
-    }
-
-    public float Radius
-    {
-        get => _internal.Radius;
-        set => _internal.Radius = value;
+        get => _internal.proxy;
+        set => _internal.proxy = value;
     }
     
+    /// <summary>
+    /// The translation of the shape cast
+    /// </summary>
     public Vec2 Translation
     {
         get => _internal.Translation;
         set => _internal.Translation = value;
     }
     
+    /// <summary>
+    /// The maximum fraction of the translation to consider, typically 1
+    /// </summary>
     public float MaxFraction
     {
         get => _internal.MaxFraction;
         set => _internal.MaxFraction = value;
+    }
+ 
+    /// <summary>
+    /// Allow shape cast to encroach when initially touching. This only works if the radius is greater than zero.
+    /// </summary>
+    public bool CanEncroach
+    {
+        get => _internal.CanEncroach;
+        set => _internal.CanEncroach = value;
     }
     
 }

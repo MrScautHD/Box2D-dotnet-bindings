@@ -52,7 +52,7 @@ public struct Filter
     /// <summary>
     /// The default filter settings.
     /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultFilter")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultFilter")]
     public static extern Filter DefaultFilter();
 
     public Filter()

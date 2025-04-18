@@ -11,10 +11,10 @@ public class MouseJoint:Joint
     internal MouseJoint(JointId id) : base(id)
     { }
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MouseJoint_SetTarget")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MouseJoint_SetTarget")]
     private static extern void b2MouseJoint_SetTarget(JointId jointId, Vec2 target);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MouseJoint_GetTarget")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MouseJoint_GetTarget")]
     private static extern Vec2 b2MouseJoint_GetTarget(JointId jointId);
     
     public Vec2 Target
@@ -23,10 +23,10 @@ public class MouseJoint:Joint
         set => b2MouseJoint_SetTarget(_id, value);
     }
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MouseJoint_SetSpringHertz")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MouseJoint_SetSpringHertz")]
     private static extern void b2MouseJoint_SetSpringHertz(JointId jointId, float hertz);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MouseJoint_GetSpringHertz")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MouseJoint_GetSpringHertz")]
     private static extern float b2MouseJoint_GetSpringHertz(JointId jointId);
     
     public float SpringHertz
@@ -35,10 +35,10 @@ public class MouseJoint:Joint
         set => b2MouseJoint_SetSpringHertz(_id, value);
     }
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MouseJoint_SetSpringDampingRatio")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MouseJoint_SetSpringDampingRatio")]
     private static extern void b2MouseJoint_SetSpringDampingRatio(JointId jointId, float ratio);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MouseJoint_GetSpringDampingRatio")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MouseJoint_GetSpringDampingRatio")]
     private static extern float b2MouseJoint_GetSpringDampingRatio(JointId jointId);
     
     public float SpringDampingRatio
@@ -47,10 +47,10 @@ public class MouseJoint:Joint
         set => b2MouseJoint_SetSpringDampingRatio(_id, value);
     }
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MouseJoint_SetMaxForce")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MouseJoint_SetMaxForce")]
     private static extern void b2MouseJoint_SetMaxForce(JointId jointId, float maxForce);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MouseJoint_GetMaxForce")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MouseJoint_GetMaxForce")]
     private static extern float b2MouseJoint_GetMaxForce(JointId jointId);
     
     public float MaxForce

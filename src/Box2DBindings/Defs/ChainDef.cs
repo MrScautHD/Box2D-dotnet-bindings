@@ -30,8 +30,8 @@ public class ChainDef
     {
         _internal = new ChainDefInternal();
     }
-    
-    ~ChainDef()
+
+    unsafe ~ChainDef()
     {
         if (_internal.Points != 0)
         {
@@ -50,8 +50,8 @@ public class ChainDef
     /// </summary>
     public object? UserData
     {
-        get => Box2D.GetObjectAtPointer(_internal.UserData);
-        set => Box2D.SetObjectAtPointer(ref _internal.UserData, value);
+        get => Core.GetObjectAtPointer(_internal.UserData);
+        set => Core.SetObjectAtPointer(ref _internal.UserData, value);
     }
 
     /// <summary>

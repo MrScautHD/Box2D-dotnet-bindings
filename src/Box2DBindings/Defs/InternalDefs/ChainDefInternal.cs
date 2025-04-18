@@ -44,7 +44,7 @@ struct ChainDefInternal
     [FieldOffset(56)]
     private readonly int internalValue;
  
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultChainDef")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultChainDef")]
     private static extern ChainDefInternal GetDefault();
     
     /// <summary>

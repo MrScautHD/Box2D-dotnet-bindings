@@ -7,10 +7,10 @@ public class DistanceJoint : Joint
     internal DistanceJoint(JointId id) : base(id)
     { }
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_SetLength")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_SetLength")]
     private static extern void b2DistanceJoint_SetLength(JointId jointId, float length);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_GetLength")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_GetLength")]
     private static extern float b2DistanceJoint_GetLength(JointId jointId);
     
     /// <summary>
@@ -22,7 +22,7 @@ public class DistanceJoint : Joint
         set => b2DistanceJoint_SetLength(_id, value);
     }
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_EnableSpring")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_EnableSpring")]
     private static extern void b2DistanceJoint_EnableSpring(JointId jointId, bool enableSpring);
     
     /// <summary>
@@ -34,7 +34,7 @@ public class DistanceJoint : Joint
         b2DistanceJoint_EnableSpring(_id, enableSpring);
     }
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_IsSpringEnabled")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_IsSpringEnabled")]
     private static extern bool b2DistanceJoint_IsSpringEnabled(JointId jointId);
     
     /// <summary>
@@ -49,10 +49,10 @@ public class DistanceJoint : Joint
         set => EnableSpring(value);
     }
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_SetSpringHertz")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_SetSpringHertz")]
     private static extern void b2DistanceJoint_SetSpringHertz(JointId jointId, float hertz);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_GetSpringHertz")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_GetSpringHertz")]
     private static extern float b2DistanceJoint_GetSpringHertz(JointId jointId);
     
     /// <summary>
@@ -64,10 +64,10 @@ public class DistanceJoint : Joint
         set => b2DistanceJoint_SetSpringHertz(_id, value);
     }
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_SetSpringDampingRatio")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_SetSpringDampingRatio")]
     private static extern void b2DistanceJoint_SetSpringDampingRatio(JointId jointId, float dampingRatio);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_GetSpringDampingRatio")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_GetSpringDampingRatio")]
     private static extern float b2DistanceJoint_GetSpringDampingRatio(JointId jointId);
     
     /// <summary>
@@ -79,10 +79,10 @@ public class DistanceJoint : Joint
         set => b2DistanceJoint_SetSpringDampingRatio(_id, value);
     }
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_EnableLimit")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_EnableLimit")]
     private static extern void b2DistanceJoint_EnableLimit(JointId jointId, bool enableLimit);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_IsLimitEnabled")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_IsLimitEnabled")]
     private static extern bool b2DistanceJoint_IsLimitEnabled(JointId jointId);
     
     /// <summary>
@@ -95,7 +95,7 @@ public class DistanceJoint : Joint
         set => b2DistanceJoint_EnableLimit(_id, value);
     }
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_SetLengthRange")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_SetLengthRange")]
     private static extern void b2DistanceJoint_SetLengthRange(JointId jointId, float minLength, float maxLength);
     
     /// <summary>
@@ -105,7 +105,7 @@ public class DistanceJoint : Joint
     /// <param name="maxLength">The maximum length</param>
     public void SetLengthRange(float minLength, float maxLength) => b2DistanceJoint_SetLengthRange(_id, minLength, maxLength);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_GetMinLength")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_GetMinLength")]
     private static extern float b2DistanceJoint_GetMinLength(JointId jointId);
     
     /// <summary>
@@ -114,7 +114,7 @@ public class DistanceJoint : Joint
     /// <returns>The minimum length</returns>
     public float GetMinLength() => b2DistanceJoint_GetMinLength(_id);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_GetMaxLength")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_GetMaxLength")]
     private static extern float b2DistanceJoint_GetMaxLength(JointId jointId);
     
     /// <summary>
@@ -123,7 +123,7 @@ public class DistanceJoint : Joint
     /// <returns>The maximum length</returns>
     public float GetMaxLength() => b2DistanceJoint_GetMaxLength(_id);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_GetCurrentLength")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_GetCurrentLength")]
     private static extern float b2DistanceJoint_GetCurrentLength(JointId jointId);
     
     /// <summary>
@@ -132,10 +132,10 @@ public class DistanceJoint : Joint
     /// <returns>The current length</returns>
     public float GetCurrentLength() => b2DistanceJoint_GetCurrentLength(_id);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_EnableMotor")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_EnableMotor")]
     private static extern void b2DistanceJoint_EnableMotor(JointId jointId, bool enableMotor);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_IsMotorEnabled")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_IsMotorEnabled")]
     private static extern bool b2DistanceJoint_IsMotorEnabled(JointId jointId);
 
     /// <summary>
@@ -147,10 +147,10 @@ public class DistanceJoint : Joint
         set => b2DistanceJoint_EnableMotor(_id, value);
     }
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_SetMotorSpeed")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_SetMotorSpeed")]
     private static extern void b2DistanceJoint_SetMotorSpeed(JointId jointId, float motorSpeed);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_GetMotorSpeed")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_GetMotorSpeed")]
     private static extern float b2DistanceJoint_GetMotorSpeed(JointId jointId);
 
     public float MotorSpeed
@@ -159,10 +159,10 @@ public class DistanceJoint : Joint
         set => b2DistanceJoint_SetMotorSpeed(_id, value);
     }
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_SetMaxMotorForce")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_SetMaxMotorForce")]
     private static extern void b2DistanceJoint_SetMaxMotorForce(JointId jointId, float force);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_GetMaxMotorForce")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_GetMaxMotorForce")]
     private static extern float b2DistanceJoint_GetMaxMotorForce(JointId jointId);
     
     /// <summary>
@@ -174,7 +174,7 @@ public class DistanceJoint : Joint
         set => b2DistanceJoint_SetMaxMotorForce(_id, value);
     }
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_GetMotorForce")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_GetMotorForce")]
     private static extern float b2DistanceJoint_GetMotorForce(JointId jointId);
     
     /// <summary>

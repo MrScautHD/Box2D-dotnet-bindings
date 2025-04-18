@@ -14,10 +14,10 @@ public class WeldJoint : Joint
     internal WeldJoint(JointId id) : base(id)
     { }
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WeldJoint_GetReferenceAngle")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WeldJoint_GetReferenceAngle")]
     private static extern float b2WeldJoint_GetReferenceAngle(JointId jointId);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WeldJoint_SetReferenceAngle")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WeldJoint_SetReferenceAngle")]
     private static extern void b2WeldJoint_SetReferenceAngle(JointId jointId, float angleInRadians);
 
     public float ReferenceAngle
@@ -30,10 +30,10 @@ public class WeldJoint : Joint
         }
     }
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WeldJoint_SetLinearHertz")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WeldJoint_SetLinearHertz")]
     private static extern void b2WeldJoint_SetLinearHertz(JointId jointId, float hertz);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WeldJoint_GetLinearHertz")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WeldJoint_GetLinearHertz")]
     private static extern float b2WeldJoint_GetLinearHertz(JointId jointId);
 
     /// <summary>
@@ -45,10 +45,10 @@ public class WeldJoint : Joint
         set => b2WeldJoint_SetLinearHertz(_id, value);
     }
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WeldJoint_SetLinearDampingRatio")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WeldJoint_SetLinearDampingRatio")]
     private static extern void b2WeldJoint_SetLinearDampingRatio(JointId jointId, float dampingRatio);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WeldJoint_GetLinearDampingRatio")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WeldJoint_GetLinearDampingRatio")]
     private static extern float b2WeldJoint_GetLinearDampingRatio(JointId jointId);
 
     /// <summary>
@@ -60,10 +60,10 @@ public class WeldJoint : Joint
         set => b2WeldJoint_SetLinearDampingRatio(_id, value);
     }
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WeldJoint_SetAngularHertz")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WeldJoint_SetAngularHertz")]
     private static extern void b2WeldJoint_SetAngularHertz(JointId jointId, float hertz);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WeldJoint_GetAngularHertz")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WeldJoint_GetAngularHertz")]
     private static extern float b2WeldJoint_GetAngularHertz(JointId jointId);
 
     /// <summary>
@@ -75,10 +75,10 @@ public class WeldJoint : Joint
         set => b2WeldJoint_SetAngularHertz(_id, value);
     }
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WeldJoint_SetAngularDampingRatio")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WeldJoint_SetAngularDampingRatio")]
     private static extern void b2WeldJoint_SetAngularDampingRatio(JointId jointId, float dampingRatio);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WeldJoint_GetAngularDampingRatio")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WeldJoint_GetAngularDampingRatio")]
     private static extern float b2WeldJoint_GetAngularDampingRatio(JointId jointId);
 
     /// <summary>

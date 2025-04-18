@@ -23,16 +23,16 @@ public unsafe struct Manifold
     public float RollingImpulse;
 
     [FieldOffset(12)]
-    private nint* _points;
+    private nint* points;
 
     /// <summary>
     /// The number of contacts points, will be 0, 1, or 2
     /// </summary>
     [FieldOffset(112)]
-    public int PointCount;
+    private int pointCount;
     
     /// <summary>
     /// The manifold points, up to two are possible in 2D
     /// </summary>
-    public ReadOnlySpan<ManifoldPoint> Points => new(_points, 2);
+    public ReadOnlySpan<ManifoldPoint> Points => new(points, pointCount);
 }

@@ -6,15 +6,15 @@ public class Box2DVersionTest
     public void CheckVersion()
     {
         string? error = null;
-        Box2D.Box2D.SetAssertFunction((condition, name, number) =>
+        Box2D.Core.SetAssertFunction((condition, name, number) =>
         {
             error = condition;
             return 0;
         });
         
-        var version = Box2D.Box2D.GetVersion();
+        var version = Box2D.Core.GetVersion();
         string versionString = $"v{version.Major}.{version.Minor}.{version.Revision}";
-        Assert.Equal("v3.0.0", versionString);
+        Assert.Equal("v3.1.0", versionString);
         
         if (error is not null) Assert.Fail(error);
     }

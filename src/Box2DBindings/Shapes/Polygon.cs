@@ -23,25 +23,25 @@ public unsafe struct Polygon
     /// <summary>
     /// The outward normal vectors of the polygon sides
     /// </summary>
-    [FieldOffset(Box2D.B2_MAX_POLYGON_VERTICES * 8)]
+    [FieldOffset(Core.B2_MAX_POLYGON_VERTICES * 8)]
     private nint* normals;
 
     /// <summary>
     /// The centroid of the polygon
     /// </summary>
-    [FieldOffset(Box2D.B2_MAX_POLYGON_VERTICES * 8 * 2)]
+    [FieldOffset(Core.B2_MAX_POLYGON_VERTICES * 8 * 2)]
     public Vec2 Centroid;
 
     /// <summary>
     /// The external radius for rounded polygons
     /// </summary>
-    [FieldOffset(Box2D.B2_MAX_POLYGON_VERTICES * 8 * 2 + 8)] 
+    [FieldOffset(Core.B2_MAX_POLYGON_VERTICES * 8 * 2 + 8)] 
     public float Radius;
 
     /// <summary>
     /// The number of polygon vertices
     /// </summary>
-    [FieldOffset(Box2D.B2_MAX_POLYGON_VERTICES * 8 * 2 + 12)]
+    [FieldOffset(Core.B2_MAX_POLYGON_VERTICES * 8 * 2 + 12)]
     private int count;
     
     public ReadOnlySpan<Vec2> Vertices => new(vertices, count);
@@ -53,7 +53,7 @@ public unsafe struct Polygon
     /// <remarks>
     /// <b>Warning: Do not manually fill in the hull data, it must come directly from b2ComputeHull</b>
     /// </remarks>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakePolygon")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakePolygon")]
     public static extern Polygon MakePolygon(in Hull hull, float radius);
     
     /// <summary>
@@ -62,7 +62,7 @@ public unsafe struct Polygon
     /// <remarks>
     /// <b>Warning: Do not manually fill in the hull data, it must come directly from b2ComputeHull</b>
     /// </remarks>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakeOffsetPolygon")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakeOffsetPolygon")]
     public static extern Polygon MakeOffsetPolygon(in Hull hull, Vec2 position, Rotation rotation);
     
     /// <summary>
@@ -71,14 +71,14 @@ public unsafe struct Polygon
     /// <remarks>
     /// <b>Warning: Do not manually fill in the hull data, it must come directly from b2ComputeHull</b>
     /// </remarks>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakeOffsetRoundedPolygon")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakeOffsetRoundedPolygon")]
     public static extern Polygon MakeOffsetRoundedPolygon(in Hull hull, Vec2 position, Rotation rotation, float radius);
 
     /// <summary>
     /// Make a square polygon, bypassing the need for a convex hull.
     /// </summary>
     /// <param name="halfWidth">the half-width</param>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakeSquare")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakeSquare")]
     public static extern Polygon MakeSquare(float halfWidth);
 
     /// <summary>
@@ -86,7 +86,7 @@ public unsafe struct Polygon
     /// </summary>
     /// <param name="halfWidth">the half-width (x-axis)</param>
     /// <param name="halfHeight">the half-height (y-axis)</param>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakeBox")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakeBox")]
     public static extern Polygon MakeBox(float halfWidth, float halfHeight);
 
     /// <summary>
@@ -95,7 +95,7 @@ public unsafe struct Polygon
     /// <param name="halfWidth">the half-width (x-axis)</param>
     /// <param name="halfHeight">the half-height (y-axis)</param>
     /// <param name="radius">the radius of the rounded extension</param>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakeRoundedBox")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakeRoundedBox")]
     public static extern Polygon MakeRoundedBox(float halfWidth, float halfHeight, float radius);
 
     /// <summary>
@@ -105,7 +105,7 @@ public unsafe struct Polygon
     /// <param name="halfHeight">the half-height (y-axis)</param>
     /// <param name="center">the local center of the box</param>
     /// <param name="rotation">the local rotation of the box</param>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakeOffsetBox")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakeOffsetBox")]
     public static extern Polygon MakeOffsetBox(float halfWidth, float halfHeight, Vec2 center, Rotation rotation);
 
     /// <summary>
@@ -116,19 +116,19 @@ public unsafe struct Polygon
     /// <param name="center">the local center of the box</param>
     /// <param name="rotation">the local rotation of the box</param>
     /// <param name="radius">the radius of the rounded extension</param>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakeOffsetRoundedBox")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakeOffsetRoundedBox")]
     public static extern Polygon MakeOffsetRoundedBox(float halfWidth, float halfHeight, Vec2 center, Rotation rotation, float radius);
 
     /// <summary>
     /// Transform a polygon. This is useful for transferring a shape from one body to another.
     /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2TransformPolygon")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2TransformPolygon")]
     public static extern Polygon TransformPolygon(Transform transform, in Polygon polygon);
     
     /// <summary>
     /// Compute mass properties of a polygon
     /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ComputePolygonMass")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ComputePolygonMass")]
     private static extern MassData ComputePolygonMass(in Polygon shape, float density);
     
     /// <summary>
@@ -139,7 +139,7 @@ public unsafe struct Polygon
     /// <summary>
     /// Compute the bounding box of a transformed polygon
     /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ComputePolygonAABB")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ComputePolygonAABB")]
     private static extern AABB ComputePolygonAABB(in Polygon shape, Transform transform);
     
     /// <summary>
@@ -150,7 +150,7 @@ public unsafe struct Polygon
     /// <summary>
     /// Test a point for overlap with a convex polygon in local space
     /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PointInPolygon")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PointInPolygon")]
     private static extern bool PointInPolygon(Vec2 point, in Polygon shape);
 
     /// <summary>
@@ -161,7 +161,7 @@ public unsafe struct Polygon
     /// <summary>
     /// Ray cast versus polygon shape in local space. Initial overlap is treated as a miss.
     /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2RayCastPolygon")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2RayCastPolygon")]
     private static extern CastOutput RayCastPolygon(in RayCastInput input, in Polygon shape);
     
     /// <summary>
@@ -172,7 +172,7 @@ public unsafe struct Polygon
     /// <summary>
     /// Shape cast versus a convex polygon. Initial overlap is treated as a miss.
     /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ShapeCastPolygon")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ShapeCastPolygon")]
     private static extern CastOutput ShapeCastPolygon(in ShapeCastInputInternal input, in Polygon shape);
 
     /// <summary>

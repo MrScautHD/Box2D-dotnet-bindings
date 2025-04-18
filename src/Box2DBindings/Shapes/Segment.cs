@@ -24,7 +24,7 @@ public struct Segment : IEquatable<Segment>
     /// <summary>
     /// Compute the bounding box of a transformed line segment
     /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ComputeSegmentAABB")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ComputeSegmentAABB")]
     private static extern AABB ComputeSegmentAABB(in Segment shape, Transform transform);
     
     /// <summary>
@@ -36,7 +36,7 @@ public struct Segment : IEquatable<Segment>
     /// Ray cast versus segment shape in local space. Optionally treat the segment as one-sided with hits from
     /// the left side being treated as a miss.
     /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2RayCastSegment")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2RayCastSegment")]
     private static extern CastOutput RayCastSegment(in RayCastInput input, in Segment shape, bool oneSided);
     
     /// <summary>
@@ -48,7 +48,7 @@ public struct Segment : IEquatable<Segment>
     /// <summary>
     /// Shape cast versus a line segment. Initial overlap is treated as a miss.
     /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ShapeCastSegment")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ShapeCastSegment")]
     private static extern CastOutput ShapeCastSegment(in ShapeCastInputInternal input, in Segment shape);
 
     /// <summary>
@@ -59,7 +59,7 @@ public struct Segment : IEquatable<Segment>
     /// <summary>
     /// Compute the distance between two line segments, clamping at the end points if needed.
     /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2SegmentDistance")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2SegmentDistance")]
     private static extern SegmentDistanceResult SegmentDistance(Vec2 p1, Vec2 q1, Vec2 p2, Vec2 q2);
 
     /// <summary>

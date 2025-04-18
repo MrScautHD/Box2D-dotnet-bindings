@@ -66,7 +66,7 @@ struct MouseJointDefInternal
     [FieldOffset(48)]
     private readonly int internalValue;
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultMouseJointDef")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultMouseJointDef")]
     private static extern MouseJointDefInternal GetDefault();
     
     /// <summary>

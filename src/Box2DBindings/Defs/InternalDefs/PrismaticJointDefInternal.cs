@@ -125,7 +125,7 @@ struct PrismaticJointDefInternal
     [FieldOffset(92)]
     private readonly int internalValue;
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultPrismaticJointDef")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultPrismaticJointDef")]
     private static extern PrismaticJointDefInternal GetDefault();
     
     /// <summary>

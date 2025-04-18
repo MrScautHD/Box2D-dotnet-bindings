@@ -13,7 +13,7 @@ public class PrismaticJoint : Joint
     internal PrismaticJoint(JointId id) : base(id)
     { }
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_EnableSpring")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_EnableSpring")]
     private static extern void b2PrismaticJoint_EnableSpring(JointId jointId, bool enableSpring);
 
     /// <summary>
@@ -22,7 +22,7 @@ public class PrismaticJoint : Joint
     /// <param name="enableSpring">True to enable the joint spring, false to disable the joint spring</param>
     public void EnableSpring(bool enableSpring) => b2PrismaticJoint_EnableSpring(_id, enableSpring);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_IsSpringEnabled")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_IsSpringEnabled")]
     private static extern bool b2PrismaticJoint_IsSpringEnabled(JointId jointId);
 
     /// <summary>
@@ -37,10 +37,10 @@ public class PrismaticJoint : Joint
         set => EnableSpring(value);
     }
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_SetSpringHertz")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_SetSpringHertz")]
     private static extern void b2PrismaticJoint_SetSpringHertz(JointId jointId, float hertz);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_GetSpringHertz")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_GetSpringHertz")]
     private static extern float b2PrismaticJoint_GetSpringHertz(JointId jointId);
 
     public float SpringHertz
@@ -49,10 +49,10 @@ public class PrismaticJoint : Joint
         set => b2PrismaticJoint_SetSpringHertz(_id, value);
     }
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_SetSpringDampingRatio")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_SetSpringDampingRatio")]
     private static extern void b2PrismaticJoint_SetSpringDampingRatio(JointId jointId, float dampingRatio);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_GetSpringDampingRatio")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_GetSpringDampingRatio")]
     private static extern float b2PrismaticJoint_GetSpringDampingRatio(JointId jointId);
 
     public float SpringDampingRatio
@@ -61,10 +61,10 @@ public class PrismaticJoint : Joint
         set => b2PrismaticJoint_SetSpringDampingRatio(_id, value);
     }
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_EnableLimit")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_EnableLimit")]
     private static extern void b2PrismaticJoint_EnableLimit(JointId jointId, bool enableLimit);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_IsLimitEnabled")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_IsLimitEnabled")]
     private static extern bool b2PrismaticJoint_IsLimitEnabled(JointId jointId);
 
     public bool LimitEnabled
@@ -73,7 +73,7 @@ public class PrismaticJoint : Joint
         set => b2PrismaticJoint_EnableLimit(_id, value);
     }
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_SetLimits")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_SetLimits")]
     private static extern void b2PrismaticJoint_SetLimits(JointId jointId, float lower, float upper);
 
     /// <summary>
@@ -83,10 +83,10 @@ public class PrismaticJoint : Joint
     /// <param name="upper">The upper prismatic joint limit</param>
     public void SetLimits(float lower, float upper) => b2PrismaticJoint_SetLimits(_id, lower, upper);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_GetLowerLimit")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_GetLowerLimit")]
     private static extern float b2PrismaticJoint_GetLowerLimit(JointId jointId);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_GetUpperLimit")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_GetUpperLimit")]
     private static extern float b2PrismaticJoint_GetUpperLimit(JointId jointId);
     
     /// <summary>
@@ -99,10 +99,10 @@ public class PrismaticJoint : Joint
     /// </summary>
     public float UpperLimit => b2PrismaticJoint_GetUpperLimit(_id);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_EnableMotor")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_EnableMotor")]
     private static extern void b2PrismaticJoint_EnableMotor(JointId jointId, bool enableMotor);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_IsMotorEnabled")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_IsMotorEnabled")]
     private static extern bool b2PrismaticJoint_IsMotorEnabled(JointId jointId);
 
     /// <summary>
@@ -114,10 +114,10 @@ public class PrismaticJoint : Joint
         set => b2PrismaticJoint_EnableMotor(_id, value);
     }
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_SetMotorSpeed")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_SetMotorSpeed")]
     private static extern void b2PrismaticJoint_SetMotorSpeed(JointId jointId, float motorSpeed);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_GetMotorSpeed")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_GetMotorSpeed")]
     private static extern float b2PrismaticJoint_GetMotorSpeed(JointId jointId);
 
     /// <summary>
@@ -129,10 +129,10 @@ public class PrismaticJoint : Joint
         set => b2PrismaticJoint_SetMotorSpeed(_id, value);
     }
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_SetMaxMotorForce")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_SetMaxMotorForce")]
     private static extern void b2PrismaticJoint_SetMaxMotorForce(JointId jointId, float force);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_GetMaxMotorForce")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_GetMaxMotorForce")]
     private static extern float b2PrismaticJoint_GetMaxMotorForce(JointId jointId);
 
     /// <summary>
@@ -144,7 +144,7 @@ public class PrismaticJoint : Joint
         set => b2PrismaticJoint_SetMaxMotorForce(_id, value);
     }
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_GetMotorForce")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_GetMotorForce")]
     private static extern float b2PrismaticJoint_GetMotorForce(JointId jointId);
     
     /// <summary>
@@ -152,7 +152,7 @@ public class PrismaticJoint : Joint
     /// </summary>
     public float MotorForce => b2PrismaticJoint_GetMotorForce(_id);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_GetTranslation")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_GetTranslation")]
     private static extern float b2PrismaticJoint_GetTranslation(JointId jointId);
 
     /// <summary>
@@ -160,7 +160,7 @@ public class PrismaticJoint : Joint
     /// </summary>
     public float Translation =>  b2PrismaticJoint_GetTranslation(_id);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_GetSpeed")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_GetSpeed")]
     private static extern float b2PrismaticJoint_GetSpeed(JointId jointId);
 
     /// <summary>

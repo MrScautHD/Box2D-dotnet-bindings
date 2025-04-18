@@ -21,52 +21,15 @@ public class ShapeDef
     /// </summary>
     public object? UserData
     {
-        get => Box2D.GetObjectAtPointer(_internal.UserData);
-        set => Box2D.SetObjectAtPointer(ref _internal.UserData, value);
-    }
-
-    /// <summary>
-    /// The Coulomb (dry) friction coefficient, usually in the range [0,1].
-    /// </summary>
-    public float Friction
-    {
-        get => _internal.Friction;
-        set => _internal.Friction = value;
-    }
-
-    /// <summary>
-    /// The coefficient of restitution (bounce) usually in the range [0,1].<br/>
-    /// https://en.wikipedia.org/wiki/Coefficient_of_restitution
-    /// </summary>
-    public float Restitution
-    {
-        get => _internal.Restitution;
-        set => _internal.Restitution = value;
-    }
-
-    /// <summary>
-    /// The rolling resistance usually in the range [0,1].
-    /// </summary>
-    public float RollingResistance
-    {
-        get => _internal.RollingResistance;
-        set => _internal.RollingResistance = value;
-    }
-
-    /// <summary>
-    /// The tangent speed for conveyor belts
-    /// </summary>
-    public float TangentSpeed
-    {
-        get => _internal.TangentSpeed;
-        set => _internal.TangentSpeed = value;
+        get => Core.GetObjectAtPointer(_internal.UserData);
+        set => Core.SetObjectAtPointer(ref _internal.UserData, value);
     }
 
     /// <summary>
     /// User material identifier. This is passed with query results and to friction and restitution
     /// combining functions. It is not used internally.
     /// </summary>
-    public int Material
+    public SurfaceMaterial Material
     {
         get => _internal.Material;
         set => _internal.Material = value;
@@ -90,15 +53,6 @@ public class ShapeDef
         set => _internal.Filter = value;
     }
 
-    /// <summary>
-    /// Custom debug draw color.
-    /// </summary>
-    public HexColor CustomColor
-    {
-        get => _internal.CustomColor;
-        set => _internal.CustomColor = value;
-    }
-    
     /// <summary>
     /// A sensor shape generates overlap events but never generates a collision response.
     /// Sensors do not have continuous collision. Instead, use a ray or shape cast for those scenarios.

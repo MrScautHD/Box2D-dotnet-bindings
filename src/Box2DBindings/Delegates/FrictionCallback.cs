@@ -5,8 +5,8 @@ namespace Box2D;
 /// from a worker thread.
 /// </summary>
 /// <param name="frictionA">The friction A</param>
-/// <param name="materialA">The material A</param>
+/// <param name="userMaterialIdA">The material A</param>
 /// <param name="frictionB">The friction B</param>
-/// <param name="materialB">The material B</param>
+/// <param name="userMaterialIdB">The material B</param>
 /// <returns>The mixed friction</returns>
-public delegate float FrictionCallback(float frictionA, int materialA, float frictionB, int materialB);
+public delegate float FrictionCallback(float frictionA, int userMaterialIdA, float frictionB, int userMaterialIdB);

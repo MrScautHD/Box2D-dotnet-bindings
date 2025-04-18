@@ -49,11 +49,11 @@ public struct ManifoldPoint
     public float TangentImpulse;
 
     /// <summary>
-    /// The maximum normal impulse applied during sub-stepping. This is important
+    /// The total normal impulse applied across sub-stepping and restitution. This is important
     /// to identify speculative contact points that had an interaction in the time step.
     /// </summary>
     [FieldOffset(36)]
-    public float MaxNormalImpulse;
+    public float TotalNormalImpulse;
 
     /// <summary>
     /// Relative normal velocity pre-solve. Used for hit events. If the normal impulse is

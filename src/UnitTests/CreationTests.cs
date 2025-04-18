@@ -9,7 +9,7 @@ public class CreationTests
     public void CreateWorldFromDefault()
     {
         string? error = null;
-        Box2D.Box2D.SetAssertFunction((condition, name, number) =>
+        Core.SetAssertFunction((condition, name, number) =>
         {
             error = condition;
             return 0;
@@ -24,7 +24,7 @@ public class CreationTests
     public void CreateWorldDefFromNew()
     {
         string? error = null;
-        Box2D.Box2D.SetAssertFunction((condition, name, number) =>
+        Core.SetAssertFunction((condition, name, number) =>
         {
             error = condition;
             return 0;
@@ -40,7 +40,7 @@ public class CreationTests
     void CreateTwoJointedBodies()
     {
         string? error = null;
-        Box2D.Box2D.SetAssertFunction((condition, name, number) =>
+        Core.SetAssertFunction((condition, name, number) =>
         {
             error = condition;
             return 0;
@@ -72,7 +72,7 @@ public class CreationTests
     void CreateChainShape()
     {
         string? error = null;
-        Box2D.Box2D.SetAssertFunction((condition, name, number) =>
+        Core.SetAssertFunction((condition, name, number) =>
         {
             error = condition;
             return 0;

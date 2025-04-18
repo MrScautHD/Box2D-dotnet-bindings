@@ -13,7 +13,7 @@ public struct ChainShape
     [FieldOffset(6)]
     private ushort generation;
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DestroyChain")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DestroyChain")]
     private static extern void b2DestroyChain(ChainShape chainId);
     
     /// <summary>
@@ -22,7 +22,7 @@ public struct ChainShape
     /// <remarks>This will remove the chain shape from the world and destroy all contacts associated with this shape</remarks>
     public void Destroy() => b2DestroyChain(this);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Chain_GetWorld")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Chain_GetWorld")]
     private static extern World b2Chain_GetWorld(ChainShape chainId);
     
     /// <summary>
@@ -31,30 +31,34 @@ public struct ChainShape
     /// <returns>The world that owns this chain shape</returns>
     public World GetWorld() => b2Chain_GetWorld(this);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Chain_GetSegmentCount")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Chain_GetSegmentCount")]
     private static extern int b2Chain_GetSegmentCount(ChainShape chainId);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Chain_GetSegments")]
-    private static extern int b2Chain_GetSegments(ChainShape chainId, nint segmentArray, int capacity);
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Chain_GetSegments")]
+    private static extern unsafe int b2Chain_GetSegments(ChainShape chainId, [In] Shape* segmentArray, int capacity);
     
     /// <summary>
     /// The chain segments
     /// </summary>
-    public Shape[] Segments
+    public unsafe ReadOnlySpan<Shape> Segments
     {
         get
         {
-            Shape[] segments = new Shape[b2Chain_GetSegmentCount(this)];
-            nint segmentArrayPtr = Marshal.UnsafeAddrOfPinnedArrayElement(segments, 0);
-            b2Chain_GetSegments(this, segmentArrayPtr, segments.Length);
-            return segments;
+            int needed = b2Chain_GetSegmentCount(this);
+            Shape[] buffer = GC.AllocateUninitializedArray<Shape>(needed);
+            int written;
+            fixed (Shape* p = buffer)
+            {
+                written = b2Chain_GetSegments(this, p, buffer.Length);
+            }
+            return buffer.AsSpan(0, written);
         }
     }
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Chain_SetFriction")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Chain_SetFriction")]
     private static extern void b2Chain_SetFriction(ChainShape chainId, float friction);
    
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Chain_GetFriction")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Chain_GetFriction")]
     private static extern float b2Chain_GetFriction(ChainShape chainId);
     
     /// <summary>
@@ -66,10 +70,10 @@ public struct ChainShape
         set => b2Chain_SetFriction(this, value);
     }
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Chain_SetRestitution")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Chain_SetRestitution")]
     private static extern void b2Chain_SetRestitution(ChainShape chainId, float restitution);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Chain_GetRestitution")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Chain_GetRestitution")]
     private static extern float b2Chain_GetRestitution(ChainShape chainId);
     
     /// <summary>
@@ -81,10 +85,10 @@ public struct ChainShape
         set => b2Chain_SetRestitution(this, value);
     }
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Chain_SetMaterial")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Chain_SetMaterial")]
     private static extern void b2Chain_SetMaterial(ChainShape chainId, int material);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Chain_GetMaterial")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Chain_GetMaterial")]
     private static extern int b2Chain_GetMaterial(ChainShape chainId);
     
     /// <summary>

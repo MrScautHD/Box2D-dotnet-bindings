@@ -131,7 +131,7 @@ struct RevoluteJointDefInternal
     [FieldOffset(88)]
     private readonly int internalValue;
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultRevoluteJointDef")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultRevoluteJointDef")]
     private static extern RevoluteJointDefInternal GetDefault();
     
     /// <summary>

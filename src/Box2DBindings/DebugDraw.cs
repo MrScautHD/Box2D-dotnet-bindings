@@ -145,18 +145,21 @@ public struct DebugDraw
     [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(98)]
     public bool DrawContactImpulses;
-
-    [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(99)]
-    public bool DrawContactFeatures;
     
     /// <summary>
     /// Option to draw contact friction impulses
     /// </summary>
     [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(100)]
+    [FieldOffset(99)]
     public bool DrawFrictionImpulses;
 
+    /// <summary>
+    /// Option to draw contact feature ids
+    /// </summary>
+    [MarshalAs(UnmanagedType.U1)]
+    [FieldOffset(100)]
+    public bool DrawContactFeatures;
+    
     /// <summary>
     /// Option to draw contact friction impulses
     /// </summary>
@@ -167,8 +170,9 @@ public struct DebugDraw
     /// <summary>
     /// User context that is passed as an argument to drawing callback functions
     /// </summary>
-    [FieldOffset(104)]
+    [FieldOffset(104)] // align to next 4 byte boundary
     public nint context;
+    
     public DebugDraw()
     {
         this = DefaultDebugDraw();
@@ -177,7 +181,7 @@ public struct DebugDraw
     /// <summary>
     /// The default debug draw settings.
     /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultDebugDraw")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultDebugDraw")]
     public static extern DebugDraw DefaultDebugDraw();
 
 

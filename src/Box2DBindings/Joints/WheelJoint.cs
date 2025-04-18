@@ -13,7 +13,7 @@ public class WheelJoint : Joint
     internal WheelJoint(JointId id) : base(id)
     { }
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WheelJoint_EnableSpring")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WheelJoint_EnableSpring")]
     private static extern void b2WheelJoint_EnableSpring(JointId jointId, bool enableSpring);
     
     /// <summary>
@@ -22,7 +22,7 @@ public class WheelJoint : Joint
     /// <param name="enableSpring">True to enable the spring, false to disable the spring</param>
     public void EnableSpring(bool enableSpring) => b2WheelJoint_EnableSpring(_id, enableSpring);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WheelJoint_IsSpringEnabled")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WheelJoint_IsSpringEnabled")]
     private static extern bool b2WheelJoint_IsSpringEnabled(JointId jointId);
     
     /// <summary>
@@ -37,10 +37,10 @@ public class WheelJoint : Joint
         set => EnableSpring(value);
     }
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WheelJoint_SetSpringHertz")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WheelJoint_SetSpringHertz")]
     private static extern void b2WheelJoint_SetSpringHertz(JointId jointId, float hertz);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WheelJoint_GetSpringHertz")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WheelJoint_GetSpringHertz")]
     private static extern float b2WheelJoint_GetSpringHertz(JointId jointId);
     
     /// <summary>
@@ -52,10 +52,10 @@ public class WheelJoint : Joint
         set => b2WheelJoint_SetSpringHertz(_id, value);
     }
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WheelJoint_SetSpringDampingRatio")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WheelJoint_SetSpringDampingRatio")]
     private static extern void b2WheelJoint_SetSpringDampingRatio(JointId jointId, float dampingRatio);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WheelJoint_GetSpringDampingRatio")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WheelJoint_GetSpringDampingRatio")]
     private static extern float b2WheelJoint_GetSpringDampingRatio(JointId jointId);
     
     /// <summary>
@@ -67,10 +67,10 @@ public class WheelJoint : Joint
         set => b2WheelJoint_SetSpringDampingRatio(_id, value);
     }
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WheelJoint_EnableLimit")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WheelJoint_EnableLimit")]
     private static extern void b2WheelJoint_EnableLimit(JointId jointId, bool enableLimit);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WheelJoint_IsLimitEnabled")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WheelJoint_IsLimitEnabled")]
     private static extern bool b2WheelJoint_IsLimitEnabled(JointId jointId);
     
     /// <summary>
@@ -82,7 +82,7 @@ public class WheelJoint : Joint
         set => b2WheelJoint_EnableLimit(_id, value);
     }
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WheelJoint_SetLimits")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WheelJoint_SetLimits")]
     private static extern void b2WheelJoint_SetLimits(JointId jointId, float lower, float upper);
     
     /// <summary>
@@ -92,7 +92,7 @@ public class WheelJoint : Joint
     /// <param name="upper">The upper limit</param>
     public void SetLimits(float lower, float upper) => b2WheelJoint_SetLimits(_id, lower, upper);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WheelJoint_GetLowerLimit")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WheelJoint_GetLowerLimit")]
     private static extern float b2WheelJoint_GetLowerLimit(JointId jointId);
     
     /// <summary>
@@ -100,7 +100,7 @@ public class WheelJoint : Joint
     /// </summary>
     public float LowerLimit => b2WheelJoint_GetLowerLimit(_id);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WheelJoint_GetUpperLimit")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WheelJoint_GetUpperLimit")]
     private static extern float b2WheelJoint_GetUpperLimit(JointId jointId);
     
     /// <summary>
@@ -108,10 +108,10 @@ public class WheelJoint : Joint
     /// </summary>
     public float UpperLimit => b2WheelJoint_GetUpperLimit(_id);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WheelJoint_EnableMotor")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WheelJoint_EnableMotor")]
     private static extern void b2WheelJoint_EnableMotor(JointId jointId, bool enableMotor);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WheelJoint_IsMotorEnabled")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WheelJoint_IsMotorEnabled")]
     private static extern bool b2WheelJoint_IsMotorEnabled(JointId jointId);
     
     /// <summary>
@@ -123,10 +123,10 @@ public class WheelJoint : Joint
         set => b2WheelJoint_EnableMotor(_id, value);
     }
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WheelJoint_SetMotorSpeed")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WheelJoint_SetMotorSpeed")]
     private static extern void b2WheelJoint_SetMotorSpeed(JointId jointId, float motorSpeed);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WheelJoint_GetMotorSpeed")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WheelJoint_GetMotorSpeed")]
     private static extern float b2WheelJoint_GetMotorSpeed(JointId jointId);
     
     /// <summary>
@@ -138,10 +138,10 @@ public class WheelJoint : Joint
         set => b2WheelJoint_SetMotorSpeed(_id, value);
     }
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WheelJoint_SetMaxMotorTorque")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WheelJoint_SetMaxMotorTorque")]
     private static extern void b2WheelJoint_SetMaxMotorTorque(JointId jointId, float torque);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WheelJoint_GetMaxMotorTorque")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WheelJoint_GetMaxMotorTorque")]
     private static extern float b2WheelJoint_GetMaxMotorTorque(JointId jointId);
     
     /// <summary>
@@ -153,7 +153,7 @@ public class WheelJoint : Joint
         set => b2WheelJoint_SetMaxMotorTorque(_id, value);
     }
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WheelJoint_GetMotorTorque")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WheelJoint_GetMotorTorque")]
     private static extern float b2WheelJoint_GetMotorTorque(JointId jointId);
     
     /// <summary>

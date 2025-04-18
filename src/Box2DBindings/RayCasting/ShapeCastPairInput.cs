@@ -43,4 +43,11 @@ public struct ShapeCastPairInput
     /// </summary>
     [FieldOffset(72)]
     public float MaxFraction;
+    
+    /// <summary>
+    /// Allows shapes with a radius to move slightly closer if already touching
+    /// </summary>
+    [FieldOffset(76)]
+    [MarshalAs(UnmanagedType.I1)]
+    public bool CanEncroach;
 }

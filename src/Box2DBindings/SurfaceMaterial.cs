@@ -38,7 +38,7 @@ public struct SurfaceMaterial
     /// combining functions. It is not used internally.
     /// </summary>
     [FieldOffset(16)]
-    public int Material;
+    public int UserMaterialId;
 
     /// <summary>
     /// Custom debug draw color.
@@ -49,7 +49,7 @@ public struct SurfaceMaterial
     /// <summary>
     /// The default surface material settings.
     /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultSurfaceMaterial")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultSurfaceMaterial")]
     public static extern SurfaceMaterial DefaultSurfaceMaterial();
     
     public SurfaceMaterial()

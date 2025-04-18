@@ -21,20 +21,26 @@ public struct DistanceOutput
     public Vec2 PointB;
 
     /// <summary>
-    /// The final distance, zero if overlapped
+    /// Normal vector that points from A to B
     /// </summary>
     [FieldOffset(16)]
+    public Vec2 Normal;
+    
+    /// <summary>
+    /// The final distance, zero if overlapped
+    /// </summary>
+    [FieldOffset(32)]
     public float Distance;
 
     /// <summary>
     /// Number of GJK iterations used
     /// </summary>
-    [FieldOffset(20)]
+    [FieldOffset(36)]
     public int Iterations;
 
     /// <summary>
     /// The number of simplexes stored in the simplex array
     /// </summary>
-    [FieldOffset(24)]
+    [FieldOffset(40)]
     public int SimplexCount;
 }

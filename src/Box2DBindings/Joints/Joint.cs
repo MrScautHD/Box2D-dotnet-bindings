@@ -14,8 +14,35 @@ public class Joint
     {
         _id = id;
     }
+    
+    internal static Joint GetJoint(JointId id)
+    {
+        JointType t = b2Joint_GetType(id);
+        switch (t)
+        {
+            case JointType.Distance:
+                return new DistanceJoint(id);
+            case JointType.Motor:
+                return new MotorJoint(id);
+            case JointType.Mouse:
+                return new MouseJoint(id);
+            case JointType.Prismatic:
+                return new PrismaticJoint(id);
+            case JointType.Revolute:
+                return new RevoluteJoint(id);
+            case JointType.Weld:
+                return new WeldJoint(id);
+            case JointType.Wheel:
+                return new WheelJoint(id);
+            case JointType.Filter:
+                return new Joint(id);
+            default:
+                throw new NotSupportedException($"Joint type {t} is not supported");
+            
+        }
+    }
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DestroyJoint")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DestroyJoint")]
     private static extern void b2DestroyJoint(JointId jointId);
     
     /// <summary>
@@ -24,13 +51,13 @@ public class Joint
     public void Destroy()
     {
         nint userDataPtr = b2Joint_GetUserData(_id);
-        Box2D.FreeHandle(ref userDataPtr);
+        Core.FreeHandle(ref userDataPtr);
         b2Joint_SetUserData(_id, 0);
         
         b2DestroyJoint(_id);
     }
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_IsValid")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_IsValid")]
     private static extern bool b2Joint_IsValid(JointId jointId);
     
     /// <summary>
@@ -40,7 +67,7 @@ public class Joint
     /// <remarks>Provides validation for up to 64K allocations</remarks>
     public bool IsValid() => b2Joint_IsValid(_id);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetType")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetType")]
     private static extern JointType b2Joint_GetType(JointId jointId);
     
     /// <summary>
@@ -51,7 +78,7 @@ public class Joint
 
     public JointType Type => GetJointType();
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetBodyA")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetBodyA")]
     private static extern Body b2Joint_GetBodyA(JointId jointId);
 
     /// <summary>
@@ -62,7 +89,7 @@ public class Joint
 
     public Body BodyA => GetBodyA();
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetBodyB")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetBodyB")]
     private static extern Body b2Joint_GetBodyB(JointId jointId);
     
     /// <summary>
@@ -73,7 +100,7 @@ public class Joint
 
     public Body BodyB => GetBodyB();
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetWorld")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetWorld")]
     private static extern World b2Joint_GetWorld(JointId jointId);
     
     /// <summary>
@@ -81,7 +108,7 @@ public class Joint
     /// </summary>
     public World World => b2Joint_GetWorld(_id);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetLocalAnchorA")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetLocalAnchorA")]
     private static extern Vec2 b2Joint_GetLocalAnchorA(JointId jointId);
     
     /// <summary>
@@ -92,7 +119,7 @@ public class Joint
 
     public Vec2 LocalAnchorA => GetLocalAnchorA();
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetLocalAnchorB")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetLocalAnchorB")]
     private static extern Vec2 b2Joint_GetLocalAnchorB(JointId jointId);
     
     /// <summary>
@@ -103,10 +130,10 @@ public class Joint
 
     public Vec2 LocalAnchorB => GetLocalAnchorB();
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_SetCollideConnected")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_SetCollideConnected")]
     private static extern void b2Joint_SetCollideConnected(JointId jointId, bool shouldCollide);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetCollideConnected")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetCollideConnected")]
     private static extern bool b2Joint_GetCollideConnected(JointId jointId);
     
     public bool CollideConnected
@@ -115,10 +142,10 @@ public class Joint
         set => b2Joint_SetCollideConnected(_id, value);
     }
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_SetUserData")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_SetUserData")]
     private static extern void b2Joint_SetUserData(JointId jointId, nint userData);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetUserData")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetUserData")]
     private static extern nint b2Joint_GetUserData(JointId jointId);
     
     /// <summary>
@@ -126,11 +153,11 @@ public class Joint
     /// </summary>
     public object? UserData
     {
-        get => Box2D.GetObjectAtPointer(b2Joint_GetUserData, _id);
-        set => Box2D.SetObjectAtPointer(b2Joint_GetUserData, b2Joint_SetUserData, _id, value);
+        get => Core.GetObjectAtPointer(b2Joint_GetUserData, _id);
+        set => Core.SetObjectAtPointer(b2Joint_GetUserData, b2Joint_SetUserData, _id, value);
     }
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_WakeBodies")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_WakeBodies")]
     private static extern void b2Joint_WakeBodies(JointId jointId);
     
     /// <summary>
@@ -138,7 +165,7 @@ public class Joint
     /// </summary>
     public void WakeBodies() => b2Joint_WakeBodies(_id);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetConstraintForce")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetConstraintForce")]
     private static extern Vec2 b2Joint_GetConstraintForce(JointId jointId);
     
     /// <summary>
@@ -150,7 +177,7 @@ public class Joint
 
     public Vec2 ConstraintForce => GetConstraintForce();
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetConstraintTorque")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetConstraintTorque")]
     private static extern float b2Joint_GetConstraintTorque(JointId jointId);
     
     /// <summary>

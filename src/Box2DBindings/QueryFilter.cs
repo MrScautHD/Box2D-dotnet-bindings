@@ -26,7 +26,7 @@ public struct QueryFilter
     /// <summary>
     /// The default query filter settings.
     /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultQueryFilter")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultQueryFilter")]
     public static extern QueryFilter DefaultQueryFilter();
 
     public QueryFilter()

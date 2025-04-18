@@ -32,7 +32,7 @@ struct FilterJointDefInternal
     [FieldOffset(24)]
     private readonly int internalValue;
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultNullJointDef")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultNullJointDef")]
     private static extern FilterJointDefInternal GetDefault();
     
     /// <summary>

@@ -11,13 +11,15 @@ namespace Box2D;
 unsafe struct ShapeCastInputInternal
 {
     [FieldOffset(0)]
-    internal nint Points;
-    [FieldOffset(Box2D.B2_MAX_POLYGON_VERTICES * 8)]
-    internal int Count;
-    [FieldOffset(Box2D.B2_MAX_POLYGON_VERTICES * 8 + 4)]
-    internal float Radius;
-    [FieldOffset(Box2D.B2_MAX_POLYGON_VERTICES * 8 + 8)]
+    internal ShapeProxy proxy;
+    
+    [FieldOffset(16)]
     internal Vec2 Translation;
-    [FieldOffset(Box2D.B2_MAX_POLYGON_VERTICES * 8 + 16)]
+    
+    [FieldOffset(32)]
     internal float MaxFraction;
+
+    [FieldOffset(36)]
+    [MarshalAs(UnmanagedType.I1)]
+    internal bool CanEncroach;
 }

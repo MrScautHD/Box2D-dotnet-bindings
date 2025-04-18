@@ -159,8 +159,8 @@ public class WheelJointDef
     /// </summary>
     public object? UserData
     {
-        get => Box2D.GetObjectAtPointer(_internal.UserData);
-        set => Box2D.SetObjectAtPointer(ref _internal.UserData, value);
+        get => Core.GetObjectAtPointer(_internal.UserData);
+        set => Core.SetObjectAtPointer(ref _internal.UserData, value);
     }
 
 

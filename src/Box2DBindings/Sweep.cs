@@ -43,7 +43,7 @@ public struct Sweep
     /// <summary>
     /// Evaluate the transform sweep at a specific time.
     /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2GetSweepTransform")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2GetSweepTransform")]
     private static extern Transform GetSweepTransform(in Sweep sweep, float time);
     
     public Transform GetTransform(float beta) => GetSweepTransform(this, beta);

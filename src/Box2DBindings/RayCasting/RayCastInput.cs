@@ -29,7 +29,7 @@ public struct RayCastInput
     /// <summary>
     /// Validate ray cast input data (NaN, etc)
     /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2IsValidRay")]
+    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2IsValidRay")]
     private static extern bool IsValidRay(in RayCastInput input);
     
     /// <summary>

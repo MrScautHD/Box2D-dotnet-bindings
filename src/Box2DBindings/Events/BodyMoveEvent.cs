@@ -35,7 +35,7 @@ public struct BodyMoveEvent
     /// <summary>
     /// The user data associated with the body
     /// </summary>
-    public object? UserData => Box2D.GetObjectAtPointer(userData);
+    public object? UserData => Core.GetObjectAtPointer(userData);
 
     /// <summary>
     /// The body went to sleep

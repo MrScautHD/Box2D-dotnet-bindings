@@ -103,21 +103,21 @@ public class RevoluteJointDef
     }
 
     /// <summary>
-    /// The lower angle for the joint limit in radians
+    /// The lower angle for the joint limit in radians. Minimum of -0.95*pi radians.
     /// </summary>
     public float LowerAngle
     {
         get => _internal.LowerAngle;
-        set => _internal.LowerAngle = value;
+        set => _internal.LowerAngle = Math.Clamp(value, -0.95f * MathF.PI, 0.95f * MathF.PI);
     }
 
     /// <summary>
-    /// The upper angle for the joint limit in radians
+    /// The upper angle for the joint limit in radians. Maximum of 0.95*pi radians.
     /// </summary>
     public float UpperAngle
     {
         get => _internal.UpperAngle;
-        set => _internal.UpperAngle = value;
+        set => _internal.UpperAngle = Math.Clamp(value, -0.95f * MathF.PI, 0.95f * MathF.PI);
     }
 
     /// <summary>
@@ -170,7 +170,7 @@ public class RevoluteJointDef
     /// </summary>
     public object? UserData
     {
-        get => Box2D.GetObjectAtPointer(_internal.UserData);
-        set => Box2D.SetObjectAtPointer(ref _internal.UserData, value);
+        get => Core.GetObjectAtPointer(_internal.UserData);
+        set => Core.SetObjectAtPointer(ref _internal.UserData, value);
     }
 }
