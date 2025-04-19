@@ -26,4 +26,6 @@ public static class Constants
 
     public const ulong DEFAULT_CATEGORY_BITS = 0x0001;
     public const ulong DEFAULT_MASK_BITS = 0xFFFF;
+    
+    public const int B2_MAX_POLYGON_VERTICES = 8;
 }

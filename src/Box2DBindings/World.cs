@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Runtime.InteropServices;
 
 namespace Box2D;
@@ -55,7 +56,7 @@ public struct World
     /// World id validation. Provides validation for up to 64K allocations.
     /// </summary>
     /// <returns>True if the world id is valid</returns>
-    public bool IsValid() => b2World_IsValid(this);
+    public bool Valid => b2World_IsValid(this);
 
     [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_Step")]
     private static extern void b2World_Step(World worldId, float timeStep, int subStepCount);
@@ -83,7 +84,7 @@ public struct World
     /// Get the body events for the current time step. The event data is transient. Do not store a reference to this data.
     /// </summary>
     /// <returns>The body events</returns>
-    public BodyEvents GetBodyEvents() => b2World_GetBodyEvents(this);
+    public BodyEvents BodyEvents => b2World_GetBodyEvents(this);
 
     [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetSensorEvents")]
     private static extern SensorEvents b2World_GetSensorEvents(World worldId);
@@ -92,7 +93,7 @@ public struct World
     /// Get sensor events for the current time step. The event data is transient. Do not store a reference to this data.
     /// </summary>
     /// <returns>The sensor events</returns>
-    public SensorEvents GetSensorEvents() => b2World_GetSensorEvents(this);
+    public SensorEvents SensorEvents => b2World_GetSensorEvents(this);
 
     [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetContactEvents")]
     private static extern ContactEvents b2World_GetContactEvents(World worldId);
@@ -101,7 +102,7 @@ public struct World
     /// Get the contact events for the current time step. The event data is transient. Do not store a reference to this data.
     /// </summary>
     /// <returns>The contact events</returns>
-    public ContactEvents GetContactEvents() => b2World_GetContactEvents(this);
+    public ContactEvents ContactEvents => b2World_GetContactEvents(this);
 
     [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_OverlapAABB")]
     private static extern TreeStats b2World_OverlapAABB(World worldId, AABB aabb, QueryFilter filter, OverlapResultCallback fcn, nint context);
@@ -205,40 +206,35 @@ public struct World
     [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_EnableSleeping")]
     private static extern void b2World_EnableSleeping(World worldId, bool flag);
 
-    /// <summary>
-    /// Enable/disable sleep. If your application does not need sleeping, you can gain some performance by disabling sleep completely at the world level.
-    /// </summary>
-    /// <param name="flag">True to enable sleep, false to disable sleep</param>
-    public void EnableSleeping(bool flag) => b2World_EnableSleeping(this, flag);
-    
     [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_IsSleepingEnabled")]
     private static extern bool b2World_IsSleepingEnabled(World worldId);
-
+    
     /// <summary>
-    /// Is body sleeping enabled?
+    /// Gets or sets the sleeping enabled status of the world. If your application does not need sleeping, you can gain some performance by disabling sleep completely at the world level.
     /// </summary>
-    /// <returns>True if body sleeping is enabled</returns>
-    public bool IsSleepingEnabled() => b2World_IsSleepingEnabled(this);
-
+    public bool SleepingEnabled
+    {
+        get => b2World_IsSleepingEnabled(this);
+        set => b2World_EnableSleeping(this, value);
+    }
+    
     [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_EnableContinuous")]
     private static extern void b2World_EnableContinuous(World worldId, bool flag);
 
-    /// <summary>
-    /// Enable/disable continuous collision between dynamic and static bodies.
-    /// </summary>
-    /// <param name="flag">True to enable continuous collision, false to disable continuous collision</param>
-    /// <remarks>Generally you should keep continuous collision enabled to prevent fast moving objects from going through static objects. The performance gain from disabling continuous collision is minor</remarks>
-    public void EnableContinuous(bool flag) => b2World_EnableContinuous(this, flag);
-
     [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_IsContinuousEnabled")]
     private static extern bool b2World_IsContinuousEnabled(World worldId);
-
+    
     /// <summary>
-    /// Is continuous collision enabled?
+    /// Gets or sets the continuous collision enabled state of the world.
     /// </summary>
-    /// <returns>True if continuous collision is enabled</returns>
-    public bool IsContinuousEnabled() => b2World_IsContinuousEnabled(this);
-
+    /// <remarks>Generally you should keep continuous collision enabled to prevent fast moving objects from going through static objects. The performance gain from disabling continuous collision is minor</remarks>
+    public bool ContinuousEnabled
+    {
+        get => b2World_IsContinuousEnabled(this);
+        set => b2World_EnableContinuous(this, value);
+    }
+    
+    
     [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetRestitutionThreshold")]
     private static extern void b2World_SetRestitutionThreshold(World worldId, float value);
 
@@ -329,7 +325,6 @@ public struct World
     public void SetContactTuning(float hertz, float dampingRatio, float pushSpeed) =>
         b2World_SetContactTuning(this, hertz, dampingRatio, pushSpeed);
 
-
     [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetJointTuning")]
     private static extern void b2World_SetJointTuning(World worldId, float hertz, float dampingRatio);
 
@@ -388,7 +383,7 @@ public struct World
     /// Get the current world performance profile
     /// </summary>
     /// <returns>The world performance profile</returns>
-    public Profile GetProfile() => b2World_GetProfile(this);
+    public Profile Profile => b2World_GetProfile(this);
 
     [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetCounters")]
     private static extern Counters b2World_GetCounters(World worldId);
@@ -397,7 +392,7 @@ public struct World
     /// Get world counters and sizes
     /// </summary>
     /// <returns>The world counters and sizes</returns>
-    public Counters GetCounters() => b2World_GetCounters(this);
+    public Counters Counters => b2World_GetCounters(this);
     
     [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetUserData")]
     private static extern void b2World_SetUserData(World worldId, nint userData);

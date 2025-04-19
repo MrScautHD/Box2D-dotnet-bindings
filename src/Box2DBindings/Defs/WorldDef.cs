@@ -19,124 +19,72 @@ public class WorldDef
     /// <summary>
     /// Gravity vector. Box2D has no up-vector defined.
     /// </summary>
-    public Vec2 Gravity
-    {
-        get => _internal.Gravity;
-        set => _internal.Gravity = value;
-    }
-    
+    public ref Vec2 Gravity => ref _internal.Gravity;
+
     /// <summary>
     /// Restitution speed threshold, usually in m/s. Collisions above this
     /// speed have restitution applied (will bounce).
     /// </summary>
-    public float RestitutionThreshold
-    {
-        get => _internal.RestitutionThreshold;
-        set => _internal.RestitutionThreshold = value;
-    }
+    public ref float RestitutionThreshold => ref _internal.RestitutionThreshold;
 
     /// <summary>
     /// Threshold speed for hit events. Usually meters per second.
     /// </summary>
-    public float HitEventThreshold
-    {
-        get => _internal.HitEventThreshold;
-        set => _internal.HitEventThreshold = value;
-    }
-    
+    public ref float HitEventThreshold => ref _internal.HitEventThreshold;
+
     /// <summary>
     /// Contact stiffness. Cycles per second. Increasing this increases the speed of overlap recovery, but can introduce jitter.
     /// </summary>
-    public float ContactHertz
-    {
-        get => _internal.ContactHertz;
-        set => _internal.ContactHertz = value;
-    }
-    
+    public ref float ContactHertz => ref _internal.ContactHertz;
+
     /// <summary>
     /// Contact bounciness. Non-dimensional. You can speed up overlap recovery by decreasing this with
     /// the trade-off that overlap resolution becomes more energetic.
     /// </summary>
-    public float ContactDampingRatio
-    {
-        get => _internal.ContactDampingRatio;
-        set => _internal.ContactDampingRatio = value;
-    }
+    public ref float ContactDampingRatio => ref _internal.ContactDampingRatio;
 
     /// <summary>
     /// This parameter controls how fast overlap is resolved and usually has units of meters per second. This only
     /// puts a cap on the resolution speed. The resolution speed is increased by increasing the hertz and/or
     /// decreasing the damping ratio.
     /// </summary>
-    public float MaxContactPushSpeed
-    {
-        get => _internal.MaxContactPushSpeed;
-        set => _internal.MaxContactPushSpeed = value;
-    }
-    
+    public ref float MaxContactPushSpeed => ref _internal.MaxContactPushSpeed;
+
     /// <summary>
     /// Joint stiffness. Cycles per second.
     /// </summary>
-    public float JointHertz
-    {
-        get => _internal.JointHertz;
-        set => _internal.JointHertz = value;
-    }
-    
+    public ref float JointHertz => ref _internal.JointHertz;
+
     /// <summary>
     /// Joint bounciness. Non-dimensional.
     /// </summary>
-    public float JointDampingRatio
-    {
-        get => _internal.JointDampingRatio;
-        set => _internal.JointDampingRatio = value;
-    }
-    
+    public ref float JointDampingRatio => ref _internal.JointDampingRatio;
+
     /// <summary>
     /// Maximum linear speed. Usually meters per second.
     /// </summary>
-    public float MaximumLinearSpeed
-    {
-        get => _internal.MaximumLinearSpeed;
-        set => _internal.MaximumLinearSpeed = value;
-    }
+    public ref float MaximumLinearSpeed => ref _internal.MaximumLinearSpeed;
 
     /// <summary>
     /// Optional mixing callback for friction. The default uses sqrt(frictionA * frictionB).
     /// </summary>
-    public FrictionCallback FrictionCallback
-    {
-        get => _internal.FrictionCallback;
-        set => _internal.FrictionCallback = value;
-    }
-    
+    public ref FrictionCallback FrictionCallback => ref _internal.FrictionCallback;
+
     /// <summary>
     /// Optional mixing callback for restitution. The default uses max(restitutionA, restitutionB).
     /// </summary>
-    public RestitutionCallback RestitutionCallback
-    {
-        get => _internal.RestitutionCallback;
-        set => _internal.RestitutionCallback = value;
-    }
+    public ref RestitutionCallback RestitutionCallback => ref _internal.RestitutionCallback;
 
     /// <summary>
     /// Can bodies go to sleep to improve performance
     /// </summary>
-    public bool EnableSleep
-    {
-        get => _internal.EnableSleep;
-        set => _internal.EnableSleep = value;
-    }
-    
+    public ref bool EnableSleep => ref _internal.EnableSleep;
+
     /// <summary>
     /// Enable continuous collision
     /// </summary>
-    public bool EnableContinuous
-    {
-        get => _internal.EnableContinuous;
-        set => _internal.EnableContinuous = value;
-    }
-    
+    public ref bool EnableContinuous => ref _internal.EnableContinuous;
+
     /// <summary>
     /// Number of workers to use with the provided task system. Box2D performs best when using only
     /// performance cores and accessing a single L2 cache. Efficiency cores and hyper-threading provide
@@ -146,30 +94,18 @@ public class WorldDef
     /// <b>Warning: Do not modify the default value unless you are also providing a task system and providing
     /// task callbacks (enqueueTask and finishTask).</b>
     /// </summary>
-    public int WorkerCount
-    {
-        get => _internal.WorkerCount;
-        set => _internal.WorkerCount = value;
-    }
-    
+    public ref int WorkerCount => ref _internal.WorkerCount;
+
     /// <summary>
     /// Callback function to spawn tasks
     /// </summary>
-    public EnqueueTaskCallback EnqueueTask
-    {
-        get => _internal.EnqueueTask;
-        set => _internal.EnqueueTask = value;
-    }
-    
+    public ref EnqueueTaskCallback EnqueueTask => ref _internal.EnqueueTask;
+
     /// <summary>
     /// Callback function to finish a task
     /// </summary>
-    public FinishTaskCallback FinishTask
-    {
-        get => _internal.FinishTask;
-        set => _internal.FinishTask = value;
-    }
-    
+    public ref FinishTaskCallback FinishTask => ref _internal.FinishTask;
+
     /// <summary>
     /// User data pointer
     /// </summary>

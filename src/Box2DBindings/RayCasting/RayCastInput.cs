@@ -35,6 +35,6 @@ public struct RayCastInput
     /// <summary>
     /// Validate this ray cast input data (NaN, etc)
     /// </summary>
-    public bool IsValid => IsValidRay(this);
+    public bool Valid => IsValidRay(this);
 
 }

@@ -184,8 +184,7 @@ public struct DebugDraw
     [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultDebugDraw")]
     public static extern DebugDraw DefaultDebugDraw();
 
-
-    
+   
 
 
 #region Delegates

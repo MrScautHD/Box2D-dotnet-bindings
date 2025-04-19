@@ -22,137 +22,77 @@ public class WheelJointDef
     /// <summary>
     /// The first attached body
     /// </summary>
-    public Body BodyA
-    {
-        get => _internal.BodyA;
-        set => _internal.BodyA = value;
-    }
+    public ref Body BodyA => ref _internal.BodyA;
 
     /// <summary>
     /// The second attached body
     /// </summary>
-    public Body BodyB
-    {
-        get => _internal.BodyB;
-        set => _internal.BodyB = value;
-    }
+    public ref Body BodyB => ref _internal.BodyB;
 
     /// <summary>
     /// The local anchor point relative to bodyA's origin
     /// </summary>
-    public Vec2 LocalAnchorA
-    {
-        get => _internal.LocalAnchorA;
-        set => _internal.LocalAnchorA = value;
-    }
+    public ref Vec2 LocalAnchorA => ref _internal.LocalAnchorA;
 
     /// <summary>
     /// The local anchor point relative to bodyB's origin
     /// </summary>
-    public Vec2 LocalAnchorB
-    {
-        get => _internal.LocalAnchorB;
-        set => _internal.LocalAnchorB = value;
-    }
+    public ref Vec2 LocalAnchorB => ref _internal.LocalAnchorB;
 
     /// <summary>
     /// The local translation unit axis in bodyA
     /// </summary>
-    public Vec2 LocalAxisA
-    {
-        get => _internal.LocalAxisA;
-        set => _internal.LocalAxisA = value;
-    }
+    public ref Vec2 LocalAxisA => ref _internal.LocalAxisA;
 
     /// <summary>
     /// Enable a linear spring along the local axis
     /// </summary>
-    public bool EnableSpring
-    {
-        get => _internal.EnableSpring;
-        set => _internal.EnableSpring = value;
-    }
+    public ref bool EnableSpring => ref _internal.EnableSpring;
 
     /// <summary>
     /// Spring stiffness in Hertz
     /// </summary>
-    public float Hertz
-    {
-        get => _internal.Hertz;
-        set => _internal.Hertz = value;
-    }
+    public ref float Hertz => ref _internal.Hertz;
 
     /// <summary>
     /// Spring damping ratio, non-dimensional
     /// </summary>
-    public float DampingRatio
-    {
-        get => _internal.DampingRatio;
-        set => _internal.DampingRatio = value;
-    }
+    public ref float DampingRatio => ref _internal.DampingRatio;
 
     /// <summary>
     /// Enable/disable the joint linear limit
     /// </summary>
-    public bool EnableLimit
-    {
-        get => _internal.EnableLimit;
-        set => _internal.EnableLimit = value;
-    }
+    public ref bool EnableLimit => ref _internal.EnableLimit;
 
     /// <summary>
     /// The lower translation limit
     /// </summary>
-    public float LowerTranslation
-    {
-        get => _internal.LowerTranslation;
-        set => _internal.LowerTranslation = value;
-    }
+    public ref float LowerTranslation => ref _internal.LowerTranslation;
 
     /// <summary>
     /// The upper translation limit
     /// </summary>
-    public float UpperTranslation
-    {
-        get => _internal.UpperTranslation;
-        set => _internal.UpperTranslation = value;
-    }
-    
+    public ref float UpperTranslation => ref _internal.UpperTranslation;
+
     /// <summary>
     /// Enable/disable the joint rotational motor
     /// </summary>
-    public bool EnableMotor
-    {
-        get => _internal.EnableMotor;
-        set => _internal.EnableMotor = value;
-    }
+    public ref bool EnableMotor => ref _internal.EnableMotor;
 
     /// <summary>
     /// The maximum motor torque, typically in newton-meters
     /// </summary>
-    public float MaxMotorTorque
-    {
-        get => _internal.MaxMotorTorque;
-        set => _internal.MaxMotorTorque = value;
-    }
+    public ref float MaxMotorTorque => ref _internal.MaxMotorTorque;
 
     /// <summary>
     /// The desired motor speed in radians per second
     /// </summary>
-    public float MotorSpeed
-    {
-        get => _internal.MotorSpeed;
-        set => _internal.MotorSpeed = value;
-    }
+    public ref float MotorSpeed => ref _internal.MotorSpeed;
 
     /// <summary>
     /// Set this flag to true if the attached bodies should collide
     /// </summary>
-    public bool CollideConnected
-    {
-        get => _internal.CollideConnected;
-        set => _internal.CollideConnected = value;
-    }
+    public ref bool CollideConnected => ref _internal.CollideConnected;
 
     /// <summary>
     /// User data pointer

@@ -12,12 +12,12 @@ namespace Box2D;
 public unsafe struct BodyEvents
 {
     [FieldOffset(0)]
-    private nint moveEvents;
+    private BodyMoveEvent* moveEvents;
 
     /// <summary>
     /// Array of move events
     /// </summary>
-    public ReadOnlySpan<BodyMoveEvent> MoveEvents => new((BodyMoveEvent*)moveEvents, moveCount);
+    public ReadOnlySpan<BodyMoveEvent> MoveEvents => new(moveEvents, moveCount);
     
     [FieldOffset(8)]
     private int moveCount;

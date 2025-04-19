@@ -65,7 +65,7 @@ public class Joint
     /// </summary>
     /// <returns>true if this joint is valid</returns>
     /// <remarks>Provides validation for up to 64K allocations</remarks>
-    public bool IsValid() => b2Joint_IsValid(_id);
+    public bool Valid => b2Joint_IsValid(_id);
 
     [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetType")]
     private static extern JointType b2Joint_GetType(JointId jointId);
@@ -74,9 +74,7 @@ public class Joint
     /// Gets the joint type
     /// </summary>
     /// <returns>The joint type</returns>
-    public JointType GetJointType() => b2Joint_GetType(_id);
-
-    public JointType Type => GetJointType();
+    public JointType Type => b2Joint_GetType(_id);
 
     [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetBodyA")]
     private static extern Body b2Joint_GetBodyA(JointId jointId);
@@ -85,9 +83,7 @@ public class Joint
     /// Gets body A on this joint
     /// </summary>
     /// <returns>The body A on this joint</returns>
-    public Body GetBodyA() => b2Joint_GetBodyA(_id);
-
-    public Body BodyA => GetBodyA();
+    public Body BodyA => b2Joint_GetBodyA(_id);
     
     [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetBodyB")]
     private static extern Body b2Joint_GetBodyB(JointId jointId);
@@ -96,9 +92,7 @@ public class Joint
     /// Gets body B on this joint
     /// </summary>
     /// <returns>The body B on this joint</returns>
-    public Body GetBodyB() => b2Joint_GetBodyB(_id);
-
-    public Body BodyB => GetBodyB();
+    public Body BodyB => b2Joint_GetBodyB(_id);
 
     [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetWorld")]
     private static extern World b2Joint_GetWorld(JointId jointId);
@@ -115,9 +109,7 @@ public class Joint
     /// Gets the local anchor on body A
     /// </summary>
     /// <returns>The local anchor on body A</returns>
-    public Vec2 GetLocalAnchorA() => b2Joint_GetLocalAnchorA(_id);
-
-    public Vec2 LocalAnchorA => GetLocalAnchorA();
+    public Vec2 LocalAnchorA => b2Joint_GetLocalAnchorA(_id);
     
     [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetLocalAnchorB")]
     private static extern Vec2 b2Joint_GetLocalAnchorB(JointId jointId);
@@ -126,9 +118,7 @@ public class Joint
     /// Gets the local anchor on body B
     /// </summary>
     /// <returns>The local anchor on body B</returns>
-    public Vec2 GetLocalAnchorB() => b2Joint_GetLocalAnchorB(_id);
-
-    public Vec2 LocalAnchorB => GetLocalAnchorB();
+    public Vec2 LocalAnchorB => b2Joint_GetLocalAnchorB(_id);
 
     [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_SetCollideConnected")]
     private static extern void b2Joint_SetCollideConnected(JointId jointId, bool shouldCollide);
@@ -173,9 +163,7 @@ public class Joint
     /// </summary>
     /// <returns>The current constraint force for this joint</returns>
     /// <remarks>Usually in Newtons</remarks>
-    public Vec2 GetConstraintForce() => b2Joint_GetConstraintForce(_id);
-
-    public Vec2 ConstraintForce => GetConstraintForce();
+    public Vec2 ConstraintForce => b2Joint_GetConstraintForce(_id);
 
     [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetConstraintTorque")]
     private static extern float b2Joint_GetConstraintTorque(JointId jointId);
@@ -185,7 +173,5 @@ public class Joint
     /// </summary>
     /// <returns>The current constraint torque for this joint</returns>
     /// <remarks>Usually in Newton * meters</remarks>
-    public float GetConstraintTorque() => b2Joint_GetConstraintTorque(_id);
-
-    public float ConstraintTorque => GetConstraintTorque();
+    public float ConstraintTorque => b2Joint_GetConstraintTorque(_id);
 }

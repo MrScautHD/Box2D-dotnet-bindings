@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.InteropServices;
 
 namespace Box2D;
@@ -31,7 +32,7 @@ public class ChainDef
         _internal = new ChainDefInternal();
     }
 
-    unsafe ~ChainDef()
+    ~ChainDef()
     {
         if (_internal.Points != 0)
         {
@@ -104,28 +105,15 @@ public class ChainDef
     /// <summary>
     /// Contact filtering data.
     /// </summary>
-    public Filter Filter
-    {
-        get => _internal.Filter;
-        set => _internal.Filter = value;
-    }
+    public ref Filter Filter => ref _internal.Filter;
 
     /// <summary>
     /// Indicates a closed chain formed by connecting the first and last points
     /// </summary>
-    public bool IsLoop
-    {
-        get => _internal.IsLoop;
-        set => _internal.IsLoop = value;
-    }
+    public ref bool IsLoop => ref _internal.IsLoop;
 
     /// <summary>
     /// Enable sensors to detect this chain. False by default.
     /// </summary>
-    public bool EnableSensorEvents
-    {
-        get => _internal.EnableSensorEvents;
-        set => _internal.EnableSensorEvents = value;
-    }
-    
+    public ref bool EnableSensorEvents => ref _internal.EnableSensorEvents;
 }

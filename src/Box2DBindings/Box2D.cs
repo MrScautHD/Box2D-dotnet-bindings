@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 using System.Runtime.InteropServices;
 
 using System.Runtime.CompilerServices;
@@ -9,10 +10,13 @@ namespace Box2D;
 
 public static class Core
 {
-    public const int B2_MAX_POLYGON_VERTICES = 8;
-
     internal const string libraryName = "box2d";
 
+    public static Vec2 MultiplySubtract(this Vec2 a, float s, Vec2 b)
+    {
+        return new Vec2(a.X - s * b.X, a.Y - s * b.Y);
+    }
+    
     /// <summary>
     /// Get the current version of Box2D
     /// </summary>

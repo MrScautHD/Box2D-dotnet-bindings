@@ -20,65 +20,37 @@ public class MouseJointDef
     /// <summary>
     /// The first attached body. This is assumed to be static.
     /// </summary>
-    public Body BodyA
-    {
-        get => _internal.BodyA;
-        set => _internal.BodyA = value;
-    }
+    public ref Body BodyA => ref _internal.BodyA;
 
     /// <summary>
     /// The second attached body.
     /// </summary>
-    public Body BodyB
-    {
-        get => _internal.BodyB;
-        set => _internal.BodyB = value;
-    }
+    public ref Body BodyB => ref _internal.BodyB;
 
     /// <summary>
     /// The initial target point in world space
     /// </summary>
-    public Vec2 Target
-    {
-        get => _internal.Target;
-        set => _internal.Target = value;
-    }
+    public ref Vec2 Target => ref _internal.Target;
 
     /// <summary>
     /// Stiffness in hertz
     /// </summary>
-    public float Hertz
-    {
-        get => _internal.Hertz;
-        set => _internal.Hertz = value;
-    }
+    public ref float Hertz => ref _internal.Hertz;
 
     /// <summary>
     /// Damping ratio, non-dimensional
     /// </summary>
-    public float DampingRatio
-    {
-        get => _internal.DampingRatio;
-        set => _internal.DampingRatio = value;
-    }
+    public ref float DampingRatio => ref _internal.DampingRatio;
 
     /// <summary>
     /// Maximum force, typically in newtons
     /// </summary>
-    public float MaxForce
-    {
-        get => _internal.MaxForce;
-        set => _internal.MaxForce = value;
-    }
+    public ref float MaxForce => ref _internal.MaxForce;
 
     /// <summary>
     /// Set this flag to true if the attached bodies should collide.
     /// </summary>
-    public bool CollideConnected
-    {
-        get => _internal.CollideConnected;
-        set => _internal.CollideConnected = value;
-    }
+    public ref bool CollideConnected => ref _internal.CollideConnected;
 
     /// <summary>
     /// User data pointer

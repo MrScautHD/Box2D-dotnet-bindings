@@ -15,13 +15,13 @@ public unsafe struct SensorEvents
     /// Array of sensor begin touch events
     /// </summary>
     [FieldOffset(0)]
-    private nint beginEvents;
+    private SensorBeginTouchEvent* beginEvents;
 
     /// <summary>
     /// Array of sensor end touch events
     /// </summary>
     [FieldOffset(8)]
-    private nint endEvents;
+    private SensorEndTouchEvent* endEvents;
 
     [FieldOffset(16)]
     private int beginCount;
@@ -29,7 +29,7 @@ public unsafe struct SensorEvents
     [FieldOffset(20)]
     private int endCount;
 	
-    public ReadOnlySpan<SensorBeginTouchEvent> BeginEvents => new((SensorBeginTouchEvent*)beginEvents, beginCount);
+    public ReadOnlySpan<SensorBeginTouchEvent> BeginEvents => new(beginEvents, beginCount);
 
-    public ReadOnlySpan<SensorEndTouchEvent> EndEvents => new((SensorEndTouchEvent*)endEvents, endCount);
+    public ReadOnlySpan<SensorEndTouchEvent> EndEvents => new(endEvents, endCount);
 }

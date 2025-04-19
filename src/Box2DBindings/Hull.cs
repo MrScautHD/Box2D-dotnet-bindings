@@ -16,7 +16,7 @@ public struct Hull
     /// The final points of the hull
     /// </summary>
     [FieldOffset(0)]
-    [MarshalAs(UnmanagedType.ByValArray, SizeConst = Core.B2_MAX_POLYGON_VERTICES)]
+    [MarshalAs(UnmanagedType.ByValArray, SizeConst = B2_MAX_POLYGON_VERTICES)]
     private Vec2[] points;
     
     public ReadOnlySpan<Vec2> Points
@@ -54,8 +54,8 @@ public struct Hull
     /// </remarks>
     public static unsafe Hull Compute(Vec2[] points)
     {
-        if (points.Length > Core.B2_MAX_POLYGON_VERTICES)
-            throw new ArgumentException($"Hull can only contain up to {Core.B2_MAX_POLYGON_VERTICES} points");
+        if (points.Length > B2_MAX_POLYGON_VERTICES)
+            throw new ArgumentException($"Hull can only contain up to {B2_MAX_POLYGON_VERTICES} points");
         
         fixed (Vec2* pointsPtr = points)
             return Compute(pointsPtr, points.Length);
@@ -80,5 +80,5 @@ public struct Hull
     /// </ul>
     /// This is expensive and should not be called at runtime.
     /// </summary>
-    public bool Validate() => Validate(in this);
+    public bool Valid => Validate(in this);
 }

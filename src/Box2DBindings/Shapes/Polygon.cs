@@ -18,30 +18,30 @@ public unsafe struct Polygon
     /// The polygon vertices
     /// </summary>
     [FieldOffset(0)]
-    private nint* vertices;
+    private Vec2* vertices;
 
     /// <summary>
     /// The outward normal vectors of the polygon sides
     /// </summary>
-    [FieldOffset(Core.B2_MAX_POLYGON_VERTICES * 8)]
-    private nint* normals;
+    [FieldOffset(B2_MAX_POLYGON_VERTICES * 8)]
+    private Vec2* normals;
 
     /// <summary>
     /// The centroid of the polygon
     /// </summary>
-    [FieldOffset(Core.B2_MAX_POLYGON_VERTICES * 8 * 2)]
+    [FieldOffset(B2_MAX_POLYGON_VERTICES * 8 * 2)]
     public Vec2 Centroid;
 
     /// <summary>
     /// The external radius for rounded polygons
     /// </summary>
-    [FieldOffset(Core.B2_MAX_POLYGON_VERTICES * 8 * 2 + 8)] 
+    [FieldOffset(B2_MAX_POLYGON_VERTICES * 8 * 2 + 8)] 
     public float Radius;
 
     /// <summary>
     /// The number of polygon vertices
     /// </summary>
-    [FieldOffset(Core.B2_MAX_POLYGON_VERTICES * 8 * 2 + 12)]
+    [FieldOffset(B2_MAX_POLYGON_VERTICES * 8 * 2 + 12)]
     private int count;
     
     public ReadOnlySpan<Vec2> Vertices => new(vertices, count);

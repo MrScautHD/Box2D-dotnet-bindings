@@ -21,93 +21,53 @@ public class WeldJointDef
     /// <summary>
     /// The first attached body
     /// </summary>
-    public Body BodyA
-    {
-        get => _internal.BodyA;
-        set => _internal.BodyA = value;
-    }
-    
+    public ref Body BodyA => ref _internal.BodyA;
+
     /// <summary>
     /// The second attached body
     /// </summary>
-    public Body BodyB
-    {
-        get => _internal.BodyB;
-        set => _internal.BodyB = value;
-    }
-    
+    public ref Body BodyB => ref _internal.BodyB;
+
     /// <summary>
     /// The local anchor point relative to bodyA's origin
     /// </summary>
-    public Vec2 LocalAnchorA
-    {
-        get => _internal.LocalAnchorA;
-        set => _internal.LocalAnchorA = value;
-    }
-    
+    public ref Vec2 LocalAnchorA => ref _internal.LocalAnchorA;
+
     /// <summary>
     /// The local anchor point relative to bodyB's origin
     /// </summary>
-    public Vec2 LocalAnchorB
-    {
-        get => _internal.LocalAnchorB;
-        set => _internal.LocalAnchorB = value;
-    }
-    
+    public ref Vec2 LocalAnchorB => ref _internal.LocalAnchorB;
+
     /// <summary>
     /// The bodyB angle minus bodyA angle in the reference state (radians)
     /// </summary>
-    public float ReferenceAngle
-    {
-        get => _internal.ReferenceAngle;
-        set => _internal.ReferenceAngle = value;
-    }
-    
+    public ref float ReferenceAngle => ref _internal.ReferenceAngle;
+
     /// <summary>
     /// Linear stiffness expressed as Hertz (cycles per second). Use zero for maximum stiffness.
     /// </summary>
-    public float LinearHertz
-    {
-        get => _internal.LinearHertz;
-        set => _internal.LinearHertz = value;
-    }
-    
+    public ref float LinearHertz => ref _internal.LinearHertz;
+
     /// <summary>
     /// Angular stiffness as Hertz (cycles per second). Use zero for maximum stiffness.
     /// </summary>
-    public float AngularHertz
-    {
-        get => _internal.AngularHertz;
-        set => _internal.AngularHertz = value;
-    }
-    
-    /// <summary>
-    /// Linear damping ratio, non-dimensional. Use 1 for critical damping.
-    /// </summary>
-    public float LinearDampingRatio
-    {
-        get => _internal.LinearDampingRatio;
-        set => _internal.LinearDampingRatio = value;
-    }
+    public ref float AngularHertz => ref _internal.AngularHertz;
 
     /// <summary>
     /// Linear damping ratio, non-dimensional. Use 1 for critical damping.
     /// </summary>
-    public float AngularDampingRatio
-    {
-        get => _internal.AngularDampingRatio;
-        set => _internal.AngularDampingRatio = value;
-    }
-    
+    public ref float LinearDampingRatio => ref _internal.LinearDampingRatio;
+
+    /// <summary>
+    /// Linear damping ratio, non-dimensional. Use 1 for critical damping.
+    /// </summary>
+    public ref float AngularDampingRatio => ref _internal.AngularDampingRatio;
+
     /// <summary>
     /// Set this flag to true if the attached bodies should collide
     /// </summary>
-    public bool CollideConnected
-    {
-        get => _internal.CollideConnected;
-        set => _internal.CollideConnected = value;
-    }
-    
+    public ref bool CollideConnected => ref _internal.CollideConnected;
+
     /// <summary>
     /// User data
     /// </summary>

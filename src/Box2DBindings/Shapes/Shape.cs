@@ -14,7 +14,9 @@ public struct Shape : IEquatable<Shape>
     private ushort generation;
     
     public bool Equals(Shape other) => index1 == other.index1 && world0 == other.world0 && generation == other.generation;
+    
     public override bool Equals(object? obj) => obj is Shape other && Equals(other);
+    
     public override int GetHashCode() => HashCode.Combine(index1, world0, generation);
     
     [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DestroyShape")]
@@ -176,7 +178,7 @@ public struct Shape : IEquatable<Shape>
     /// </summary>
     public int Material
     {
-        get =>  b2Shape_GetMaterial(this);
+        get => b2Shape_GetMaterial(this);
         set => b2Shape_SetMaterial(this, value);
     }
 
@@ -387,7 +389,6 @@ public struct Shape : IEquatable<Shape>
     [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetSensorCapacity")]
     private static extern int b2Shape_GetSensorCapacity(Shape shapeId);
     
-    
     [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetSensorOverlaps")]
     private static extern unsafe int b2Shape_GetSensorOverlaps(Shape shapeId, Shape* overlaps, int capacity);
 
@@ -455,25 +456,23 @@ public struct Shape : IEquatable<Shape>
     {
         get
         {
+            switch (Type)
             {
-                switch (Type)
-                {
-                    case ShapeType.Circle:
-                        return new ([GetCircle().Center]);
-                    case ShapeType.Segment:
-                        var segment = GetSegment();
-                        return new([segment.Point1, segment.Point2]);
-                    case ShapeType.Polygon:
-                        return GetPolygon().Vertices;
-                    case ShapeType.Capsule:
-                        var capsule = GetCapsule();
-                        return new([capsule.Center1, capsule.Center2]);
-                    case ShapeType.ChainSegment:
-                        var chainSegment = GetChainSegment();
-                        return new([chainSegment.Segment.Point1, chainSegment.Segment.Point2]);
-                    default:
-                        return [];
-                }
+                case ShapeType.Circle:
+                    return new ([GetCircle().Center]);
+                case ShapeType.Segment:
+                    var segment = GetSegment();
+                    return new([segment.Point1, segment.Point2]);
+                case ShapeType.Polygon:
+                    return GetPolygon().Vertices;
+                case ShapeType.Capsule:
+                    var capsule = GetCapsule();
+                    return new([capsule.Center1, capsule.Center2]);
+                case ShapeType.ChainSegment:
+                    var chainSegment = GetChainSegment();
+                    return new([chainSegment.Segment.Point1, chainSegment.Segment.Point2]);
+                default:
+                    return [];
             }
         }
     }

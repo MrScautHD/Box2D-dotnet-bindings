@@ -19,37 +19,20 @@ public class ShapeCastInput
     /// <summary>
     /// A generic shape
     /// </summary>
-    public ShapeProxy Proxy
-    {
-        get => _internal.proxy;
-        set => _internal.proxy = value;
-    }
-    
+    public ref ShapeProxy Proxy => ref _internal.proxy;
+
     /// <summary>
     /// The translation of the shape cast
     /// </summary>
-    public Vec2 Translation
-    {
-        get => _internal.Translation;
-        set => _internal.Translation = value;
-    }
-    
+    public ref Vec2 Translation => ref _internal.Translation;
+
     /// <summary>
     /// The maximum fraction of the translation to consider, typically 1
     /// </summary>
-    public float MaxFraction
-    {
-        get => _internal.MaxFraction;
-        set => _internal.MaxFraction = value;
-    }
- 
+    public ref float MaxFraction => ref _internal.MaxFraction;
+
     /// <summary>
     /// Allow shape cast to encroach when initially touching. This only works if the radius is greater than zero.
     /// </summary>
-    public bool CanEncroach
-    {
-        get => _internal.CanEncroach;
-        set => _internal.CanEncroach = value;
-    }
-    
+    public ref bool CanEncroach => ref _internal.CanEncroach;
 }

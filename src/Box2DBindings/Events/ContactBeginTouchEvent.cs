@@ -25,5 +25,5 @@ public struct ContactBeginTouchEvent
     /// so all the impulses will be zero.
     /// </summary>
     [FieldOffset(16)]
-    public Manifold manifold;
+    public Manifold Manifold;
 }

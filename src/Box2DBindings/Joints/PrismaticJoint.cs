@@ -16,25 +16,17 @@ public class PrismaticJoint : Joint
     [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_EnableSpring")]
     private static extern void b2PrismaticJoint_EnableSpring(JointId jointId, bool enableSpring);
 
-    /// <summary>
-    /// Enables/disables the joint spring
-    /// </summary>
-    /// <param name="enableSpring">True to enable the joint spring, false to disable the joint spring</param>
-    public void EnableSpring(bool enableSpring) => b2PrismaticJoint_EnableSpring(_id, enableSpring);
-
     [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_IsSpringEnabled")]
     private static extern bool b2PrismaticJoint_IsSpringEnabled(JointId jointId);
 
     /// <summary>
-    /// Checks if the prismatic joint spring is enabled
+    /// Gets or sets the prismatic joint spring enabled state
     /// </summary>
     /// <returns>True if the prismatic joint spring is enabled</returns>
-    public bool IsSpringEnabled() => b2PrismaticJoint_IsSpringEnabled(_id);
-
     public bool SpringEnabled
     {
-        get => IsSpringEnabled();
-        set => EnableSpring(value);
+        get => b2PrismaticJoint_IsSpringEnabled(_id);
+        set => b2PrismaticJoint_EnableSpring(_id, value);
     }
 
     [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_SetSpringHertz")]

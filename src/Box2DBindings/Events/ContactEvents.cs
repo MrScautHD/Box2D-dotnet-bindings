@@ -12,28 +12,28 @@ namespace Box2D;
 public unsafe struct ContactEvents
 {
     [FieldOffset(0)]
-    private nint beginEvents;
+    private ContactBeginTouchEvent* beginEvents;
 	
     /// <summary>
     /// Array of begin touch events
     /// </summary>
-    public ReadOnlySpan<ContactBeginTouchEvent> BeginEvents => new((ContactBeginTouchEvent*)beginEvents, beginCount);
+    public ReadOnlySpan<ContactBeginTouchEvent> BeginEvents => new(beginEvents, beginCount);
 
     [FieldOffset(8)]
-    private nint endEvents;
+    private ContactEndTouchEvent* endEvents;
 	
     /// <summary>
     /// Array of end touch events
     /// </summary>
-    public ReadOnlySpan<ContactEndTouchEvent> EndEvents => new((ContactEndTouchEvent*)endEvents, endCount);
+    public ReadOnlySpan<ContactEndTouchEvent> EndEvents => new(endEvents, endCount);
 
     [FieldOffset(16)]
-    private nint hitEvents;
+    private ContactHitEvent* hitEvents;
 	
     /// <summary>
     /// Array of hit events
     /// </summary>
-    public ReadOnlySpan<ContactHitEvent> HitEvents => new((ContactHitEvent*)hitEvents, hitCount);
+    public ReadOnlySpan<ContactHitEvent> HitEvents => new(hitEvents, hitCount);
 
     /// Number of begin touch events
     [FieldOffset(24)]

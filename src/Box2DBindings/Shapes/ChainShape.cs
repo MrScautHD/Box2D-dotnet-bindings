@@ -48,9 +48,7 @@ public struct ChainShape
             Shape[] buffer = GC.AllocateUninitializedArray<Shape>(needed);
             int written;
             fixed (Shape* p = buffer)
-            {
                 written = b2Chain_GetSegments(this, p, buffer.Length);
-            }
             return buffer.AsSpan(0, written);
         }
     }

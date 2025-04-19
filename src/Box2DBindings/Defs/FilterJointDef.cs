@@ -17,20 +17,12 @@ public class FilterJointDef
     /// <summary>
     /// The first attached body.
     /// </summary>
-    public Body BodyA
-    {
-        get => _internal.BodyA;
-        set => _internal.BodyA = value;
-    }
+    public ref Body BodyA => ref _internal.BodyA;
 
     /// <summary>
     /// The second attached body.
     /// </summary>
-    public Body BodyB
-    {
-        get => _internal.BodyB;
-        set => _internal.BodyB = value;
-    }
+    public ref Body BodyB => ref _internal.BodyB;
 
     /// <summary>
     /// User data pointer
