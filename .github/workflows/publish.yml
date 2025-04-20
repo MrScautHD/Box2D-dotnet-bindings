@@ -24,16 +24,16 @@ jobs:
 
           - os: ubuntu-latest
             artifact_name: box2d-linux
-            artifact_path: box2d-src/build/src/bin/libbox2d.so
-            cmake_flags: "-DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin"
+            artifact_path: box2d-src/build/bin/libbox2d.so
+            cmake_flags: "-DBUILD_SHARED_LIBS=ON -DBOX2D_UNIT_TESTS=OFF -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS="-Wno-error=maybe-uninitialized""
             cmake_build_dir: "box2d-src/build"
             post_build_cmd: |
-              rm box2d-src/build/src/bin/libbox2d.so
-              mv box2d-src/build/src/bin/libbox2d.so.3.0.0 box2d-src/build/src/bin/libbox2d.so
+              rm box2d-src/build/bin/libbox2d.so
+              mv box2d-src/build/bin/libbox2d.so.3.1.0 box2d-src/build/bin/libbox2d.so
                 
           - os: macos-latest
             artifact_name: box2d-macos
-            artifact_path: box2d-src/build/src/bin/libbox2d.dylib
+            artifact_path: box2d-src/build/bin/libbox2d.dylib
             cmake_flags: "-DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin"
             post_build_cmd: "echo 'macOS build complete'"
     
