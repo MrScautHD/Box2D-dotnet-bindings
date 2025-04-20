@@ -6,7 +6,7 @@ namespace Box2D;
 /// This is used to filter collision on shapes. It affects shape-vs-shape collision
 /// and shape-versus-query collision (such as World.CastRay).
 /// </summary>
-[StructLayout(LayoutKind.Explicit)]
+[StructLayout(LayoutKind.Sequential)]
 public struct Filter
 {
     /// <summary>
@@ -23,7 +23,6 @@ public struct Filter
     /// };
     /// </code>
     /// </summary>
-    [FieldOffset(0)]
     public ulong CategoryBits;
 
     /// <summary>
@@ -35,7 +34,6 @@ public struct Filter
     /// maskBits = Static | Player;
     /// </code>
     /// </summary>
-    [FieldOffset(8)]
     public ulong MaskBits;
 
     /// <summary>
@@ -46,13 +44,12 @@ public struct Filter
     /// ragdoll self-collision. In this case you would give each ragdoll a unique negative group index
     /// and apply that group index to all shapes on the ragdoll.
     /// </summary>
-    [FieldOffset(16)]
     public int GroupIndex;
 
     /// <summary>
     /// The default filter settings.
     /// </summary>
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultFilter")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultFilter")]
     public static extern Filter DefaultFilter();
 
     public Filter()

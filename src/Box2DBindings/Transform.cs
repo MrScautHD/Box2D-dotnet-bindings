@@ -1,14 +1,13 @@
 using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace Box2D;
 
-[StructLayout(LayoutKind.Explicit)]
+[StructLayout(LayoutKind.Sequential)]
 public struct Transform : IEquatable<Transform>
 {
-    [FieldOffset(0)]
     public Vec2 Position;
-    [FieldOffset(8)]
     public Rotation Rotation;
     
     public static readonly Transform Identity = new()
@@ -27,4 +26,7 @@ public struct Transform : IEquatable<Transform>
         obj is Transform other && Equals(other);
     public override int GetHashCode() =>
         HashCode.Combine(Position, Rotation);
+    
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    public string DebuggerDisplay => $"Transform(Position: {Position}, Rotation: {Rotation})";
 }

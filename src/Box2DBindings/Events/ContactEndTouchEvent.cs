@@ -8,20 +8,18 @@ namespace Box2D;
 ///	world step. These include things like setting the transform, destroying a body
 ///	or shape, or changing a filter or body type.
 /// </summary>
-[StructLayout(LayoutKind.Explicit)]
+[StructLayout(LayoutKind.Sequential)]
 public struct ContactEndTouchEvent
 {
     /// <summary>
     /// The first shape
     ///	<b>Warning: this shape may have been destroyed. Use Shape.IsValid</b>
     /// </summary>
-    [FieldOffset(0)]
     public Shape ShapeA;
 
     /// <summary>
     /// The second shape
     ///	<b>Warning: this shape may have been destroyed. Use Shape.IsValid</b>
     /// </summary>
-    [FieldOffset(8)]
     public Shape ShapeB;
 }

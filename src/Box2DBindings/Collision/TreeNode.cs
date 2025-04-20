@@ -6,38 +6,42 @@ namespace Box2D;
 public struct TreeNode
 {
     [FieldOffset(0)]
-    internal AABB AABB = new AABB();
+    public AABB AABB; // 16 bytes
 
     [FieldOffset(16)]
-    internal ulong CategoryBits = DEFAULT_CATEGORY_BITS;
+    public ulong CategoryBits; // 8 bytes
+
+    // Union: userData OR children
+    [FieldOffset(24)]
+    public ulong UserData;
 
     [FieldOffset(24)]
-    internal int Child1 = NULL_INDEX;
+    public TreeChildren Children;
 
-    [FieldOffset(28)]
-    internal int Child2 = NULL_INDEX;
+    // Union: parent OR next
+    [FieldOffset(32)]
+    public int Parent;
 
     [FieldOffset(32)]
-    internal ulong UserData = 0;
+    public int Next;
 
-    [FieldOffset(40)]
-    internal int Parent = NULL_INDEX;
+    [FieldOffset(36)]
+    public ushort Height;
 
-    [FieldOffset(44)]
-    internal int Next = NULL_INDEX;
-
-    [FieldOffset(48)]
-    internal ushort Height = 0;
-
-    [FieldOffset(50)]
-    internal b2TreeNodeFlags Flags = b2TreeNodeFlags.b2_allocatedNode;
-    public TreeNode()
-    { }
-    
-    internal enum b2TreeNodeFlags : ushort
-    {
-        b2_allocatedNode = 0x0001,
-        b2_enlargedNode = 0x0002,
-        b2_leafNode = 0x0004,
-    };
+    [FieldOffset(38)]
+    public TreeNodeFlags Flags;
 }
+
+[StructLayout(LayoutKind.Sequential)]
+public struct TreeChildren
+{
+    public int Child1;
+    public int Child2;
+}
+
+public enum TreeNodeFlags : ushort
+{
+    AllocatedNode = 0x0001,
+    EnlargedNode = 0x0002,
+    LeafNode = 0x0004,
+};

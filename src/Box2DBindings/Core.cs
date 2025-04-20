@@ -1,7 +1,7 @@
-﻿using System;
-using System.Numerics;
-using System.Runtime.InteropServices;
+﻿global using static Box2D.Core;
 
+using System;
+using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 
 [assembly:InternalsVisibleTo("UnitTests")]
@@ -15,6 +15,14 @@ public static class Core
     public static Vec2 MultiplySubtract(this Vec2 a, float s, Vec2 b)
     {
         return new Vec2(a.X - s * b.X, a.Y - s * b.Y);
+    }
+    
+    public static Vec2 TransformPoint( Transform t, in Vec2 p )
+    {
+        float x = ( t.Rotation.Cos * p.X - t.Rotation.Sin * p.Y ) + t.Position.X;
+        float y = ( t.Rotation.Sin * p.X + t.Rotation.Cos * p.Y ) + t.Position.Y;
+
+        return new Vec2(x, y);
     }
     
     /// <summary>
@@ -85,12 +93,26 @@ public static class Core
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ShapeCast")]
     public static extern CastOutput ShapeCast(in ShapeCastPairInput input);
 
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakeProxy")]
+    private static extern unsafe ShapeProxy MakeProxy([In] Vec2[] points, int count, float radius);
+    
     /// <summary>
     /// Make a proxy for use in GJK and related functions.
     /// </summary>
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakeProxy")]
-    public static extern ShapeProxy MakeProxy(in Vec2 vertices, int count, float radius);
-    
+    public static unsafe ShapeProxy MakeProxy(Vec2[] vertices, float radius)
+    {
+        return MakeProxy(vertices, vertices.Length, radius);
+    }
+
+    /// <summary>
+    /// Make a proxy for use in GJK and related functions.
+    /// </summary>
+    public static ShapeProxy MakeProxy(in Vec2 vertex, float radius)
+    {
+        Vec2[] vertices = { vertex };
+        return MakeProxy(vertices, radius);
+    }
+
     /// <summary>
     /// Compute the upper bound on time before two shapes penetrate. Time is represented as
     /// a fraction between [0,tMax]. This uses a swept separating axis and may miss some intermediate,

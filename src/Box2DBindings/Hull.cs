@@ -35,7 +35,7 @@ public struct Hull
     [FieldOffset(8)]
     private int count;
     
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ComputeHull")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ComputeHull")]
     private static extern unsafe Hull Compute(Vec2* points, int count);
 
     /// <summary>
@@ -52,7 +52,7 @@ public struct Hull
     /// <remarks>
     /// <b>Warning: Do not modify a hull once it has been computed</b>
     /// </remarks>
-    public static unsafe Hull Compute(Vec2[] points)
+    public static unsafe Hull Compute(Span<Vec2> points)
     {
         if (points.Length > B2_MAX_POLYGON_VERTICES)
             throw new ArgumentException($"Hull can only contain up to {B2_MAX_POLYGON_VERTICES} points");
@@ -69,8 +69,8 @@ public struct Hull
     /// </ul>
     /// This is expensive and should not be called at runtime.
     /// </summary>
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ValidateHull")]
-    public static extern bool Validate(in Hull hull);
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ValidateHull")]
+    private static extern bool Validate(in Hull hull);
     
     /// <summary>
     /// Determines if this hull is valid. Checks for:

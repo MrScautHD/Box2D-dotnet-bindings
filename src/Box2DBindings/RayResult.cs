@@ -2,7 +2,7 @@ using System.Runtime.InteropServices;
 
 namespace Box2D;
 
-[StructLayout(LayoutKind.Explicit)]
+[StructLayout(LayoutKind.Explicit, Pack = 4)]
 public struct RayResult
 {
     [FieldOffset(0)]
@@ -20,5 +20,6 @@ public struct RayResult
     public int LeafVisits;
     
     [FieldOffset(36)]
+    [MarshalAs(UnmanagedType.U1)]
     public bool Hit;
 }

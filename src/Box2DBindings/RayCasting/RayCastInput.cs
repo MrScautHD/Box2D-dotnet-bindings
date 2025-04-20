@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Runtime.InteropServices;
 
 namespace Box2D;
@@ -29,12 +30,13 @@ public struct RayCastInput
     /// <summary>
     /// Validate ray cast input data (NaN, etc)
     /// </summary>
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2IsValidRay")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2IsValidRay")]
     private static extern bool IsValidRay(in RayCastInput input);
     
     /// <summary>
     /// Validate this ray cast input data (NaN, etc)
     /// </summary>
+    [PublicAPI]
     public bool Valid => IsValidRay(this);
 
 }

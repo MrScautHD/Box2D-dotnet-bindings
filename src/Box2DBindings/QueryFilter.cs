@@ -7,26 +7,30 @@ namespace Box2D;
 /// you may want a ray-cast representing a projectile to hit players and the static environment
 /// but not debris.
 /// </summary>
-[StructLayout(LayoutKind.Explicit)]
+[StructLayout(LayoutKind.Sequential)]
 public struct QueryFilter
 {
     /// <summary>
     /// The collision category bits of this query. Normally you would just set one bit.
     /// </summary>
-    [FieldOffset(0)]
     public ulong CategoryBits;
 
     /// <summary>
     /// The collision mask bits. This states the shape categories that this
     /// query would accept for collision.
     /// </summary>
-    [FieldOffset(8)]
     public ulong MaskBits;
 
+    public QueryFilter(ulong categoryBits, ulong maskBits)
+    {
+        CategoryBits = categoryBits;
+        MaskBits = maskBits;
+    }
+    
     /// <summary>
     /// The default query filter settings.
     /// </summary>
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultQueryFilter")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultQueryFilter")]
     public static extern QueryFilter DefaultQueryFilter();
 
     public QueryFilter()

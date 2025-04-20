@@ -2,7 +2,7 @@ using System.Runtime.InteropServices;
 
 namespace Box2D;
 
-[StructLayout(LayoutKind.Explicit)]
+[StructLayout(LayoutKind.Explicit)] // LayoutKind.Explicit is required here to align fields appearing after bools, which must be marshalled as U1
 struct DistanceJointDefInternal
 {
     /// <summary>
@@ -99,8 +99,7 @@ struct DistanceJointDefInternal
     [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(72)]
     internal bool CollideConnected;
-
-   
+    
     /// <summary>
     /// User data pointer
     /// </summary>
@@ -113,7 +112,7 @@ struct DistanceJointDefInternal
     [FieldOffset(84)]
     internal readonly int internalValue;
     
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultDistanceJointDef")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultDistanceJointDef")]
     private static extern DistanceJointDefInternal GetDefault();
     
     /// <summary>

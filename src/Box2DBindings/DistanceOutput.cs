@@ -5,42 +5,36 @@ namespace Box2D;
 /// <summary>
 /// Output for ShapeDistance
 /// </summary>
-[StructLayout(LayoutKind.Explicit)]
+[StructLayout(LayoutKind.Sequential)]
 public struct DistanceOutput
 {
     /// <summary>
     /// Closest point on shape A
     /// </summary>
-    [FieldOffset(0)]
     public Vec2 PointA;
 
     /// <summary>
     /// Closest point on shape B
     /// </summary>
-    [FieldOffset(8)]
     public Vec2 PointB;
 
     /// <summary>
     /// Normal vector that points from A to B
     /// </summary>
-    [FieldOffset(16)]
     public Vec2 Normal;
     
     /// <summary>
     /// The final distance, zero if overlapped
     /// </summary>
-    [FieldOffset(32)]
     public float Distance;
 
     /// <summary>
     /// Number of GJK iterations used
     /// </summary>
-    [FieldOffset(36)]
     public int Iterations;
 
     /// <summary>
     /// The number of simplexes stored in the simplex array
     /// </summary>
-    [FieldOffset(40)]
     public int SimplexCount;
 }

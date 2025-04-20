@@ -85,7 +85,7 @@ struct WeldJointDefInternal
     [FieldOffset(64)]
     private readonly int internalValue;
     
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultWeldJointDef")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultWeldJointDef")]
     private static extern WeldJointDefInternal GetDefault();
     
     /// <summary>

@@ -19,7 +19,7 @@
         <Nullable>enable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <RootNamespace>Box2D</RootNamespace>
-        <LangVersion>latest</LangVersion>
+        <LangVersion>preview</LangVersion>
 
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
 
@@ -36,12 +36,12 @@
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-      <DebugType>none</DebugType>
-      <DefineConstants>TRACE;BOX2D_310</DefineConstants>
+      <DebugType>full</DebugType>
+      <DefineConstants>TRACE</DefineConstants>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-      <DefineConstants>TRACE;BOX2D_310</DefineConstants>
+      <DefineConstants>TRACE</DefineConstants>
     </PropertyGroup>
     
     <PropertyGroup>

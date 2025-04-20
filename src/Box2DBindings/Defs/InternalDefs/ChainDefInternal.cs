@@ -3,13 +3,13 @@ using System.Runtime.InteropServices;
 namespace Box2D;
 
 [StructLayout(LayoutKind.Explicit)]
-struct ChainDefInternal
+unsafe struct ChainDefInternal
 {
     [FieldOffset(0)]
     internal nint UserData;
 
     [FieldOffset(8)]
-    internal nint Points;
+    internal Vec2* Points;
 	
     /// <summary>
     /// The point count, must be 4 or more.
@@ -18,7 +18,7 @@ struct ChainDefInternal
     internal int Count;
 
     [FieldOffset(20)]
-    internal nint Materials;
+    internal SurfaceMaterial* Materials;
 	
     /// <summary>
     /// The material count. Must be 1 or count. This allows you to provide one
@@ -44,7 +44,7 @@ struct ChainDefInternal
     [FieldOffset(56)]
     private readonly int internalValue;
  
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultChainDef")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultChainDef")]
     private static extern ChainDefInternal GetDefault();
     
     /// <summary>

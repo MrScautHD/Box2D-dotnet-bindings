@@ -1,7 +1,10 @@
+using JetBrains.Annotations;
+using System;
 using System.Runtime.InteropServices;
 
 namespace Box2D;
 
+[StructLayout(LayoutKind.Sequential)]
 public unsafe struct DynamicTree
 {
     private TreeNode* nodes;
@@ -13,110 +16,147 @@ public unsafe struct DynamicTree
     private int proxyCount;
     private int* leafIndices;
     private AABB* leafBoxes;
-    private Vec2 leafCenters;
+    private Vec2* leafCenters;
     private int* binIndices;
     private int rebuildCapacity;
 
+    public ReadOnlySpan<TreeNode> Nodes => new(nodes, nodeCapacity);
+    public ReadOnlySpan<int> LeafIndices => new(leafIndices, rebuildCapacity);
+    public ReadOnlySpan<AABB> LeafBoxes => new(leafBoxes, rebuildCapacity);
+    public ReadOnlySpan<Vec2> LeafCenters => new(leafCenters, rebuildCapacity);
+    public ReadOnlySpan<int> BinIndices => new(binIndices, rebuildCapacity);
+    
     /// <summary>
     /// Constructing the tree initializes the node pool.
     /// </summary>
-    [DllImport("box2d", CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DynamicTree_Create")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DynamicTree_Create")]
+    [PublicAPI]
     public static extern DynamicTree Create();
 
-    [DllImport("box2d", CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DynamicTree_Destroy")]
-    private static extern void Destroy(in DynamicTree tree);
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DynamicTree_Destroy")]
+    private static extern void Destroy(ref DynamicTree tree);
 
     /// <summary>
     /// Destroy the tree, freeing the node pool.
     /// </summary>
+    [PublicAPI]
     public void Destroy()
     {
-        Destroy(in this);
+        Destroy(ref this);
     }
 
-    [DllImport("box2d", CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DynamicTree_CreateProxy")]
-    private static extern int CreateProxy(in DynamicTree tree, AABB aabb, uint64_t categoryBits, uint64_t userData);
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DynamicTree_CreateProxy")]
+    private static extern int CreateProxy(ref DynamicTree tree, AABB aabb, uint64_t categoryBits, uint64_t userData);
 
     /// <summary>
     /// Create a proxy. Provide an AABB and a userData value.
     /// </summary>
+    [PublicAPI]
     public int CreateProxy(AABB aabb, uint64_t categoryBits, uint64_t userData)
     {
-        return CreateProxy(in this, aabb, categoryBits, userData);
+        return CreateProxy(ref this, aabb, categoryBits, userData);
     }
 
-    [DllImport("box2d", CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DynamicTree_DestroyProxy")]
-    private static extern void DestroyProxy(in DynamicTree tree, int proxyId);
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DynamicTree_DestroyProxy")]
+    private static extern void DestroyProxy(ref DynamicTree tree, int proxyId);
 
     /// <summary>
     /// Destroy a proxy. This asserts if the id is invalid.
     /// </summary>
+    [PublicAPI]
     public void DestroyProxy(int proxyId)
     {
-        DestroyProxy(in this, proxyId);
+        DestroyProxy(ref this, proxyId);
     }
 
-    [DllImport("box2d", CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DynamicTree_MoveProxy")]
-    private static extern void MoveProxy(in DynamicTree tree, int proxyId, AABB aabb);
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DynamicTree_MoveProxy")]
+    private static extern void MoveProxy(ref DynamicTree tree, int proxyId, AABB aabb);
 
     /// <summary>
     /// Move a proxy to a new AABB by removing and reinserting into the tree.
     /// </summary>
+    [PublicAPI]
     public void MoveProxy(int proxyId, AABB aabb)
     {
-        MoveProxy(in this, proxyId, aabb);
+        MoveProxy(ref this, proxyId, aabb);
     }
 
-    [DllImport("box2d", CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DynamicTree_EnlargeProxy")]
-    private static extern void EnlargeProxy(in DynamicTree tree, int proxyId, AABB aabb);
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DynamicTree_EnlargeProxy")]
+    private static extern void EnlargeProxy(ref DynamicTree tree, int proxyId, AABB aabb);
 
     /// <summary>
     /// Enlarge a proxy and enlarge ancestors as necessary.
     /// </summary>
+    [PublicAPI]
     public void EnlargeProxy(int proxyId, AABB aabb)
     {
-        EnlargeProxy(in this, proxyId, aabb);
+        EnlargeProxy(ref this, proxyId, aabb);
     }
 
-    [DllImport("box2d", CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DynamicTree_SetCategoryBits")]
-    private static extern void SetCategoryBits(in DynamicTree tree, int proxyId, uint64_t categoryBits);
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DynamicTree_SetCategoryBits")]
+    private static extern void SetCategoryBits(ref DynamicTree tree, int proxyId, uint64_t categoryBits);
 
     /// <summary>
     /// Modify the category bits on a proxy. This is an expensive operation.
     /// </summary>
+    [PublicAPI]
     public void SetCategoryBits(int proxyId, uint64_t categoryBits)
     {
-        SetCategoryBits(in this, proxyId, categoryBits);
+        SetCategoryBits(ref this, proxyId, categoryBits);
     }
 
-    [DllImport("box2d", CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DynamicTree_GetCategoryBits")]
-    private static extern uint64_t GetCategoryBits(in DynamicTree tree, int proxyId);
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DynamicTree_GetCategoryBits")]
+    private static extern uint64_t GetCategoryBits(ref DynamicTree tree, int proxyId);
 
     /// <summary>
     /// Get the category bits on a proxy.
     /// </summary>
+    [PublicAPI]
     public uint64_t GetCategoryBits(int proxyId)
     {
-        return GetCategoryBits(in this, proxyId);
+        return GetCategoryBits(ref this, proxyId);
     }
-
-    [DllImport("box2d", CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DynamicTree_Query")]
-    private static extern TreeStats Query(in DynamicTree tree, AABB aabb, uint64_t maskBits,
-        TreeQueryCallbackFcn callback, void* context);
+    
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DynamicTree_Query")]
+    private static extern TreeStats b2DynamicTree_Query(in DynamicTree tree, AABB aabb, uint64_t maskBits,
+        TreeQueryNintCallback callback, nint context);
 
     /// <summary>
     /// Query an AABB for overlapping proxies. The callback class is called for each proxy that overlaps the supplied AABB.
     /// </summary>
     /// <returns>Performance data</returns>
-    public TreeStats Query(AABB aabb, uint64_t maskBits, TreeQueryCallbackFcn callback, void* context)
+    [PublicAPI]
+    public TreeStats Query<TContext>(AABB aabb, uint64_t maskBits, TreeQueryCallback<TContext> callback, TContext context)
     {
-        return Query(in this, aabb, maskBits, callback, context);
+        bool TreeQueryCallbackPrivate(int proxyId, uint64_t userData, nint _) => callback(proxyId, userData, context);
+        return b2DynamicTree_Query(this, aabb, maskBits, TreeQueryCallbackPrivate, nint.Zero);
     }
-        
-    [DllImport("box2d", CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DynamicTree_RayCast")]
-    private static extern TreeStats RayCast(in DynamicTree tree, in RayCastInput input, uint64_t maskBits,
-        TreeRayCastCallbackFcn callback, void* context);
-
+    
+    /// <summary>
+    /// Query an AABB for overlapping proxies. The callback class is called for each proxy that overlaps the supplied AABB.
+    /// </summary>
+    /// <returns>Performance data</returns>
+    [PublicAPI]
+    public TreeStats Query(AABB aabb, uint64_t maskBits, TreeQueryCallback callback)
+    {
+        bool TreeQueryCallbackPrivate(int proxyId, uint64_t userData, nint _) => callback(proxyId, userData);
+        return b2DynamicTree_Query(this, aabb, maskBits, TreeQueryCallbackPrivate, nint.Zero);
+    }
+    
+    /// <summary>
+    /// Query an AABB for overlapping proxies. The callback class is called for each proxy that overlaps the supplied AABB.
+    /// </summary>
+    /// <returns>Performance data</returns>
+    [PublicAPI]
+    public TreeStats Query(AABB aabb, uint64_t maskBits, TreeQueryNintCallback callback, nint context)
+    {
+        return b2DynamicTree_Query(this, aabb, maskBits, callback, context);
+    }
+    
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DynamicTree_RayCast")]
+    private static extern TreeStats b2DynamicTree_RayCast(in DynamicTree tree, in RayCastInput input, uint64_t maskBits,
+        TreeRayCastNintCallback callback, nint context);
+    
     /// <summary>
     /// Ray cast against the proxies in the tree. This relies on the callback
     /// to perform a exact ray cast in the case were the proxy contains a shape.
@@ -129,14 +169,52 @@ public unsafe struct DynamicTree
     /// <param name="callback">A callback class that is called for each proxy that is hit by the ray</param>
     /// <param name="context">User context that is passed to the callback</param>
     /// <returns>Performance data</returns>
-    public TreeStats RayCast(in RayCastInput input, uint64_t maskBits, TreeRayCastCallbackFcn callback, void* context)
+    [PublicAPI]
+    public TreeStats RayCast<TContext>(in RayCastInput input, uint64_t maskBits, TreeRayCastCallback<TContext> callback, TContext context)
     {
-        return RayCast(in this, input, maskBits, callback, context);
+        float TreeRayCastCallbackPrivate(in RayCastInput input, int proxyId, uint64_t userData, nint _) => callback(input, proxyId, userData, context);
+        return b2DynamicTree_RayCast(this, input, maskBits, TreeRayCastCallbackPrivate, nint.Zero);
     }
-        
-    [DllImport("box2d", CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DynamicTree_ShapeCast")]
-    private static extern TreeStats ShapeCast(in DynamicTree tree, in ShapeCastInput input, uint64_t maskBits,
-        TreeShapeCastCallbackFcn callback, void* context);
+    
+    /// <summary>
+    /// Ray cast against the proxies in the tree. This relies on the callback
+    /// to perform a exact ray cast in the case were the proxy contains a shape.
+    /// The callback also performs the any collision filtering. This has performance
+    /// roughly equal to k * log(n), where k is the number of collisions and n is the
+    /// number of proxies in the tree.
+    /// </summary>
+    /// <param name="input">The ray cast input data. The ray extends from p1 to p1 + maxFraction * (p2 - p1)</param>
+    /// <param name="maskBits">Mask bit hint: `bool accept = (maskBits &amp; node-&gt;categoryBits) != 0;`</param>
+    /// <param name="callback">A callback class that is called for each proxy that is hit by the ray</param>
+    /// <returns>Performance data</returns>
+    [PublicAPI]
+    public TreeStats RayCast(in RayCastInput input, uint64_t maskBits, TreeRayCastCallback callback)
+    {
+        float TreeRayCastCallbackPrivate(in RayCastInput input, int proxyId, uint64_t userData, nint _) => callback(input, proxyId, userData);
+        return b2DynamicTree_RayCast(this, input, maskBits, TreeRayCastCallbackPrivate, nint.Zero);
+    }
+    
+    /// <summary>
+    /// Ray cast against the proxies in the tree. This relies on the callback
+    /// to perform a exact ray cast in the case were the proxy contains a shape.
+    /// The callback also performs the any collision filtering. This has performance
+    /// roughly equal to k * log(n), where k is the number of collisions and n is the
+    /// number of proxies in the tree.
+    /// </summary>
+    /// <param name="input">The ray cast input data. The ray extends from p1 to p1 + maxFraction * (p2 - p1)</param>
+    /// <param name="maskBits">Mask bit hint: `bool accept = (maskBits &amp; node-&gt;categoryBits) != 0;`</param>
+    /// <param name="callback">A callback class that is called for each proxy that is hit by the ray</param>
+    /// <param name="context">User context that is passed to the callback</param>
+    /// <returns>Performance data</returns>
+    [PublicAPI]
+    public TreeStats RayCast(in RayCastInput input, uint64_t maskBits, TreeRayCastNintCallback callback, nint context)
+    {
+        return b2DynamicTree_RayCast(this, input, maskBits, callback, context);
+    }
+    
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DynamicTree_ShapeCast")]
+    private static extern TreeStats b2DynamicTree_ShapeCast(in DynamicTree tree, in ShapeCastInput input, uint64_t maskBits,
+        TreeShapeCastNintCallback callback, nint context);
 
     /// <summary>
     /// Ray cast against the proxies in the tree. This relies on the callback
@@ -150,103 +228,150 @@ public unsafe struct DynamicTree
     /// <param name="callback">A callback class that is called for each proxy that is hit by the shape</param>
     /// <param name="context">User context that is passed to the callback</param>
     /// <returns>Performance data</returns>
-    public TreeStats ShapeCast(in ShapeCastInput input, uint64_t maskBits, TreeShapeCastCallbackFcn callback, void* context)
+    [PublicAPI]
+    public TreeStats ShapeCast<TContext>(in ShapeCastInput input, uint64_t maskBits, TreeShapeCastCallback<TContext> callback, TContext context)
     {
-        return ShapeCast(in this, input, maskBits, callback, context);
+        float TreeShapeCastCallbackPrivate(in ShapeCastInput input, int proxyId, uint64_t userData, nint _) => callback(input, proxyId, userData, context);
+        return b2DynamicTree_ShapeCast(this, input, maskBits, TreeShapeCastCallbackPrivate, nint.Zero);
     }
-        
-    [DllImport("box2d", CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DynamicTree_GetHeight")]
+    
+    /// <summary>
+    /// Ray cast against the proxies in the tree. This relies on the callback
+    /// to perform a exact ray cast in the case were the proxy contains a shape.
+    /// The callback also performs the any collision filtering. This has performance
+    /// roughly equal to k * log(n), where k is the number of collisions and n is the
+    /// number of proxies in the tree.
+    /// </summary>
+    /// <param name="input">The ray cast input data. The ray extends from p1 to p1 + maxFraction * (p2 - p1).</param>
+    /// <param name="maskBits">Filter bits: `bool accept = (maskBits &amp; node-&gt;categoryBits) != 0;`</param>
+    /// <param name="callback">A callback class that is called for each proxy that is hit by the shape</param>
+    /// <returns>Performance data</returns>
+    [PublicAPI]
+    public TreeStats ShapeCast(in ShapeCastInput input, uint64_t maskBits, TreeShapeCastCallback callback)
+    {
+        float TreeShapeCastCallbackPrivate(in ShapeCastInput input, int proxyId, uint64_t userData, nint _) => callback(input, proxyId, userData);
+        return b2DynamicTree_ShapeCast(this, input, maskBits, TreeShapeCastCallbackPrivate, nint.Zero);
+    }
+    
+    /// <summary>
+    /// Ray cast against the proxies in the tree. This relies on the callback
+    /// to perform a exact ray cast in the case were the proxy contains a shape.
+    /// The callback also performs the any collision filtering. This has performance
+    /// roughly equal to k * log(n), where k is the number of collisions and n is the
+    /// number of proxies in the tree.
+    /// </summary>
+    /// <param name="input">The ray cast input data. The ray extends from p1 to p1 + maxFraction * (p2 - p1).</param>
+    /// <param name="maskBits">Filter bits: `bool accept = (maskBits &amp; node-&gt;categoryBits) != 0;`</param>
+    /// <param name="callback">A callback class that is called for each proxy that is hit by the shape</param>
+    /// <returns>Performance data</returns>
+    [PublicAPI]
+    public TreeStats ShapeCast(in ShapeCastInput input, uint64_t maskBits, TreeShapeCastNintCallback callback, nint context)
+    {
+        return b2DynamicTree_ShapeCast(this, input, maskBits, callback, context);
+    }
+    
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DynamicTree_GetHeight")]
     private static extern int GetHeight(in DynamicTree tree);
         
     /// <summary>
     /// Get the height of the binary tree.
     /// </summary>
+    [PublicAPI]
     public int Height => GetHeight(in this);
         
-    [DllImport("box2d", CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DynamicTree_GetAreaRatio")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DynamicTree_GetAreaRatio")]
     private static extern float GetAreaRatio(in DynamicTree tree);
         
     /// <summary>
     /// Get the ratio of the sum of the node areas to the root area.
     /// </summary>
+    [PublicAPI]
     public float AreaRatio => GetAreaRatio(in this);
         
-    [DllImport("box2d", CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DynamicTree_GetRootBounds")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DynamicTree_GetRootBounds")]
     private static extern AABB GetRootBounds(in DynamicTree tree);
         
     /// <summary>
     /// Get the bounding box that contains the entire tree
     /// </summary>
+    [PublicAPI]
     public AABB RootBounds => GetRootBounds(in this);
         
-    [DllImport("box2d", CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DynamicTree_GetProxyCount")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DynamicTree_GetProxyCount")]
     private static extern int GetProxyCount(in DynamicTree tree);
         
     /// <summary>
     /// Get the number of proxies created
     /// </summary>
+    [PublicAPI]
     public int ProxyCount => GetProxyCount(in this);
         
-    [DllImport("box2d", CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DynamicTree_Rebuild")]
-    private static extern int Rebuild(in DynamicTree tree, bool fullBuild);
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DynamicTree_Rebuild")]
+    private static extern int Rebuild(ref DynamicTree tree, bool fullBuild);
         
     /// <summary>
     /// Rebuild the tree while retaining subtrees that haven't changed. Returns the number of boxes sorted.
     /// </summary>
     /// <param name="fullBuild">If true, the tree is fully rebuilt. If false, only the boxes that have changed are rebuilt.</param>
     /// <returns>The number of boxes sorted.</returns>
+    [PublicAPI]
     public int Rebuild(bool fullBuild)
     {
-        return Rebuild(in this, fullBuild);
+        return Rebuild(ref this, fullBuild);
     }
         
-    [DllImport("box2d", CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DynamicTree_GetByteCount")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DynamicTree_GetByteCount")]
     private static extern int GetByteCount(in DynamicTree tree);
         
     /// <summary>
     /// Get the number of bytes used by this tree
     /// </summary>
+    [PublicAPI]
     public int ByteCount => GetByteCount(in this);
         
-    [DllImport("box2d", CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DynamicTree_GetUserData")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DynamicTree_GetUserData")]
     private static extern uint64_t GetUserData(in DynamicTree tree, int proxyId);
         
     /// <summary>
     /// Get proxy user data
     /// </summary>
+    [PublicAPI]
     public uint64_t GetUserData(int proxyId)
     {
         return GetUserData(in this, proxyId);
     }
         
-    [DllImport("box2d", CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DynamicTree_GetAABB")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DynamicTree_GetAABB")]
     private static extern AABB GetAABB(in DynamicTree tree, int proxyId);
         
     /// <summary>
     /// Get the AABB of a proxy
     /// </summary>
+    [PublicAPI]
     public AABB GetAABB(int proxyId)
     {
         return GetAABB(in this, proxyId);
     }
         
-    [DllImport("box2d", CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DynamicTree_Validate")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DynamicTree_Validate")]
     private static extern void Validate(in DynamicTree tree);
         
     /// <summary>
     /// Validate this tree. For testing.
     /// </summary>
+    [PublicAPI]
     public void Validate()
     {
         Validate(in this);
     }
         
-    [DllImport("box2d", CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DynamicTree_ValidateNoEnlarged")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DynamicTree_ValidateNoEnlarged")]
     private static extern void ValidateNoEnlarged(in DynamicTree tree);
         
     /// <summary>
     /// Validate this tree. For testing.
     /// </summary>
+    [PublicAPI]
     public void ValidateNoEnlarged()
     {
         ValidateNoEnlarged(in this);

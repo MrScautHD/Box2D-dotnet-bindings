@@ -7,48 +7,19 @@ namespace Box2D;
 /// A distance proxy is used by the GJK algorithm. It encapsulates any shape.
 /// You can provide between 1 and <see cref="Constants.MAX_POLYGON_VERTICES" /> and a radius.
 /// </summary>
-[StructLayout(LayoutKind.Explicit)]
-public struct ShapeProxy : IDisposable
+[StructLayout(LayoutKind.Sequential)]
+public unsafe struct ShapeProxy
 {
-    [FieldOffset(0)]
-    private nint points;
-    
-    /// <summary>
-    /// The point cloud
-    /// </summary>
-    public unsafe ReadOnlySpan<Vec2> Points
+    public fixed float points[B2_MAX_POLYGON_VERTICES*2];
+    public int count;
+    public float radius;
+
+    public ReadOnlySpan<Vec2> Points
     {
-        get => new((void*)points, count);
-        set
+        get
         {
-            if (points != 0)
-                Marshal.FreeHGlobal(points);
-            points = Marshal.AllocHGlobal(value.Length * sizeof(Vec2));
-            var span = new Span<Vec2>((void*)points, count);
-            for (int i = 0; i < value.Length; i++)
-                span[i] = value[i];
-            count = value.Length;
-        }
-    }
-    
-    /// <summary>
-    /// The number of points
-    /// </summary>
-    [FieldOffset(8)]
-    private int count;
-    
-    /// <summary>
-    /// The external radius of the point cloud
-    /// </summary>
-    [FieldOffset(12)]
-    public float Radius;
-    
-    public void Dispose()
-    {
-        if (points != 0)
-        {
-            Marshal.FreeHGlobal(points);
-            points = 0;
+            fixed (float* ptr = points)
+                return new ReadOnlySpan<Vec2>(ptr, count);
         }
     }
 }

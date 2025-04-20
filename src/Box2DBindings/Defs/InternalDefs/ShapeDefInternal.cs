@@ -90,7 +90,7 @@ struct ShapeDefInternal
     /// </summary>
     [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(62)]
-    internal bool UpdateBodyMass;
+    internal bool UpdateBodyMass = true;
 
     /// <summary>
     /// Used internally to detect a valid definition. DO NOT SET.
@@ -101,7 +101,7 @@ struct ShapeDefInternal
     /// <summary>
     /// The default shape definition.
     /// </summary>
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultShapeDef")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultShapeDef")]
     private static extern ShapeDefInternal GetDefault();
     
     /// <summary>

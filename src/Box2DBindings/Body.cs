@@ -1,18 +1,21 @@
 using JetBrains.Annotations;
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace Box2D;
 
-[StructLayout(LayoutKind.Explicit)]
-public struct Body
+[StructLayout(LayoutKind.Sequential)]
+public struct Body: IEquatable<Body>, IComparable<Body>
 {
-    [FieldOffset(0)]
     public int index1;
-    [FieldOffset(4)]
     private ushort world0;
-    [FieldOffset(6)]
     private ushort generation;
+    
+    [PublicAPI]
+    public static IComparer<Body> DefaultComparer { get; } = Comparers.BodyComparer.Instance;
+    [PublicAPI]
+    public static IEqualityComparer<Body> DefaultEqualityComparer { get; } = Comparers.BodyComparer.Instance;
     
     [PublicAPI]
     public bool Equals(Body other) => index1 == other.index1 && world0 == other.world0 && generation == other.generation;
@@ -24,7 +27,18 @@ public struct Body
     public static bool operator !=(Body left, Body right) => !(left == right);
     public bool ReferenceEquals(Body other) => this == other;
 
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DestroyBody")]
+    public int CompareTo(Body other)
+    {
+        int index1Comparison = index1.CompareTo(other.index1);
+        if (index1Comparison != 0)
+            return index1Comparison;
+        int world0Comparison = world0.CompareTo(other.world0);
+        if (world0Comparison != 0)
+            return world0Comparison;
+        return generation.CompareTo(other.generation);
+    }
+    
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DestroyBody")]
     private static extern void b2DestroyBody(Body bodyId);
     
     /// <summary>
@@ -33,17 +47,18 @@ public struct Body
     /// <remarks>This destroys all shapes and joints attached to the body. Do not keep references to the associated shapes and joints</remarks>
     public void Destroy()
     {
-        World._bodies[world0+1].Remove(index1);
+        // remove self from world
+        World.bodies.Remove(index1);
         
         // dealloc user data
         nint userDataPtr = b2Body_GetUserData(this);
-        Core.FreeHandle(ref userDataPtr);
+        FreeHandle(ref userDataPtr);
         b2Body_SetUserData(this, 0);
         
         b2DestroyBody(this);
     }
 
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_IsValid")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_IsValid")]
     private static extern bool b2Body_IsValid(Body bodyId);
     
     /// <summary>
@@ -54,10 +69,10 @@ public struct Body
     [PublicAPI]
     public bool IsValid() => b2Body_IsValid(this);
 
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetType")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetType")]
     private static extern BodyType b2Body_GetType(Body bodyId);
     
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetType")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetType")]
     private static extern void b2Body_SetType(Body bodyId, BodyType type);
 
     /// <summary>
@@ -70,10 +85,10 @@ public struct Body
         set => b2Body_SetType(this, value);
     }
     
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetName")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetName")]
     private static extern void b2Body_SetName(Body bodyId, string? name);
     
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetName")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetName")]
     private static extern nint b2Body_GetName(Body bodyId);
     
     /// <summary>
@@ -86,10 +101,10 @@ public struct Body
         set => b2Body_SetName(this, value);
     }
 
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetUserData")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetUserData")]
     private static extern void b2Body_SetUserData(Body bodyId, nint userData);
     
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetUserData")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetUserData")]
     private static extern nint b2Body_GetUserData(Body bodyId);
     
     /// <summary>
@@ -98,11 +113,11 @@ public struct Body
     [PublicAPI]
     public object? UserData
     {
-        get => Core.GetObjectAtPointer(b2Body_GetUserData,this);
-        set => Core.SetObjectAtPointer(b2Body_GetUserData, b2Body_SetUserData, this, value);
+        get => GetObjectAtPointer(b2Body_GetUserData,this);
+        set => SetObjectAtPointer(b2Body_GetUserData, b2Body_SetUserData, this, value);
     }
     
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetPosition")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetPosition")]
     private static extern Vec2 b2Body_GetPosition(Body bodyId);
     
     /// <summary>
@@ -112,7 +127,7 @@ public struct Body
     [PublicAPI]
     public Vec2 Position => b2Body_GetPosition(this);
 
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetRotation")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetRotation")]
     private static extern Rotation b2Body_GetRotation(Body bodyId);
     
     /// <summary>
@@ -121,10 +136,10 @@ public struct Body
     [PublicAPI]
     public Rotation Rotation => b2Body_GetRotation(this);
 
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetTransform")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetTransform")]
     private static extern Transform b2Body_GetTransform(Body bodyId);
     
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetTransform")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetTransform")]
     private static extern void b2Body_SetTransform(Body bodyId, Vec2 position, Rotation rotation);
     
     /// <summary>
@@ -139,7 +154,7 @@ public struct Body
         set => b2Body_SetTransform(this, value.Position, value.Rotation);
     }
     
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetLocalPoint")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetLocalPoint")]
     private static extern Vec2 b2Body_GetLocalPoint(Body bodyId, Vec2 worldPoint);
 
     /// <summary>
@@ -150,7 +165,7 @@ public struct Body
     [PublicAPI]
     public Vec2 GetLocalPoint(Vec2 worldPoint) => b2Body_GetLocalPoint(this, worldPoint);
 
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetWorldPoint")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetWorldPoint")]
     private static extern Vec2 b2Body_GetWorldPoint(Body bodyId, Vec2 localPoint);
 
     /// <summary>
@@ -161,7 +176,7 @@ public struct Body
     [PublicAPI]
     public Vec2 GetWorldPoint(Vec2 localPoint) => b2Body_GetWorldPoint(this, localPoint);
 
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetLocalVector")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetLocalVector")]
     private static extern Vec2 b2Body_GetLocalVector(Body bodyId, Vec2 worldVector);
     
     /// <summary>
@@ -172,7 +187,7 @@ public struct Body
     [PublicAPI]
     public Vec2 GetLocalVector(Vec2 worldVector) => b2Body_GetLocalVector(this, worldVector);
 
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetWorldVector")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetWorldVector")]
     private static extern Vec2 b2Body_GetWorldVector(Body bodyId, Vec2 localVector);
     
     /// <summary>
@@ -183,10 +198,10 @@ public struct Body
     [PublicAPI]
     public Vec2 GetWorldVector(Vec2 localVector) => b2Body_GetWorldVector(this, localVector);
 
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetLinearVelocity")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetLinearVelocity")]
     private static extern void b2Body_SetLinearVelocity(Body bodyId, Vec2 linearVelocity);
     
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetLinearVelocity")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetLinearVelocity")]
     private static extern Vec2 b2Body_GetLinearVelocity(Body bodyId);
     
     /// <summary>
@@ -200,10 +215,10 @@ public struct Body
         set => b2Body_SetLinearVelocity(this, value);
     }
     
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetAngularVelocity")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetAngularVelocity")]
     private static extern float b2Body_GetAngularVelocity(Body bodyId);
     
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetAngularVelocity")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetAngularVelocity")]
     private static extern void b2Body_SetAngularVelocity(Body bodyId, float angularVelocity);
     
     /// <summary>
@@ -217,7 +232,7 @@ public struct Body
         set => b2Body_SetAngularVelocity(this, value);
     }
 
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetTargetTransform")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetTargetTransform")]
     private static extern void b2Body_SetTargetTransform(Body bodyId, Transform target, float timeStep);
     
     /// <summary>
@@ -230,7 +245,7 @@ public struct Body
     [PublicAPI]
     public void SetTargetTransform(Transform target, float timeStep) => b2Body_SetTargetTransform(this, target, timeStep);
     
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetKinematicTarget")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetKinematicTarget")]
     private static extern void b2Body_SetKinematicTarget(Body bodyId, Transform target, float timeStep);
     
     /// <summary>
@@ -243,7 +258,7 @@ public struct Body
     [PublicAPI]
     public void SetKinematicTarget(Transform target, float timeStep) => b2Body_SetKinematicTarget(this, target, timeStep);
     
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetLocalPointVelocity")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetLocalPointVelocity")]
     private static extern Vec2 b2Body_GetLocalPointVelocity(Body bodyId, Vec2 localPoint);
     
     /// <summary>
@@ -252,9 +267,10 @@ public struct Body
     /// <param name="localPoint">The local point</param>
     /// <returns>The linear velocity of the local point attached to the body, usually in meters per second</returns>
     /// <remarks>Usually in meters per second</remarks>
+    [PublicAPI]
     public Vec2 GetLocalPointVelocity(Vec2 localPoint) => b2Body_GetLocalPointVelocity(this, localPoint);
 
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetWorldPointVelocity")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetWorldPointVelocity")]
     private static extern Vec2 b2Body_GetWorldPointVelocity(Body bodyId, Vec2 worldPoint);
     
     /// <summary>
@@ -266,7 +282,7 @@ public struct Body
     [PublicAPI]
     public Vec2 GetWorldPointVelocity(Vec2 worldPoint) => b2Body_GetWorldPointVelocity(this, worldPoint);
 
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ApplyForce")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ApplyForce")]
     private static extern void b2Body_ApplyForce(Body bodyId, Vec2 force, Vec2 point, bool wake);
     
     /// <summary>
@@ -279,7 +295,7 @@ public struct Body
     [PublicAPI]
     public void ApplyForce(Vec2 force, Vec2 point, bool wake) => b2Body_ApplyForce(this, force, point, wake);
     
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ApplyForceToCenter")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ApplyForceToCenter")]
     private static extern void b2Body_ApplyForceToCenter(Body bodyId, Vec2 force, bool wake);
     
     /// <summary>
@@ -292,7 +308,7 @@ public struct Body
     [PublicAPI]
     public void ApplyForceToCenter(Vec2 force, bool wake) => b2Body_ApplyForceToCenter(this, force, wake);
     
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ApplyTorque")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ApplyTorque")]
     private static extern void b2Body_ApplyTorque(Body bodyId, float torque, bool wake);
     
     /// <summary>
@@ -304,7 +320,7 @@ public struct Body
     [PublicAPI]
     public void ApplyTorque(float torque, bool wake) => b2Body_ApplyTorque(this, torque, wake);
     
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ApplyLinearImpulse")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ApplyLinearImpulse")]
     private static extern void b2Body_ApplyLinearImpulse(Body bodyId, Vec2 impulse, Vec2 point, bool wake);
     
     /// <summary>
@@ -318,7 +334,7 @@ public struct Body
     [PublicAPI]
     public void ApplyLinearImpulse(Vec2 impulse, Vec2 point, bool wake) => b2Body_ApplyLinearImpulse(this, impulse, point, wake);
 
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ApplyLinearImpulseToCenter")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ApplyLinearImpulseToCenter")]
     private static extern void b2Body_ApplyLinearImpulseToCenter(Body bodyId, Vec2 impulse, bool wake);
     
     /// <summary>
@@ -330,7 +346,7 @@ public struct Body
     /// <br/><br/><b>Warning: This should be used for one-shot impulses. If you need a steady force, use a force instead, which will work better with the sub-stepping solver</b></remarks>
     public void ApplyLinearImpulseToCenter(Vec2 impulse, bool wake) => b2Body_ApplyLinearImpulseToCenter(this, impulse, wake);
 
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ApplyAngularImpulse")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ApplyAngularImpulse")]
     private static extern void b2Body_ApplyAngularImpulse(Body bodyId, float impulse, bool wake);
     
     /// <summary>
@@ -343,7 +359,7 @@ public struct Body
     [PublicAPI]
     public void ApplyAngularImpulse(float impulse, bool wake) => b2Body_ApplyAngularImpulse(this, impulse, wake);
 
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetMass")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetMass")]
     private static extern float b2Body_GetMass(Body bodyId  );
     
     /// <summary>
@@ -352,7 +368,7 @@ public struct Body
     [PublicAPI]
     public float Mass => b2Body_GetMass(this);
     
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetRotationalInertia")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetRotationalInertia")]
     private static extern float b2Body_GetRotationalInertia(Body bodyId);
     
     /// <summary>
@@ -361,7 +377,7 @@ public struct Body
     [PublicAPI]
     public float RotationalInertia => b2Body_GetRotationalInertia(this);
     
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetLocalCenterOfMass")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetLocalCenterOfMass")]
     private static extern Vec2 b2Body_GetLocalCenterOfMass(Body bodyId);
     
     /// <summary>
@@ -370,7 +386,7 @@ public struct Body
     [PublicAPI]
     public Vec2 LocalCenterOfMass => b2Body_GetLocalCenterOfMass(this);
 
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetWorldCenterOfMass")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetWorldCenterOfMass")]
     private static extern Vec2 b2Body_GetWorldCenterOfMass(Body bodyId);
     
     /// <summary>
@@ -379,10 +395,10 @@ public struct Body
     [PublicAPI]
     public Vec2 WorldCenterOfMass => b2Body_GetWorldCenterOfMass(this);
 
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetMassData")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetMassData")]
     private static extern void b2Body_SetMassData(Body bodyId, MassData massData);
     
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetMassData")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetMassData")]
     private static extern MassData b2Body_GetMassData(Body bodyId);
     
     /// <summary>
@@ -395,7 +411,7 @@ public struct Body
         set => b2Body_SetMassData(this, value);
     }
     
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ApplyMassFromShapes")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ApplyMassFromShapes")]
     private static extern void b2Body_ApplyMassFromShapes(Body bodyId);
     
     /// <summary>
@@ -407,10 +423,10 @@ public struct Body
     [PublicAPI]
     public void ApplyMassFromShapes() => b2Body_ApplyMassFromShapes(this);
 
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetLinearDamping")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetLinearDamping")]
     private static extern void b2Body_SetLinearDamping(Body bodyId, float linearDamping);
     
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetLinearDamping")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetLinearDamping")]
     private static extern float b2Body_GetLinearDamping(Body bodyId);
     
     /// <summary>
@@ -424,10 +440,10 @@ public struct Body
         set => b2Body_SetLinearDamping(this, value);
     }
 
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetAngularDamping")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetAngularDamping")]
     private static extern void b2Body_SetAngularDamping(Body bodyId, float angularDamping);
     
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetAngularDamping")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetAngularDamping")]
     private static extern float b2Body_GetAngularDamping(Body bodyId);
     
     /// <summary>
@@ -441,10 +457,10 @@ public struct Body
         set => b2Body_SetAngularDamping(this, value);
     }
 
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetGravityScale")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetGravityScale")]
     private static extern void b2Body_SetGravityScale(Body bodyId, float gravityScale);
     
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetGravityScale")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetGravityScale")]
     private static extern float b2Body_GetGravityScale(Body bodyId);
     
     /// <summary>
@@ -458,10 +474,10 @@ public struct Body
         set => b2Body_SetGravityScale(this, value);
     }
     
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_IsAwake")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_IsAwake")]
     private static extern bool b2Body_IsAwake(Body bodyId);
     
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetAwake")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetAwake")]
     private static extern void b2Body_SetAwake(Body bodyId, bool awake);
     
     /// <summary>
@@ -478,10 +494,10 @@ public struct Body
         set => b2Body_SetAwake(this, value);
     }
     
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_EnableSleep")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_EnableSleep")]
     private static extern void b2Body_EnableSleep(Body bodyId, bool enableSleep);
     
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_IsSleepEnabled")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_IsSleepEnabled")]
     private static extern bool b2Body_IsSleepEnabled(Body bodyId);
 
     /// <summary>
@@ -495,10 +511,10 @@ public struct Body
         set => b2Body_EnableSleep(this, value);
     }
     
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetSleepThreshold")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetSleepThreshold")]
     private static extern void b2Body_SetSleepThreshold(Body bodyId, float sleepThreshold);
     
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetSleepThreshold")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetSleepThreshold")]
     private static extern float b2Body_GetSleepThreshold(Body bodyId);
     
     /// <summary>
@@ -511,13 +527,13 @@ public struct Body
         set => b2Body_SetSleepThreshold(this, value);
     }
     
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_IsEnabled")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_IsEnabled")]
     private static extern bool b2Body_IsEnabled(Body bodyId);
     
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_Disable")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_Disable")]
     private static extern void b2Body_Disable(Body bodyId);
     
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_Enable")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_Enable")]
     private static extern void b2Body_Enable(Body bodyId);
     
     /// <summary>
@@ -537,10 +553,10 @@ public struct Body
     }
 
 
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetFixedRotation")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetFixedRotation")]
     private static extern void b2Body_SetFixedRotation(Body bodyId, bool flag);
     
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_IsFixedRotation")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_IsFixedRotation")]
     private static extern bool b2Body_IsFixedRotation(Body bodyId);
     
     /// <summary>
@@ -554,10 +570,10 @@ public struct Body
         set => b2Body_SetFixedRotation(this, value);
     }
     
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetBullet")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetBullet")]
     private static extern void b2Body_SetBullet(Body bodyId, bool flag);
     
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_IsBullet")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_IsBullet")]
     private static extern bool b2Body_IsBullet(Body bodyId);
     
     /// <summary>
@@ -571,7 +587,7 @@ public struct Body
         set => b2Body_SetBullet(this, value);
     }
     
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_EnableContactEvents")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_EnableContactEvents")]
     private static extern void b2Body_EnableContactEvents(Body bodyId, bool flag);
 
     /// <summary>
@@ -582,7 +598,7 @@ public struct Body
     [PublicAPI]
     public void EnableContactEvents(bool flag) => b2Body_EnableContactEvents(this, flag);
 
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_EnableHitEvents")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_EnableHitEvents")]
     private static extern void b2Body_EnableHitEvents(Body bodyId, bool flag);
     
     /// <summary>
@@ -592,19 +608,19 @@ public struct Body
     [PublicAPI]
     public void EnableHitEvents(bool flag) => b2Body_EnableHitEvents(this, flag);
     
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetWorld")]
-    private static extern World b2Body_GetWorld(Body bodyId);
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetWorld")]
+    private static extern WorldId b2Body_GetWorld(Body bodyId);
     
     /// <summary>
     /// The world that owns this body.
     /// </summary>
     [PublicAPI]
-    public World World => b2Body_GetWorld(this);
+    public World World => World.GetWorld(b2Body_GetWorld(this));
 
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetShapeCount")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetShapeCount")]
     private static extern int b2Body_GetShapeCount(Body bodyId);
     
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetShapes")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetShapes")]
     private static extern unsafe int b2Body_GetShapes(Body bodyId, Shape* shapeArray, int capacity);
     
     /// <summary>
@@ -628,15 +644,16 @@ public struct Body
         }
     }
     
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetJointCount")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetJointCount")]
     private static extern int b2Body_GetJointCount(Body bodyId);
     
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetJoints")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetJoints")]
     private static extern unsafe int b2Body_GetJoints(Body bodyId, JointId* jointArray, int capacity);
     
     /// <summary>
     /// The joints attached to this body.
     /// </summary>
+    [PublicAPI]
     public unsafe ReadOnlySpan<Joint> Joints
     {
         get
@@ -657,10 +674,10 @@ public struct Body
         }
     }
     
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetContactCapacity")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetContactCapacity")]
     private static extern int b2Body_GetContactCapacity(Body bodyId);
     
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetContactData")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetContactData")]
     private static extern unsafe int b2Body_GetContactData(Body bodyId, ContactData* contactData, int capacity);
     
     /// <summary>
@@ -688,7 +705,7 @@ public struct Body
         }
     }
     
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ComputeAABB")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ComputeAABB")]
     private static extern AABB b2Body_ComputeAABB(Body bodyId);
 
     /// <summary>
@@ -698,7 +715,7 @@ public struct Body
     [PublicAPI]
     public AABB AABB => b2Body_ComputeAABB(this);
     
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateCircleShape")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateCircleShape")]
     private static extern Shape b2CreateCircleShape(Body bodyId, in ShapeDefInternal def, in Circle circle);
     
     /// <summary>
@@ -711,7 +728,7 @@ public struct Body
     [PublicAPI]
     public Shape CreateShape(in ShapeDef def, in Circle circle) => b2CreateCircleShape(this, in def._internal, circle);
 
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateSegmentShape")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateSegmentShape")]
     private static extern Shape b2CreateSegmentShape(Body bodyId, in ShapeDefInternal def, in Segment segment);
     
     /// <summary>
@@ -724,7 +741,7 @@ public struct Body
     [PublicAPI]
     public Shape CreateShape(in ShapeDef def, in Segment segment) => b2CreateSegmentShape(this, in def._internal, segment);
 
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateCapsuleShape")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateCapsuleShape")]
     private static extern Shape b2CreateCapsuleShape(Body bodyId, in ShapeDefInternal def, in Capsule capsule);
     
     /// <summary>
@@ -737,7 +754,7 @@ public struct Body
     [PublicAPI]
     public Shape CreateShape(in ShapeDef def, in Capsule capsule) => b2CreateCapsuleShape(this, in def._internal, capsule);
 
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreatePolygonShape")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreatePolygonShape")]
     private static extern Shape b2CreatePolygonShape(Body bodyId, in ShapeDefInternal def, in Polygon polygon);
     
     /// <summary>
@@ -750,7 +767,7 @@ public struct Body
     [PublicAPI]
     public Shape CreateShape(in ShapeDef def, in Polygon polygon) => b2CreatePolygonShape(this, in def._internal, polygon);
 
-    [DllImport(Core.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateChain")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateChain")]
     private static extern ChainShape b2CreateChain(Body bodyId, in ChainDefInternal def);
     
     /// <summary>

@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System;
 using System.Runtime.InteropServices;
 
@@ -12,6 +13,7 @@ public class BodyDef
 {
     internal BodyDefInternal _internal;
     
+    [PublicAPI]
     public BodyDef()
     {
         _internal = new BodyDefInternal();
@@ -29,6 +31,7 @@ public class BodyDef
     /// <summary>
     /// The body type: static, kinematic, or dynamic.
     /// </summary>
+    [PublicAPI]
     public ref BodyType Type => ref _internal.Type;
 
     /// <summary>
@@ -36,21 +39,25 @@ public class BodyDef
     /// <i>Note: Creating bodies at the origin and then moving them nearly doubles the cost of body creation, especially
     /// if the body is moved after shapes have been added.</i>
     /// </summary>
+    [PublicAPI]
     public ref Vec2 Position => ref _internal.Position;
 
     /// <summary>
     /// The initial world rotation of the body.
     /// </summary>
+    [PublicAPI]
     public ref Rotation Rotation => ref _internal.Rotation;
 
     /// <summary>
     /// The initial linear velocity of the body's origin. Usually in meters per second.
     /// </summary>
+    [PublicAPI]
     public ref Vec2 LinearVelocity => ref _internal.LinearVelocity;
 
     /// <summary>
     /// The initial angular velocity of the body. Radians per second.
     /// </summary>
+    [PublicAPI]
     public ref float AngularVelocity => ref _internal.AngularVelocity;
 
     /// <summary>
@@ -60,6 +67,7 @@ public class BodyDef
     /// Generally linear damping is undesirable because it makes objects move slowly
     /// as if they are floating.
     /// </summary>
+    [PublicAPI]
     public ref float LinearDamping => ref _internal.LinearDamping;
 
     /// <summary>
@@ -68,21 +76,25 @@ public class BodyDef
     /// time step when the damping parameter is large.
     /// Angular damping can be use slow down rotating bodies.
     /// </summary>
+    [PublicAPI]
     public ref float AngularDamping => ref _internal.AngularDamping;
 
     /// <summary>
     /// Scale the gravity applied to this body. Non-dimensional.
     /// </summary>
+    [PublicAPI]
     public ref float GravityScale => ref _internal.GravityScale;
 
     /// <summary>
     /// Sleep speed threshold, default is 0.05 meters per second
     /// </summary>
+    [PublicAPI]
     public ref float SleepThreshold => ref _internal.SleepThreshold;
 
     /// <summary>
     /// Optional body name for debugging. Up to 31 characters (excluding null termination)
     /// </summary>
+    [PublicAPI]
     public string? Name
     {
         get => Marshal.PtrToStringAnsi(_internal.Name);
@@ -107,23 +119,26 @@ public class BodyDef
     /// </summary>
     public object? UserData
     {
-        get => Core.GetObjectAtPointer(_internal.UserData);
-        set => Core.SetObjectAtPointer(ref _internal.UserData, value);
+        get => GetObjectAtPointer(_internal.UserData);
+        set => SetObjectAtPointer(ref _internal.UserData, value);
     }
 
     /// <summary>
     /// Set this flag to false if this body should never fall asleep.
     /// </summary>
+    [PublicAPI]
     public ref bool EnableSleep => ref _internal.EnableSleep;
 
     /// <summary>
     /// Is this body initially awake or sleeping?
     /// </summary>
+    [PublicAPI]
     public ref bool IsAwake => ref _internal.IsAwake;
 
     /// <summary>
     /// Should this body be prevented from rotating? Useful for characters.
     /// </summary>
+    [PublicAPI]
     public ref bool FixedRotation => ref _internal.FixedRotation;
 
     /// <summary>
@@ -132,16 +147,19 @@ public class BodyDef
     /// <b>Warning: Bullets should be used sparingly. They are not a solution for general dynamic-versus-dynamic</b>
     /// continuous collision. They may interfere with joint constraints.
     /// </summary>
+    [PublicAPI]
     public ref bool IsBullet => ref _internal.IsBullet;
 
     /// <summary>
     /// Used to disable a body. A disabled body does not move or collide.
     /// </summary>
+    [PublicAPI]
     public ref bool IsEnabled => ref _internal.IsEnabled;
 
     /// <summary>
     /// This allows this body to bypass rotational speed limits. Should only be used
     /// for circular objects, like wheels.
     /// </summary>
+    [PublicAPI]
     public ref bool AllowFastRotation => ref _internal.AllowFastRotation;
 }

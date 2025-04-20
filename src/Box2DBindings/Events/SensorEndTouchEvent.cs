@@ -8,20 +8,18 @@ namespace Box2D;
 ///	a filter. You will also get an end event if the sensor or visitor are destroyed.
 ///	Therefore you should always confirm the shape id is valid using Shape.IsValid.
 /// </summary>
-[StructLayout(LayoutKind.Explicit)]
+[StructLayout(LayoutKind.Sequential)]
 public struct SensorEndTouchEvent
 {
     /// <summary>
     /// The id of the sensor shape
     ///	<b>Warning: this shape may have been destroyed</b>
     /// </summary>
-    [FieldOffset(0)]
     public Shape SensorShapeId;
 
     /// <summary>
     /// The id of the dynamic shape that stopped touching the sensor shape
     ///	<b>Warning: this shape may have been destroyed</b>
     /// </summary>
-    [FieldOffset(8)]
     public Shape VisitorShapeId;
 }

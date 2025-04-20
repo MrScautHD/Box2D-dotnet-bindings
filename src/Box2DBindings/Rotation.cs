@@ -1,17 +1,14 @@
+using JetBrains.Annotations;
 using System;
 using System.Runtime.InteropServices;
 
 namespace Box2D;
 
-[StructLayout(LayoutKind.Explicit)]
+[StructLayout(LayoutKind.Sequential)]
 public struct Rotation : IEquatable<Rotation>
 {
-    [FieldOffset(0)]
-    public float Cos = 1;
-    [FieldOffset(4)]
-    public float Sin = 0;
-    public Rotation()
-    { }
+    public float Cos;
+    public float Sin;
     
     public static readonly Rotation Identity = new()
             { Cos = 1, Sin = 0 };
@@ -33,10 +30,10 @@ public struct Rotation : IEquatable<Rotation>
         return $"Rot(Cos: {Cos}, Sin: {Sin}, Rad: {GetAngle()}, Deg: {GetAngle() * 180 / MathF.PI})";
     }
     
-    public float GetAngle()
-    {
-        return MathF.Atan2(Sin, Cos);
-    }
+    [PublicAPI]
+    public float GetAngle() =>
+        MathF.Atan2(Sin, Cos);
+
     public bool Equals(Rotation other) =>
         Cos.Equals(other.Cos) && Sin.Equals(other.Sin);
     public override bool Equals(object? obj) =>

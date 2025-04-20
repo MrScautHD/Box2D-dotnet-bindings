@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System;
 using System.Runtime.InteropServices;
 
@@ -8,28 +9,26 @@ namespace Box2D;
 /// as begin/end overlap event arrays after the time step is complete.
 /// Note: these may become invalid if bodies and/or shapes are destroyed
 /// </summary>
-[StructLayout(LayoutKind.Explicit)]
+[StructLayout(LayoutKind.Sequential)]
 public unsafe struct SensorEvents
 {
+    private SensorBeginTouchEvent* beginEvents;
+
+    private SensorEndTouchEvent* endEvents;
+
+    private int beginCount;
+	
+    private int endCount;
+	
     /// <summary>
     /// Array of sensor begin touch events
     /// </summary>
-    [FieldOffset(0)]
-    private SensorBeginTouchEvent* beginEvents;
+    [PublicAPI]
+    public ReadOnlySpan<SensorBeginTouchEvent> BeginEvents => new(beginEvents, beginCount);
 
     /// <summary>
     /// Array of sensor end touch events
     /// </summary>
-    [FieldOffset(8)]
-    private SensorEndTouchEvent* endEvents;
-
-    [FieldOffset(16)]
-    private int beginCount;
-	
-    [FieldOffset(20)]
-    private int endCount;
-	
-    public ReadOnlySpan<SensorBeginTouchEvent> BeginEvents => new(beginEvents, beginCount);
-
+    [PublicAPI]
     public ReadOnlySpan<SensorEndTouchEvent> EndEvents => new(endEvents, endCount);
 }

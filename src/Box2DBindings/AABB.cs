@@ -1,17 +1,18 @@
+using JetBrains.Annotations;
 using System;
 using System.Runtime.InteropServices;
 
 namespace Box2D;
 
-[StructLayout(LayoutKind.Explicit)]
+[StructLayout(LayoutKind.Sequential)]
 public struct AABB : IEquatable<AABB>
 {
-    [FieldOffset(0)]
     public Vec2 LowerBound;
-    [FieldOffset(8)]
     public Vec2 UpperBound;
     
+    [PublicAPI]
     public float Width => UpperBound.X - LowerBound.X;
+    [PublicAPI]
     public float Height => UpperBound.Y - LowerBound.Y;
     
     public override string ToString()
@@ -26,7 +27,11 @@ public struct AABB : IEquatable<AABB>
         
     public override int GetHashCode() =>
         HashCode.Combine(LowerBound, UpperBound);
-        
+    
+    /// <summary>
+    /// Compute the bounding box of an array of circles
+    /// </summary>
+    [PublicAPI]
     public static AABB MakeAABB(ReadOnlySpan<Vec2> points, float radius)
     {
         if (points is not { Length: not 0 })
