@@ -399,7 +399,7 @@ public struct Shape : IEquatable<Shape>
         get
         {
             int needed = b2Shape_GetContactCapacity(this);
-            ContactData[] buffer = GC.AllocateUninitializedArray<ContactData>(needed);
+            ContactData[] buffer = new ContactData[needed];// GC.AllocateUninitializedArray<ContactData>(needed);
             int written;
             fixed (ContactData* p = buffer)
             {
@@ -429,7 +429,7 @@ public struct Shape : IEquatable<Shape>
         get
         {
             int needed = b2Shape_GetSensorCapacity(this);
-            Shape[] buffer = GC.AllocateUninitializedArray<Shape>(needed);
+            Shape[] buffer = new Shape[needed];// GC.AllocateUninitializedArray<Shape>(needed);
             int written;
             fixed (Shape* p = buffer)
             {

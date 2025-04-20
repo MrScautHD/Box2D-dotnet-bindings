@@ -129,7 +129,7 @@ public unsafe struct DynamicTree
     public TreeStats Query<TContext>(AABB aabb, uint64_t maskBits, TreeQueryCallback<TContext> callback, TContext context)
     {
         bool TreeQueryCallbackPrivate(int proxyId, uint64_t userData, nint _) => callback(proxyId, userData, context);
-        return b2DynamicTree_Query(this, aabb, maskBits, TreeQueryCallbackPrivate, nint.Zero);
+        return b2DynamicTree_Query(this, aabb, maskBits, TreeQueryCallbackPrivate, 0);
     }
     
     /// <summary>
@@ -140,7 +140,7 @@ public unsafe struct DynamicTree
     public TreeStats Query(AABB aabb, uint64_t maskBits, TreeQueryCallback callback)
     {
         bool TreeQueryCallbackPrivate(int proxyId, uint64_t userData, nint _) => callback(proxyId, userData);
-        return b2DynamicTree_Query(this, aabb, maskBits, TreeQueryCallbackPrivate, nint.Zero);
+        return b2DynamicTree_Query(this, aabb, maskBits, TreeQueryCallbackPrivate, 0);
     }
     
     /// <summary>
@@ -173,7 +173,7 @@ public unsafe struct DynamicTree
     public TreeStats RayCast<TContext>(in RayCastInput input, uint64_t maskBits, TreeRayCastCallback<TContext> callback, TContext context)
     {
         float TreeRayCastCallbackPrivate(in RayCastInput input, int proxyId, uint64_t userData, nint _) => callback(input, proxyId, userData, context);
-        return b2DynamicTree_RayCast(this, input, maskBits, TreeRayCastCallbackPrivate, nint.Zero);
+        return b2DynamicTree_RayCast(this, input, maskBits, TreeRayCastCallbackPrivate, 0);
     }
     
     /// <summary>
@@ -191,7 +191,7 @@ public unsafe struct DynamicTree
     public TreeStats RayCast(in RayCastInput input, uint64_t maskBits, TreeRayCastCallback callback)
     {
         float TreeRayCastCallbackPrivate(in RayCastInput input, int proxyId, uint64_t userData, nint _) => callback(input, proxyId, userData);
-        return b2DynamicTree_RayCast(this, input, maskBits, TreeRayCastCallbackPrivate, nint.Zero);
+        return b2DynamicTree_RayCast(this, input, maskBits, TreeRayCastCallbackPrivate, 0);
     }
     
     /// <summary>
@@ -232,7 +232,7 @@ public unsafe struct DynamicTree
     public TreeStats ShapeCast<TContext>(in ShapeCastInput input, uint64_t maskBits, TreeShapeCastCallback<TContext> callback, TContext context)
     {
         float TreeShapeCastCallbackPrivate(in ShapeCastInput input, int proxyId, uint64_t userData, nint _) => callback(input, proxyId, userData, context);
-        return b2DynamicTree_ShapeCast(this, input, maskBits, TreeShapeCastCallbackPrivate, nint.Zero);
+        return b2DynamicTree_ShapeCast(this, input, maskBits, TreeShapeCastCallbackPrivate, 0);
     }
     
     /// <summary>
@@ -250,7 +250,7 @@ public unsafe struct DynamicTree
     public TreeStats ShapeCast(in ShapeCastInput input, uint64_t maskBits, TreeShapeCastCallback callback)
     {
         float TreeShapeCastCallbackPrivate(in ShapeCastInput input, int proxyId, uint64_t userData, nint _) => callback(input, proxyId, userData);
-        return b2DynamicTree_ShapeCast(this, input, maskBits, TreeShapeCastCallbackPrivate, nint.Zero);
+        return b2DynamicTree_ShapeCast(this, input, maskBits, TreeShapeCastCallbackPrivate, 0);
     }
     
     /// <summary>

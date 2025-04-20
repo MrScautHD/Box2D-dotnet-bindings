@@ -694,8 +694,8 @@ public struct Body: IEquatable<Body>, IComparable<Body>
             int needed = b2Body_GetContactCapacity(this);
             if (needed == 0)
                 return [];
-            
-            ContactData[] contactData = GC.AllocateUninitializedArray<ContactData>(needed);
+
+            ContactData[] contactData = new ContactData[needed];// GC.AllocateUninitializedArray<ContactData>(needed);
             int written;
             fixed (ContactData* p = contactData)
             {

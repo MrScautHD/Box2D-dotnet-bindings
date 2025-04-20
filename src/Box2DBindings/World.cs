@@ -152,7 +152,7 @@ public sealed class World
     public TreeStats CastShape<TContext>(in ShapeProxy proxy, Vec2 translation, QueryFilter filter, CastResultCallback<TContext> callback, TContext context) where TContext : class
     {
         float CastResultCallbackPrivate(Shape shape, Vec2 point, Vec2 normal, float fraction, nint _) => callback(shape, point, normal, fraction, context);
-        return b2World_CastShape(id, in proxy, translation, filter, CastResultCallbackPrivate, nint.Zero);
+        return b2World_CastShape(id, in proxy, translation, filter, CastResultCallbackPrivate, 0);
     }
 
     /// <summary>
@@ -165,7 +165,7 @@ public sealed class World
     public TreeStats CastShape(in ShapeProxy proxy, Vec2 translation, QueryFilter filter, CastResultCallback callback)
     {
         float CastResultCallbackPrivate(Shape shape, Vec2 point, Vec2 normal, float fraction, nint _) => callback(shape, point, normal, fraction);
-        return b2World_CastShape(id, in proxy, translation, filter, CastResultCallbackPrivate, nint.Zero);
+        return b2World_CastShape(id, in proxy, translation, filter, CastResultCallbackPrivate, 0);
     }
     
     /// <summary>
@@ -197,7 +197,7 @@ public sealed class World
     public TreeStats CastRay<TContext>(Vec2 origin, Vec2 translation, QueryFilter filter, CastResultCallback<TContext> callback, TContext context) where TContext : class
     {
         float CastResultCallbackPrivate(Shape shape, Vec2 point, Vec2 normal, float fraction, nint _) => callback(shape, point, normal, fraction, context);
-        return b2World_CastRay(id, origin, translation, filter, CastResultCallbackPrivate, nint.Zero);
+        return b2World_CastRay(id, origin, translation, filter, CastResultCallbackPrivate, 0);
     }
 
     /// <summary>
@@ -212,7 +212,7 @@ public sealed class World
     public TreeStats CastRay(Vec2 origin, Vec2 translation, QueryFilter filter, CastResultCallback callback)
     {
         float CastResultCallbackPrivate(Shape shape, Vec2 point, Vec2 normal, float fraction, nint _) => callback(shape, point, normal, fraction);
-        return b2World_CastRay(id, origin, translation, filter, CastResultCallbackPrivate, nint.Zero);
+        return b2World_CastRay(id, origin, translation, filter, CastResultCallbackPrivate, 0);
     }
 
     /// <summary>
@@ -243,7 +243,7 @@ public sealed class World
     public void CollideMover<TContext>(in Capsule mover, QueryFilter filter, PlaneResultCallback<TContext> callback, TContext context)
     {
         bool PlaneResultCallbackPrivate(Shape shapeId, in PlaneResult plane, nint _) => callback(shapeId, plane, context);
-        b2World_CollideMover(id, in mover, filter, PlaneResultCallbackPrivate, nint.Zero);
+        b2World_CollideMover(id, in mover, filter, PlaneResultCallbackPrivate, 0);
     }
 
     /// <summary>
@@ -255,7 +255,7 @@ public sealed class World
     public void CollideMover(in Capsule mover, QueryFilter filter, PlaneResultCallback callback)
     {
         bool PlaneResultCallbackPrivate(Shape shapeId, in PlaneResult plane, nint _) => callback(shapeId, plane);
-        b2World_CollideMover(id, in mover, filter, PlaneResultCallbackPrivate, nint.Zero);
+        b2World_CollideMover(id, in mover, filter, PlaneResultCallbackPrivate, 0);
     }
 
     /// <summary>
@@ -353,7 +353,7 @@ public sealed class World
     public void SetCustomFilterCallback<TContext>(CustomFilterCallback<TContext> callback, TContext context)
     {
         bool Callback(Shape shapeA, Shape shapeB, nint _) => callback(shapeA, shapeB, context);
-        b2World_SetCustomFilterCallback(id, Callback, nint.Zero);
+        b2World_SetCustomFilterCallback(id, Callback, 0);
     }
 
     /// <summary>
@@ -372,7 +372,7 @@ public sealed class World
     public void SetCustomFilterCallback(CustomFilterCallback nintCallback)
     {
         bool Callback(Shape shapeA, Shape shapeB, nint _) => nintCallback(shapeA, shapeB);
-        b2World_SetCustomFilterCallback(id, Callback, nint.Zero);
+        b2World_SetCustomFilterCallback(id, Callback, 0);
     }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_OverlapAABB")]
@@ -388,7 +388,7 @@ public sealed class World
     public TreeStats OverlapAABB<TContext>(AABB aabb, QueryFilter filter, OverlapResultCallback<TContext> callback, TContext context) where TContext : new()
     {
         bool OverlapResultCallbackPrivate(Shape shapeId, nint _) => callback(shapeId, context);
-        return b2World_OverlapAABB(id, aabb, filter, OverlapResultCallbackPrivate, nint.Zero);
+        return b2World_OverlapAABB(id, aabb, filter, OverlapResultCallbackPrivate, 0);
     }
 
     /// <summary>
@@ -400,7 +400,7 @@ public sealed class World
     public TreeStats OverlapAABB(AABB aabb, QueryFilter filter, OverlapResultCallback callback)
     {
         bool OverlapResultCallbackPrivate(Shape shapeId, nint _) => callback(shapeId);
-        return b2World_OverlapAABB(id, aabb, filter, OverlapResultCallbackPrivate, nint.Zero);
+        return b2World_OverlapAABB(id, aabb, filter, OverlapResultCallbackPrivate, 0);
     }
 
         /// <summary>
@@ -427,7 +427,7 @@ public sealed class World
     public TreeStats OverlapShape<TContext>(in ShapeProxy proxy, QueryFilter filter, OverlapResultCallback<TContext> callback, TContext context) where TContext : new()
     {
         bool OverlapResultCallbackPrivate(Shape shapeId, nint _) => callback(shapeId, context);
-        return b2World_OverlapShape(id, in proxy, filter, OverlapResultCallbackPrivate, nint.Zero);
+        return b2World_OverlapShape(id, in proxy, filter, OverlapResultCallbackPrivate, 0);
     }
 
     /// <summary>
@@ -451,7 +451,7 @@ public sealed class World
     public TreeStats OverlapShape(in ShapeProxy proxy, QueryFilter filter, OverlapResultCallback callback)
     {
         bool OverlapResultCallbackPrivate(Shape shapeId, nint _) => callback(shapeId);
-        return b2World_OverlapShape(id, in proxy, filter, OverlapResultCallbackPrivate, nint.Zero);
+        return b2World_OverlapShape(id, in proxy, filter, OverlapResultCallbackPrivate, 0);
     }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetPreSolveCallback")]
@@ -465,7 +465,7 @@ public sealed class World
     public void SetPreSolveCallback<TContext>(PreSolveCallback<TContext> callback, TContext context)
     {
         unsafe bool Callback(Shape shapeA, Shape shapeB, nint manifold, nint _) => callback(shapeA, shapeB, *(Manifold*)manifold, context);
-        b2World_SetPreSolveCallback(id, Callback, nint.Zero);
+        b2World_SetPreSolveCallback(id, Callback, 0);
     }
 
     /// <summary>
@@ -475,7 +475,7 @@ public sealed class World
     public void SetPreSolveCallback(PreSolveCallback callback)
     {
         unsafe bool Callback(Shape shapeA, Shape shapeB, nint manifold, nint _) => callback(shapeA, shapeB, *(Manifold*)manifold);
-        b2World_SetPreSolveCallback(id, Callback, nint.Zero);
+        b2World_SetPreSolveCallback(id, Callback, 0);
     }
 
     /// <summary>
