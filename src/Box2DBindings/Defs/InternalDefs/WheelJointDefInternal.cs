@@ -119,7 +119,7 @@ struct WheelJointDefInternal
     [FieldOffset(88)]
     private readonly int internalValue;
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultWheelJointDef")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultWheelJointDef")]
     private static extern WheelJointDefInternal GetDefault();
     
     /// <summary>

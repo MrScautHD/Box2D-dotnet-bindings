@@ -1,4 +1,5 @@
 using Box2D;
+using System.Numerics;
 
 namespace UnitTests;
 
@@ -8,7 +9,7 @@ public class CreationTests
     public void CreateWorldFromDefault()
     {
         string? error = null;
-        Box2D.Box2D.SetAssertFunction((condition, name, number) =>
+        Core.SetAssertFunction((condition, name, number) =>
         {
             error = condition;
             return 0;
@@ -23,7 +24,7 @@ public class CreationTests
     public void CreateWorldDefFromNew()
     {
         string? error = null;
-        Box2D.Box2D.SetAssertFunction((condition, name, number) =>
+        Core.SetAssertFunction((condition, name, number) =>
         {
             error = condition;
             return 0;
@@ -39,7 +40,7 @@ public class CreationTests
     void CreateTwoJointedBodies()
     {
         string? error = null;
-        Box2D.Box2D.SetAssertFunction((condition, name, number) =>
+        Core.SetAssertFunction((condition, name, number) =>
         {
             error = condition;
             return 0;
@@ -50,19 +51,65 @@ public class CreationTests
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.Type = BodyType.Dynamic;
-        bodyDef.Position = (-10f, 0f);
+        bodyDef.Position = new(-10f, 0f);
         Body bodyA = world.CreateBody(bodyDef);
 
-        bodyDef.Position = (10f, 0f);
+        bodyDef.Position = new(10f, 0f);
         Body bodyB = world.CreateBody(bodyDef);
 
         DistanceJointDef jointDef = new DistanceJointDef();
         jointDef.BodyA = bodyA;
         jointDef.BodyB = bodyB;
-        jointDef.LocalAnchorA = (0f, 0f);
-        jointDef.LocalAnchorB = (0f, 0f);
+        jointDef.LocalAnchorA = new(0f, 0f);
+        jointDef.LocalAnchorB = new(0f, 0f);
         
         Joint joint = world.CreateJoint(jointDef);
+        
+        if (error is not null) Assert.Fail(error);
+    }
+    
+    [Fact]
+    void CreateChainShape()
+    {
+        string? error = null;
+        Core.SetAssertFunction((condition, name, number) =>
+        {
+            error = condition;
+            return 0;
+        });
+        
+        WorldDef worldDf = new WorldDef();
+        World world = World.CreateWorld(worldDf);
+
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.Type = BodyType.Static;
+        bodyDef.Position = new(0f, 0f);
+        Body bodyA = world.CreateBody(bodyDef);
+
+        Vector2[] vertices =
+        {
+            new(-5f, -10),
+            new(-3.2f, 10),
+            new(-3.2f, 0),
+            new(3.2f, 0),
+            new(3.2f, 10),
+            new(5f, -10),
+            new(-5f, -10)
+        };
+
+        ChainDef chainDef = new ChainDef()
+            {
+                Points = vertices,
+                IsLoop = true
+            };
+        
+        ChainShape chainShape = bodyA.CreateChain(chainDef);
+
+        // Materials is set by Box2D, and so it has a pointer that we didn't create.
+        // We should have a check in the Materials property and the finalizer to
+        // make sure the one we're trying to Free is our own. If this fails, then
+        // that would be the first place to look.
+        chainDef.Materials = [];
         
         if (error is not null) Assert.Fail(error);
     }

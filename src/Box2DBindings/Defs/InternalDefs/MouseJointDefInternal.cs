@@ -8,7 +8,7 @@ namespace Box2D;
 /// This a soft constraint and allows the constraint to stretch without
 /// applying huge forces. This also applies rotation constraint heuristic to improve control.
 /// </summary>
-[StructLayout(LayoutKind.Explicit)]
+[StructLayout(LayoutKind.Explicit)] // LayoutKind.Explicit is required here to align fields appearing after bools, which must be marshalled as U1
 struct MouseJointDefInternal
 {
     /// <summary>
@@ -66,7 +66,7 @@ struct MouseJointDefInternal
     [FieldOffset(48)]
     private readonly int internalValue;
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultMouseJointDef")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultMouseJointDef")]
     private static extern MouseJointDefInternal GetDefault();
     
     /// <summary>

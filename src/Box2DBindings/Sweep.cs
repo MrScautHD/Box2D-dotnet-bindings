@@ -7,43 +7,38 @@ namespace Box2D;
 /// which may not coincide with the center of mass. However, to support dynamics we must interpolate the center of mass
 /// position.
 /// </summary>
-[StructLayout(LayoutKind.Explicit)]
+[StructLayout(LayoutKind.Sequential)]
 public struct Sweep
 {
     /// <summary>
     /// Local center of mass position
     /// </summary>
-    [FieldOffset(0)]
     public Vec2 LocalCenter;
 
     /// <summary>
     /// Starting center of mass world position
     /// </summary>
-    [FieldOffset(8)]
     public Vec2 C1;
 
     /// <summary>
     /// Ending center of mass world position
     /// </summary>
-    [FieldOffset(16)]
     public Vec2 C2;
 
     /// <summary>
     /// Starting world rotation
     /// </summary>
-    [FieldOffset(24)]
     public Rotation Q1;
 
     /// <summary>
     /// Ending world rotation
     /// </summary>
-    [FieldOffset(32)]
     public Rotation Q2;
     
     /// <summary>
     /// Evaluate the transform sweep at a specific time.
     /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2GetSweepTransform")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2GetSweepTransform")]
     private static extern Transform GetSweepTransform(in Sweep sweep, float time);
     
     public Transform GetTransform(float beta) => GetSweepTransform(this, beta);

@@ -1,18 +1,23 @@
+using JetBrains.Annotations;
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace Box2D;
 
-[StructLayout(LayoutKind.Explicit)]
-public struct Body
+[StructLayout(LayoutKind.Sequential)]
+public struct Body: IEquatable<Body>, IComparable<Body>
 {
-    [FieldOffset(0)]
-    internal int index1;
-    [FieldOffset(4)]
-    internal ushort world0;
-    [FieldOffset(6)]
-    internal ushort generation;
-        
+    public int index1;
+    private ushort world0;
+    private ushort generation;
+    
+    [PublicAPI]
+    public static IComparer<Body> DefaultComparer { get; } = Comparers.BodyComparer.Instance;
+    [PublicAPI]
+    public static IEqualityComparer<Body> DefaultEqualityComparer { get; } = Comparers.BodyComparer.Instance;
+    
+    [PublicAPI]
     public bool Equals(Body other) => index1 == other.index1 && world0 == other.world0 && generation == other.generation;
     public override bool Equals(object? obj) => obj is Body other && Equals(other);
     public override int GetHashCode() => HashCode.Combine(index1, world0, generation);
@@ -22,7 +27,18 @@ public struct Body
     public static bool operator !=(Body left, Body right) => !(left == right);
     public bool ReferenceEquals(Body other) => this == other;
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DestroyBody")]
+    public int CompareTo(Body other)
+    {
+        int index1Comparison = index1.CompareTo(other.index1);
+        if (index1Comparison != 0)
+            return index1Comparison;
+        int world0Comparison = world0.CompareTo(other.world0);
+        if (world0Comparison != 0)
+            return world0Comparison;
+        return generation.CompareTo(other.generation);
+    }
+    
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DestroyBody")]
     private static extern void b2DestroyBody(Body bodyId);
     
     /// <summary>
@@ -31,16 +47,18 @@ public struct Body
     /// <remarks>This destroys all shapes and joints attached to the body. Do not keep references to the associated shapes and joints</remarks>
     public void Destroy()
     {
-        World._bodies[world0+1].Remove(index1);
+        // remove self from world
+        World.bodies.Remove(index1);
         
         // dealloc user data
         nint userDataPtr = b2Body_GetUserData(this);
-        Box2D.FreeHandle(userDataPtr);
+        FreeHandle(ref userDataPtr);
+        b2Body_SetUserData(this, 0);
         
         b2DestroyBody(this);
     }
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_IsValid")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_IsValid")]
     private static extern bool b2Body_IsValid(Body bodyId);
     
     /// <summary>
@@ -48,78 +66,80 @@ public struct Body
     /// </summary>
     /// <returns>True if the body id is valid</returns>
     /// <remarks>Can be used to detect orphaned ids. Provides validation for up to 64K allocations</remarks>
+    [PublicAPI]
     public bool IsValid() => b2Body_IsValid(this);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetType")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetType")]
     private static extern BodyType b2Body_GetType(Body bodyId);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetType")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetType")]
     private static extern void b2Body_SetType(Body bodyId, BodyType type);
 
     /// <summary>
     /// The body type: static, kinematic, or dynamic.
     /// </summary>
+    [PublicAPI]
     public BodyType Type
     {
         get => b2Body_GetType(this);
         set => b2Body_SetType(this, value);
     }
     
-#if !BOX2D_300
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetName")]
+    private static extern void b2Body_SetName(Body bodyId, string? name);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetName")]
-    private static extern void b2Body_SetName(Body bodyId, string name);
-    
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetName")]
-    private static extern string b2Body_GetName(Body bodyId);
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetName")]
+    private static extern nint b2Body_GetName(Body bodyId);
     
     /// <summary>
     /// The body name.
     /// </summary>
-    public string Name
+    [PublicAPI]
+    public string? Name
     {
-        get => b2Body_GetName(this);
+        get => Marshal.PtrToStringAnsi(b2Body_GetName(this));
         set => b2Body_SetName(this, value);
     }
-#endif
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetUserData")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetUserData")]
     private static extern void b2Body_SetUserData(Body bodyId, nint userData);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetUserData")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetUserData")]
     private static extern nint b2Body_GetUserData(Body bodyId);
     
     /// <summary>
     /// The user data object for this body.
     /// </summary>
+    [PublicAPI]
     public object? UserData
     {
-        get => Box2D.GetObjectAtPointer(b2Body_GetUserData,this);
-        set => Box2D.SetObjectAtPointer(b2Body_GetUserData, b2Body_SetUserData, this, value);
+        get => GetObjectAtPointer(b2Body_GetUserData,this);
+        set => SetObjectAtPointer(b2Body_GetUserData, b2Body_SetUserData, this, value);
     }
     
-    
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetPosition")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetPosition")]
     private static extern Vec2 b2Body_GetPosition(Body bodyId);
     
     /// <summary>
     /// The world position of the body.
     /// </summary>
     /// <remarks>This is the location of the body origin</remarks>
+    [PublicAPI]
     public Vec2 Position => b2Body_GetPosition(this);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetRotation")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetRotation")]
     private static extern Rotation b2Body_GetRotation(Body bodyId);
     
     /// <summary>
     /// The world rotation of this body as a cosine/sine pair (complex number).
     /// </summary>
+    [PublicAPI]
     public Rotation Rotation => b2Body_GetRotation(this);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetTransform")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetTransform")]
     private static extern Transform b2Body_GetTransform(Body bodyId);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetTransform")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetTransform")]
     private static extern void b2Body_SetTransform(Body bodyId, Vec2 position, Rotation rotation);
     
     /// <summary>
@@ -127,13 +147,14 @@ public struct Body
     /// </summary>
     /// <remarks>Setting this acts as a teleport and is fairly expensive.<br/>
     /// <i>Note: Generally you should create a body with the intended transform.</i></remarks>
+    [PublicAPI]
     public Transform Transform 
     {
         get => b2Body_GetTransform(this);
         set => b2Body_SetTransform(this, value.Position, value.Rotation);
     }
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetLocalPoint")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetLocalPoint")]
     private static extern Vec2 b2Body_GetLocalPoint(Body bodyId, Vec2 worldPoint);
 
     /// <summary>
@@ -141,9 +162,10 @@ public struct Body
     /// </summary>
     /// <param name="worldPoint">The world point</param>
     /// <returns>The local point on the body</returns>
+    [PublicAPI]
     public Vec2 GetLocalPoint(Vec2 worldPoint) => b2Body_GetLocalPoint(this, worldPoint);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetWorldPoint")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetWorldPoint")]
     private static extern Vec2 b2Body_GetWorldPoint(Body bodyId, Vec2 localPoint);
 
     /// <summary>
@@ -151,9 +173,10 @@ public struct Body
     /// </summary>
     /// <param name="localPoint">The local point</param>
     /// <returns>The world point on the body</returns>
+    [PublicAPI]
     public Vec2 GetWorldPoint(Vec2 localPoint) => b2Body_GetWorldPoint(this, localPoint);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetLocalVector")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetLocalVector")]
     private static extern Vec2 b2Body_GetLocalVector(Body bodyId, Vec2 worldVector);
     
     /// <summary>
@@ -161,9 +184,10 @@ public struct Body
     /// </summary>
     /// <param name="worldVector">The world vector</param>
     /// <returns>The local vector on the body</returns>
+    [PublicAPI]
     public Vec2 GetLocalVector(Vec2 worldVector) => b2Body_GetLocalVector(this, worldVector);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetWorldVector")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetWorldVector")]
     private static extern Vec2 b2Body_GetWorldVector(Body bodyId, Vec2 localVector);
     
     /// <summary>
@@ -171,43 +195,70 @@ public struct Body
     /// </summary>
     /// <param name="localVector">The local vector</param>
     /// <returns>The world vector on the body</returns>
+    [PublicAPI]
     public Vec2 GetWorldVector(Vec2 localVector) => b2Body_GetWorldVector(this, localVector);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetLinearVelocity")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetLinearVelocity")]
     private static extern void b2Body_SetLinearVelocity(Body bodyId, Vec2 linearVelocity);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetLinearVelocity")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetLinearVelocity")]
     private static extern Vec2 b2Body_GetLinearVelocity(Body bodyId);
     
     /// <summary>
     /// The linear velocity of the body's center of mass.
     /// </summary>
     /// <remarks>Usually in meters per second</remarks>
+    [PublicAPI]
     public Vec2 LinearVelocity
     {
         get => b2Body_GetLinearVelocity(this);
         set => b2Body_SetLinearVelocity(this, value);
     }
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetAngularVelocity")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetAngularVelocity")]
     private static extern float b2Body_GetAngularVelocity(Body bodyId);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetAngularVelocity")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetAngularVelocity")]
     private static extern void b2Body_SetAngularVelocity(Body bodyId, float angularVelocity);
     
     /// <summary>
     /// The angular velocity of the body in radians per second.
     /// </summary>
     /// <remarks>In radians per second</remarks>
+    [PublicAPI]
     public float AngularVelocity
     {
         get => b2Body_GetAngularVelocity(this);
         set => b2Body_SetAngularVelocity(this, value);
     }
 
-#if !BOX2D_300
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetTargetTransform")]
+    private static extern void b2Body_SetTargetTransform(Body bodyId, Transform target, float timeStep);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetLocalPointVelocity")]
+    /// <summary>
+    /// Set the velocity to reach the given transform after a given time step.
+    /// The result will be close but maybe not exact. This is meant for kinematic bodies.
+    /// This will automatically wake the body if asleep.
+    /// </summary>
+    /// <param name="target">The target transform</param>
+    /// <param name="timeStep">The time step</param>
+    [PublicAPI]
+    public void SetTargetTransform(Transform target, float timeStep) => b2Body_SetTargetTransform(this, target, timeStep);
+    
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetKinematicTarget")]
+    private static extern void b2Body_SetKinematicTarget(Body bodyId, Transform target, float timeStep);
+    
+    /// <summary>
+    /// Set the velocity to reach the given transform after a given time step.
+    /// The result will be close but maybe not exact. This is meant for kinematic bodies.
+    /// This will automatically wake the body if asleep.
+    /// </summary>
+    /// <param name="target">The target transform</param>
+    /// <param name="timeStep">The time step</param>
+    [PublicAPI]
+    public void SetKinematicTarget(Transform target, float timeStep) => b2Body_SetKinematicTarget(this, target, timeStep);
+    
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetLocalPointVelocity")]
     private static extern Vec2 b2Body_GetLocalPointVelocity(Body bodyId, Vec2 localPoint);
     
     /// <summary>
@@ -216,9 +267,10 @@ public struct Body
     /// <param name="localPoint">The local point</param>
     /// <returns>The linear velocity of the local point attached to the body, usually in meters per second</returns>
     /// <remarks>Usually in meters per second</remarks>
+    [PublicAPI]
     public Vec2 GetLocalPointVelocity(Vec2 localPoint) => b2Body_GetLocalPointVelocity(this, localPoint);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetWorldPointVelocity")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetWorldPointVelocity")]
     private static extern Vec2 b2Body_GetWorldPointVelocity(Body bodyId, Vec2 worldPoint);
     
     /// <summary>
@@ -227,11 +279,10 @@ public struct Body
     /// <param name="worldPoint">The world point</param>
     /// <returns>The linear velocity of the world point attached to the body, usually in meters per second</returns>
     /// <remarks>Usually in meters per second</remarks>
+    [PublicAPI]
     public Vec2 GetWorldPointVelocity(Vec2 worldPoint) => b2Body_GetWorldPointVelocity(this, worldPoint);
 
-#endif
-
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ApplyForce")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ApplyForce")]
     private static extern void b2Body_ApplyForce(Body bodyId, Vec2 force, Vec2 point, bool wake);
     
     /// <summary>
@@ -241,9 +292,10 @@ public struct Body
     /// <param name="point">The world position of the point of application</param>
     /// <param name="wake">Option to wake up the body</param>
     /// <remarks>If the force is not applied at the center of mass, it will generate a torque and affect the angular velocity. The force is ignored if the body is not awake</remarks>
+    [PublicAPI]
     public void ApplyForce(Vec2 force, Vec2 point, bool wake) => b2Body_ApplyForce(this, force, point, wake);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ApplyForceToCenter")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ApplyForceToCenter")]
     private static extern void b2Body_ApplyForceToCenter(Body bodyId, Vec2 force, bool wake);
     
     /// <summary>
@@ -253,9 +305,10 @@ public struct Body
     /// <param name="wake">Option to wake up the body</param>
     /// <remarks>This wakes up the body</remarks>
     /// <remarks>If the force is not applied at the center of mass, it will generate a torque and affect the angular velocity. The force is ignored if the body is not awake</remarks>
+    [PublicAPI]
     public void ApplyForceToCenter(Vec2 force, bool wake) => b2Body_ApplyForceToCenter(this, force, wake);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ApplyTorque")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ApplyTorque")]
     private static extern void b2Body_ApplyTorque(Body bodyId, float torque, bool wake);
     
     /// <summary>
@@ -264,9 +317,10 @@ public struct Body
     /// <param name="torque">The torque about the z-axis (out of the screen), usually in N*m</param>
     /// <param name="wake">Option to wake up the body</param>
     /// <remarks>This affects the angular velocity without affecting the linear velocity. The torque is ignored if the body is not awake</remarks>
+    [PublicAPI]
     public void ApplyTorque(float torque, bool wake) => b2Body_ApplyTorque(this, torque, wake);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ApplyLinearImpulse")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ApplyLinearImpulse")]
     private static extern void b2Body_ApplyLinearImpulse(Body bodyId, Vec2 impulse, Vec2 point, bool wake);
     
     /// <summary>
@@ -277,9 +331,10 @@ public struct Body
     /// <param name="wake">Option to wake up the body</param>
     /// <remarks>This immediately modifies the velocity. It also modifies the angular velocity if the point of application is not at the center of mass. The impulse is ignored if the body is not awake
     /// <br/><br/><b>Warning: This should be used for one-shot impulses. If you need a steady force, use a force instead, which will work better with the sub-stepping solver</b></remarks>
+    [PublicAPI]
     public void ApplyLinearImpulse(Vec2 impulse, Vec2 point, bool wake) => b2Body_ApplyLinearImpulse(this, impulse, point, wake);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ApplyLinearImpulseToCenter")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ApplyLinearImpulseToCenter")]
     private static extern void b2Body_ApplyLinearImpulseToCenter(Body bodyId, Vec2 impulse, bool wake);
     
     /// <summary>
@@ -291,7 +346,7 @@ public struct Body
     /// <br/><br/><b>Warning: This should be used for one-shot impulses. If you need a steady force, use a force instead, which will work better with the sub-stepping solver</b></remarks>
     public void ApplyLinearImpulseToCenter(Vec2 impulse, bool wake) => b2Body_ApplyLinearImpulseToCenter(this, impulse, wake);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ApplyAngularImpulse")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ApplyAngularImpulse")]
     private static extern void b2Body_ApplyAngularImpulse(Body bodyId, float impulse, bool wake);
     
     /// <summary>
@@ -301,164 +356,128 @@ public struct Body
     /// <param name="wake">Option to wake up the body</param>
     /// <remarks>The impulse is ignored if the body is not awake
     /// <br/><br/><b>Warning: This should be used for one-shot impulses. If you need a steady force, use a force instead, which will work better with the sub-stepping solver</b></remarks>
+    [PublicAPI]
     public void ApplyAngularImpulse(float impulse, bool wake) => b2Body_ApplyAngularImpulse(this, impulse, wake);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetMass")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetMass")]
     private static extern float b2Body_GetMass(Body bodyId  );
     
     /// <summary>
     /// The mass of the body, usually in kilograms.
     /// </summary>
+    [PublicAPI]
     public float Mass => b2Body_GetMass(this);
-
-#if BOX2D_300
     
-    /*
-     * /// Get the inertia tensor of the body, typically in kg*m^2
-       B2_API float b2Body_GetInertiaTensor( b2BodyId bodyId );
-     */
-    
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetInertiaTensor")]
-    private static extern float b2Body_GetInertiaTensor(Body bodyId);
-    
-    /// <summary>
-    /// The inertia tensor of the body, typically in kg*m².
-    /// </summary>
-    public float InertiaTensor => b2Body_GetInertiaTensor(this);
-
-#else
-    
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetRotationalInertia")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetRotationalInertia")]
     private static extern float b2Body_GetRotationalInertia(Body bodyId);
     
     /// <summary>
     /// The rotational inertia of the body, usually in kg*m².
     /// </summary>
+    [PublicAPI]
     public float RotationalInertia => b2Body_GetRotationalInertia(this);
-
-#endif
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetLocalCenterOfMass")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetLocalCenterOfMass")]
     private static extern Vec2 b2Body_GetLocalCenterOfMass(Body bodyId);
     
     /// <summary>
     /// The center of mass position of the body in local space.
     /// </summary>
+    [PublicAPI]
     public Vec2 LocalCenterOfMass => b2Body_GetLocalCenterOfMass(this);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetWorldCenterOfMass")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetWorldCenterOfMass")]
     private static extern Vec2 b2Body_GetWorldCenterOfMass(Body bodyId);
     
     /// <summary>
     /// The center of mass position of the body in world space.
     /// </summary>
+    [PublicAPI]
     public Vec2 WorldCenterOfMass => b2Body_GetWorldCenterOfMass(this);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetMassData")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetMassData")]
     private static extern void b2Body_SetMassData(Body bodyId, MassData massData);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetMassData")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetMassData")]
     private static extern MassData b2Body_GetMassData(Body bodyId);
     
     /// <summary>
     /// The mass data for this body.
     /// </summary>
+    [PublicAPI]
     public MassData MassData
     {
         get => b2Body_GetMassData(this);
         set => b2Body_SetMassData(this, value);
     }
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ApplyMassFromShapes")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ApplyMassFromShapes")]
     private static extern void b2Body_ApplyMassFromShapes(Body bodyId);
-    
-#if BOX2D_300
-    
-    /*
-     * /// Set the automatic mass setting. Normally this is set in b2BodyDef before creation.
-       ///	@see b2BodyDef::automaticMass
-       B2_API void b2Body_SetAutomaticMass( b2BodyId bodyId, bool automaticMass );
-       */
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetAutomaticMass")]
-    private static extern void b2Body_SetAutomaticMass(Body bodyId, bool automaticMass);
-    
-    /*
-       /// Get the automatic mass setting
-       B2_API bool b2Body_GetAutomaticMass( b2BodyId bodyId );
-     */
-    
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetAutomaticMass")]
-    private static extern bool b2Body_GetAutomaticMass(Body bodyId);
-    
-    /// <summary>
-    /// The automatic mass setting.
-    /// </summary>
-    public bool AutomaticMass
-    {
-        get => b2Body_GetAutomaticMass(this);
-        set => b2Body_SetAutomaticMass(this, value);
-    }
-
-#endif
     
     /// <summary>
     /// This updates the mass properties to the sum of the mass properties of the shapes
     /// </summary>
-    /// <remarks>This normally does not need to be called unless you called SetMassData to override the mass and you later want to reset the mass. You may also use this when automatic mass computation has been disabled. You should call this regardless of body type</remarks>
+    /// <remarks>This normally does not need to be called unless you called SetMassData to override the mass and you later want to reset the mass. You may also use this when automatic mass computation has been disabled. You should call this regardless of body type<br/>
+    /// <i>Note: Sensor shapes may have mass.</i>
+    /// </remarks>
+    [PublicAPI]
     public void ApplyMassFromShapes() => b2Body_ApplyMassFromShapes(this);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetLinearDamping")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetLinearDamping")]
     private static extern void b2Body_SetLinearDamping(Body bodyId, float linearDamping);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetLinearDamping")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetLinearDamping")]
     private static extern float b2Body_GetLinearDamping(Body bodyId);
     
     /// <summary>
     /// The linear damping.
     /// </summary>
     /// <remarks>Normally this is set in BodyDef before creation</remarks>
+    [PublicAPI]
     public float LinearDamping
     {
         get => b2Body_GetLinearDamping(this);
         set => b2Body_SetLinearDamping(this, value);
     }
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetAngularDamping")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetAngularDamping")]
     private static extern void b2Body_SetAngularDamping(Body bodyId, float angularDamping);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetAngularDamping")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetAngularDamping")]
     private static extern float b2Body_GetAngularDamping(Body bodyId);
     
     /// <summary>
     /// The angular damping.
     /// </summary>
     /// <remarks>Normally this is set in BodyDef before creation</remarks>
+    [PublicAPI]
     public float AngularDamping
     {
         get => b2Body_GetAngularDamping(this);
         set => b2Body_SetAngularDamping(this, value);
     }
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetGravityScale")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetGravityScale")]
     private static extern void b2Body_SetGravityScale(Body bodyId, float gravityScale);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetGravityScale")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetGravityScale")]
     private static extern float b2Body_GetGravityScale(Body bodyId);
     
     /// <summary>
     /// The gravity scale.
     /// </summary>
     /// <remarks>Normally this is set in BodyDef before creation</remarks>
+    [PublicAPI]
     public float GravityScale
     {
         get => b2Body_GetGravityScale(this);
         set => b2Body_SetGravityScale(this, value);
     }
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_IsAwake")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_IsAwake")]
     private static extern bool b2Body_IsAwake(Body bodyId);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetAwake")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetAwake")]
     private static extern void b2Body_SetAwake(Body bodyId, bool awake);
     
     /// <summary>
@@ -468,56 +487,59 @@ public struct Body
     /// This wakes the entire island the body is touching.
     /// <b>Warning: Putting a body to sleep will put the entire island of bodies touching this body to sleep, which can be expensive and possibly unintuitive.</b>
     /// </remarks>
+    [PublicAPI]
     public bool Awake
     {
         get => b2Body_IsAwake(this);
         set => b2Body_SetAwake(this, value);
     }
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_EnableSleep")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_EnableSleep")]
     private static extern void b2Body_EnableSleep(Body bodyId, bool enableSleep);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_IsSleepEnabled")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_IsSleepEnabled")]
     private static extern bool b2Body_IsSleepEnabled(Body bodyId);
 
     /// <summary>
     /// Option to enable or disable sleeping for this body.
     /// </summary>
     /// <remarks>If sleeping is disabled the body will wake</remarks>
+    [PublicAPI]
     public bool SleepEnabled
     {
         get => b2Body_IsSleepEnabled(this);
         set => b2Body_EnableSleep(this, value);
     }
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetSleepThreshold")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetSleepThreshold")]
     private static extern void b2Body_SetSleepThreshold(Body bodyId, float sleepThreshold);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetSleepThreshold")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetSleepThreshold")]
     private static extern float b2Body_GetSleepThreshold(Body bodyId);
     
     /// <summary>
     /// The sleep threshold, usually in meters per second.
     /// </summary>
+    [PublicAPI]
     public float SleepThreshold
     {
         get => b2Body_GetSleepThreshold(this);
         set => b2Body_SetSleepThreshold(this, value);
     }
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_IsEnabled")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_IsEnabled")]
     private static extern bool b2Body_IsEnabled(Body bodyId);
     
-    
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_Disable")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_Disable")]
     private static extern void b2Body_Disable(Body bodyId);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_Enable")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_Enable")]
     private static extern void b2Body_Enable(Body bodyId);
     
     /// <summary>
     /// The body enabled flag. 
     /// </summary>
+    [PublicAPI]
     public bool Enabled
     {
         get => b2Body_IsEnabled(this);
@@ -531,41 +553,41 @@ public struct Body
     }
 
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetFixedRotation")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetFixedRotation")]
     private static extern void b2Body_SetFixedRotation(Body bodyId, bool flag);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_IsFixedRotation")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_IsFixedRotation")]
     private static extern bool b2Body_IsFixedRotation(Body bodyId);
     
     /// <summary>
     /// The fixed rotation flag of the body.
     /// </summary>
     /// <remarks>Setting this causes the mass to be reset in all cases</remarks>
+    [PublicAPI]
     public bool FixedRotation
     {
         get => b2Body_IsFixedRotation(this);
         set => b2Body_SetFixedRotation(this, value);
     }
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetBullet")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetBullet")]
     private static extern void b2Body_SetBullet(Body bodyId, bool flag);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_IsBullet")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_IsBullet")]
     private static extern bool b2Body_IsBullet(Body bodyId);
     
     /// <summary>
     /// The bullet flag of the body.
     /// </summary>
     /// <remarks>A bullet does continuous collision detection against dynamic bodies (but not other bullets)</remarks>
+    [PublicAPI]
     public bool Bullet
     {
         get => b2Body_IsBullet(this);
         set => b2Body_SetBullet(this, value);
     }
     
-#if !BOX2D_300
-    
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_EnableContactEvents")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_EnableContactEvents")]
     private static extern void b2Body_EnableContactEvents(Body bodyId, bool flag);
 
     /// <summary>
@@ -573,104 +595,127 @@ public struct Body
     /// </summary>
     /// <param name="flag">Option to enable or disable contact events on all shapes</param>
     /// <remarks><b>Warning: Changing this at runtime may cause mismatched begin/end touch events.</b></remarks>
+    [PublicAPI]
     public void EnableContactEvents(bool flag) => b2Body_EnableContactEvents(this, flag);
 
-#endif
-
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_EnableHitEvents")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_EnableHitEvents")]
     private static extern void b2Body_EnableHitEvents(Body bodyId, bool flag);
     
     /// <summary>
     /// Enable/disable hit events on all shapes
     /// </summary>
     /// <param name="flag">Option to enable or disable hit events on all shapes</param>
+    [PublicAPI]
     public void EnableHitEvents(bool flag) => b2Body_EnableHitEvents(this, flag);
-
-#if !BOX2D_300
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetWorld")]
-    private static extern World b2Body_GetWorld(Body bodyId);
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetWorld")]
+    private static extern WorldId b2Body_GetWorld(Body bodyId);
     
     /// <summary>
     /// The world that owns this body.
     /// </summary>
-    public World World => b2Body_GetWorld(this);
-    
-#endif
+    [PublicAPI]
+    public World World => World.GetWorld(b2Body_GetWorld(this));
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetShapeCount")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetShapeCount")]
     private static extern int b2Body_GetShapeCount(Body bodyId);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetShapes")]
-    private static extern int b2Body_GetShapes(Body bodyId, nint shapeArray, int capacity);
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetShapes")]
+    private static extern unsafe int b2Body_GetShapes(Body bodyId, Shape* shapeArray, int capacity);
     
     /// <summary>
     /// The shapes attached to this body.
     /// </summary>
-    public Shape[] Shapes
+    [PublicAPI]
+    public unsafe ReadOnlySpan<Shape> Shapes
     {
         get
         {
             int shapeCount = b2Body_GetShapeCount(this);
+            if (shapeCount == 0)
+                return [];
+
             Shape[] shapes = new Shape[shapeCount];
-            nint shapeArrayPtr = Marshal.UnsafeAddrOfPinnedArrayElement(shapes, 0);
-            b2Body_GetShapes(this, shapeArrayPtr, shapeCount);
+
+            fixed (Shape* shapeArrayPtr = shapes)
+                b2Body_GetShapes(this, shapeArrayPtr, shapeCount);
+
             return shapes;
         }
     }
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetJointCount")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetJointCount")]
     private static extern int b2Body_GetJointCount(Body bodyId);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetJoints")]
-    private static extern int b2Body_GetJoints(Body bodyId, nint jointArray, int capacity);
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetJoints")]
+    private static extern unsafe int b2Body_GetJoints(Body bodyId, JointId* jointArray, int capacity);
     
     /// <summary>
     /// The joints attached to this body.
     /// </summary>
-    public Joint[] Joints
+    [PublicAPI]
+    public unsafe ReadOnlySpan<Joint> Joints
     {
         get
         {
             int jointCount = b2Body_GetJointCount(this);
-            Joint[] joints = new Joint[jointCount];
-            nint jointArrayPtr = Marshal.UnsafeAddrOfPinnedArrayElement(joints, 0);
-            b2Body_GetJoints(this, jointArrayPtr, jointCount);
-            return joints;
+            if (jointCount == 0)
+                return [];
+            
+            JointId[] jointIds = new JointId[jointCount];
+            fixed (JointId* jointIdsArrayPtr = jointIds)
+                b2Body_GetJoints(this, jointIdsArrayPtr, jointCount);
+            
+            Joint[] jointObjects = new Joint[jointCount];
+            for (int i = 0; i < jointCount; i++)
+                jointObjects[i] = Joint.GetJoint(jointIds[i]);
+            
+            return jointObjects;
         }
     }
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetContactCapacity")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetContactCapacity")]
     private static extern int b2Body_GetContactCapacity(Body bodyId);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetContactData")]
-    private static extern int b2Body_GetContactData(Body bodyId, nint contactData, int capacity);
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetContactData")]
+    private static extern unsafe int b2Body_GetContactData(Body bodyId, ContactData* contactData, int capacity);
     
     /// <summary>
     /// The touching contact data for this body.
     /// </summary>
-    public ContactData[] Contacts
+    /// <remarks>
+    /// <i>Note: Box2D uses speculative collision so some contact points may be separated.</i>
+    /// </remarks>
+    [PublicAPI]
+    public unsafe ReadOnlySpan<ContactData> Contacts
     {
         get
         {
-            int contactCapacity = b2Body_GetContactCapacity(this);
-            ContactData[] contactData = new ContactData[contactCapacity];
-            nint contactDataPtr = Marshal.UnsafeAddrOfPinnedArrayElement(contactData, 0);
-            b2Body_GetContactData(this, contactDataPtr, contactCapacity);
-            return contactData;
+            int needed = b2Body_GetContactCapacity(this);
+            if (needed == 0)
+                return [];
+            
+            ContactData[] contactData = GC.AllocateUninitializedArray<ContactData>(needed);
+            int written;
+            fixed (ContactData* p = contactData)
+            {
+                written = b2Body_GetContactData(this, p, contactData.Length);
+            }
+            return contactData.AsSpan(0, written);
         }
     }
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ComputeAABB")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ComputeAABB")]
     private static extern AABB b2Body_ComputeAABB(Body bodyId);
 
     /// <summary>
     /// The current world AABB that contains all the attached shapes.
     /// </summary>
     /// <remarks>Note that this may not encompass the body origin. If there are no shapes attached then the returned AABB is empty and centered on the body origin</remarks>
+    [PublicAPI]
     public AABB AABB => b2Body_ComputeAABB(this);
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateCircleShape")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateCircleShape")]
     private static extern Shape b2CreateCircleShape(Body bodyId, in ShapeDefInternal def, in Circle circle);
     
     /// <summary>
@@ -680,9 +725,10 @@ public struct Body
     /// <param name="circle">The circle</param>
     /// <returns>The shape</returns>
     /// <remarks>The shape definition and geometry are fully cloned. Contacts are not created until the next time step</remarks>
-    public Shape CreateShape(ShapeDef def, in Circle circle) => b2CreateCircleShape(this, def._internal, circle);
+    [PublicAPI]
+    public Shape CreateShape(in ShapeDef def, in Circle circle) => b2CreateCircleShape(this, in def._internal, circle);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateSegmentShape")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateSegmentShape")]
     private static extern Shape b2CreateSegmentShape(Body bodyId, in ShapeDefInternal def, in Segment segment);
     
     /// <summary>
@@ -692,9 +738,10 @@ public struct Body
     /// <param name="segment">The segment</param>
     /// <returns>The shape</returns>
     /// <remarks>The shape definition and geometry are fully cloned. Contacts are not created until the next time step</remarks>
-    public Shape CreateShape(ShapeDef def, in Segment segment) => b2CreateSegmentShape(this, def._internal, segment);
+    [PublicAPI]
+    public Shape CreateShape(in ShapeDef def, in Segment segment) => b2CreateSegmentShape(this, in def._internal, segment);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateCapsuleShape")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateCapsuleShape")]
     private static extern Shape b2CreateCapsuleShape(Body bodyId, in ShapeDefInternal def, in Capsule capsule);
     
     /// <summary>
@@ -704,9 +751,10 @@ public struct Body
     /// <param name="capsule">The capsule</param>
     /// <returns>The shape</returns>
     /// <remarks>The shape definition and geometry are fully cloned. Contacts are not created until the next time step</remarks>
-    public Shape CreateShape(ShapeDef def, in Capsule capsule) => b2CreateCapsuleShape(this, def._internal, capsule);
+    [PublicAPI]
+    public Shape CreateShape(in ShapeDef def, in Capsule capsule) => b2CreateCapsuleShape(this, in def._internal, capsule);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreatePolygonShape")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreatePolygonShape")]
     private static extern Shape b2CreatePolygonShape(Body bodyId, in ShapeDefInternal def, in Polygon polygon);
     
     /// <summary>
@@ -716,9 +764,10 @@ public struct Body
     /// <param name="polygon">The polygon</param>
     /// <returns>The shape</returns>
     /// <remarks>The shape definition and geometry are fully cloned. Contacts are not created until the next time step</remarks>
-    public Shape CreateShape(ShapeDef def, in Polygon polygon) => b2CreatePolygonShape(this, def._internal, polygon);
+    [PublicAPI]
+    public Shape CreateShape(in ShapeDef def, in Polygon polygon) => b2CreatePolygonShape(this, in def._internal, polygon);
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateChain")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateChain")]
     private static extern ChainShape b2CreateChain(Body bodyId, in ChainDefInternal def);
     
     /// <summary>
@@ -726,6 +775,5 @@ public struct Body
     /// </summary>
     /// <param name="def">The chain definition</param>
     /// <returns>The chain shape</returns>
-    public ChainShape CreateChain(ChainDef def) => b2CreateChain(this, def._internal);
-
+    public ChainShape CreateChain(ChainDef def) => b2CreateChain(this, in def._internal);
 }

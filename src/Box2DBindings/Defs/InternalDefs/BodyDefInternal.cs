@@ -7,7 +7,7 @@ namespace Box2D;
 /// You can safely re-use body definitions. Shapes are added to a body after construction.
 /// Body definitions are temporary objects used to bundle creation parameters.
 /// </summary>
-[StructLayout(LayoutKind.Explicit)]
+[StructLayout(LayoutKind.Explicit)] // The alternative to LayoutKind.Explicit is to have two padding bytes between AllowFastRotation and internalValue
 struct BodyDefInternal
 {
     /// <summary>
@@ -22,25 +22,25 @@ struct BodyDefInternal
     /// if the body is moved after shapes have been added.</i>
     /// </summary>
     [FieldOffset(4)]
-    public Vec2 Position;
+    internal Vec2 Position;
 
     /// <summary>
     /// The initial world rotation of the body.
     /// </summary>
     [FieldOffset(12)]
-    public Rotation Rotation;
+    internal Rotation Rotation;
 
     /// <summary>
     /// The initial linear velocity of the body's origin. Usually in meters per second.
     /// </summary>
     [FieldOffset(20)]
-    public Vec2 LinearVelocity;
+    internal Vec2 LinearVelocity;
 
     /// <summary>
     /// The initial angular velocity of the body. Radians per second.
     /// </summary>
     [FieldOffset(28)]
-    public float AngularVelocity;
+    internal float AngularVelocity;
 
     /// <summary>
     /// Linear damping is used to reduce the linear velocity. The damping parameter
@@ -50,7 +50,7 @@ struct BodyDefInternal
     /// as if they are floating.
     /// </summary>
     [FieldOffset(32)]
-    public float LinearDamping;
+    internal float LinearDamping;
 
     /// <summary>
     /// Angular damping is used to reduce the angular velocity. The damping parameter
@@ -59,81 +59,19 @@ struct BodyDefInternal
     /// Angular damping can be use slow down rotating bodies.
     /// </summary>
     [FieldOffset(36)]
-    public float AngularDamping;
+    internal float AngularDamping;
 
     /// <summary>
     /// Scale the gravity applied to this body. Non-dimensional.
     /// </summary>
     [FieldOffset(40)]
-    public float GravityScale;
+    internal float GravityScale;
 
     /// <summary>
     /// Sleep speed threshold, default is 0.05 meters per second
     /// </summary>
     [FieldOffset(44)]
-    public float SleepThreshold;
-
-#if BOX2D_300
-    
-    /// <summary>
-    /// Use this to store application specific body data.
-    /// </summary>
-    [FieldOffset(48)]
-    public nint UserData;
-
-    /// <summary>
-    /// Set this flag to false if this body should never fall asleep.
-    /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(56)]
-    public bool EnableSleep;
-
-    /// <summary>
-    /// Is this body initially awake or sleeping?
-    /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(57)]
-    public bool IsAwake;
-
-    /// <summary>
-    /// Should this body be prevented from rotating? Useful for characters.
-    /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(58)]
-    public bool FixedRotation;
-
-    /// <summary>
-    /// Treat this body as high speed object that performs continuous collision detection
-    /// against dynamic and kinematic bodies, but not other bullet bodies.
-    /// <b>Warning: Bullets should be used sparingly. They are not a solution for general dynamic-versus-dynamic</b>
-    /// continuous collision. They may interfere with joint constraints.
-    /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(59)]
-    public bool IsBullet;
-
-    /// <summary>
-    /// Used to disable a body. A disabled body does not move or collide.
-    /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(60)]
-    public bool IsEnabled;
-
-    /// <summary>
-    /// This allows this body to bypass rotational speed limits. Should only be used
-    /// for circular objects, like wheels.
-    /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(61)]
-    public bool AllowFastRotation;
-
-    /// <summary>
-    /// Used internally to detect a valid definition. DO NOT SET.
-    /// </summary>
-    [FieldOffset(64)]
-    private readonly int internalValue;
-    
-#else
+    internal float SleepThreshold;
     
     [FieldOffset(48)]
     internal nint Name;
@@ -142,28 +80,28 @@ struct BodyDefInternal
     /// Use this to store application specific body data.
     /// </summary>
     [FieldOffset(56)]
-    public nint UserData;
+    internal nint UserData;
 
     /// <summary>
     /// Set this flag to false if this body should never fall asleep.
     /// </summary>
     [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(64)]
-    public bool EnableSleep;
+    internal bool EnableSleep;
 
     /// <summary>
     /// Is this body initially awake or sleeping?
     /// </summary>
     [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(65)]
-    public bool IsAwake;
+    internal bool IsAwake;
 
     /// <summary>
     /// Should this body be prevented from rotating? Useful for characters.
     /// </summary>
     [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(66)]
-    public bool FixedRotation;
+    internal bool FixedRotation;
 
     /// <summary>
     /// Treat this body as high speed object that performs continuous collision detection
@@ -173,14 +111,14 @@ struct BodyDefInternal
     /// </summary>
     [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(67)]
-    public bool IsBullet;
+    internal bool IsBullet;
 
     /// <summary>
     /// Used to disable a body. A disabled body does not move or collide.
     /// </summary>
     [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(68)]
-    public bool IsEnabled;
+    internal bool IsEnabled;
 
     /// <summary>
     /// This allows this body to bypass rotational speed limits. Should only be used
@@ -188,18 +126,15 @@ struct BodyDefInternal
     /// </summary>
     [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(69)]
-    public bool AllowFastRotation;
+    internal bool AllowFastRotation;
 
     /// <summary>
     /// Used internally to detect a valid definition. DO NOT SET.
     /// </summary>
     [FieldOffset(72)]
     private readonly int internalValue;
-#endif
     
-    
-    
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultBodyDef")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultBodyDef")]
     private static extern BodyDefInternal GetDefault();
     
     /// <summary>

@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System;
 using System.Runtime.InteropServices;
 
@@ -8,42 +9,39 @@ namespace Box2D;
 /// as event arrays after the time step is complete.
 /// <i>Note: these may become invalid if bodies and/or shapes are destroyed</i>
 /// </summary>
-[StructLayout(LayoutKind.Explicit)]
+[StructLayout(LayoutKind.Sequential)]
 public unsafe struct ContactEvents
 {
-    [FieldOffset(0)]
-    private nint beginEvents;
+    private ContactBeginTouchEvent* beginEvents;
 	
     /// <summary>
     /// Array of begin touch events
     /// </summary>
-    public ReadOnlySpan<ContactBeginTouchEvent> BeginEvents => new((ContactBeginTouchEvent*)beginEvents, beginCount);
+    [PublicAPI]
+    public ReadOnlySpan<ContactBeginTouchEvent> BeginEvents => new(beginEvents, beginCount);
 
-    [FieldOffset(8)]
-    private nint endEvents;
+    private ContactEndTouchEvent* endEvents;
 	
     /// <summary>
     /// Array of end touch events
     /// </summary>
-    public ReadOnlySpan<ContactEndTouchEvent> EndEvents => new((ContactEndTouchEvent*)endEvents, endCount);
+    [PublicAPI]
+    public ReadOnlySpan<ContactEndTouchEvent> EndEvents => new(endEvents, endCount);
 
-    [FieldOffset(16)]
-    private nint hitEvents;
+    private ContactHitEvent* hitEvents;
 	
     /// <summary>
     /// Array of hit events
     /// </summary>
-    public ReadOnlySpan<ContactHitEvent> HitEvents => new((ContactHitEvent*)hitEvents, hitCount);
+    [PublicAPI]
+    public ReadOnlySpan<ContactHitEvent> HitEvents => new(hitEvents, hitCount);
 
     /// Number of begin touch events
-    [FieldOffset(24)]
     private int beginCount;
 
     /// Number of end touch events
-    [FieldOffset(28)]
     private int endCount;
 
     /// Number of hit events
-    [FieldOffset(32)]
     private int hitCount;
 }

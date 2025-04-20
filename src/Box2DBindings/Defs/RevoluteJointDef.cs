@@ -1,4 +1,5 @@
-using System.Runtime.InteropServices;
+using JetBrains.Annotations;
+using System;
 
 namespace Box2D;
 
@@ -20,162 +21,110 @@ public class RevoluteJointDef
         _internal = new RevoluteJointDefInternal();
     }
     
-    ~RevoluteJointDef()
-    {
-        Box2D.FreeHandle(_internal.UserData);
-    }
-    
     /// <summary>
     /// The first attached body
     /// </summary>
-    public Body BodyA
-    {
-        get => _internal.BodyA;
-        set => _internal.BodyA = value;
-    }
+    [PublicAPI]
+    public ref Body BodyA => ref _internal.BodyA;
 
     /// <summary>
     /// The second attached body
     /// </summary>
-    public Body BodyB
-    {
-        get => _internal.BodyB;
-        set => _internal.BodyB = value;
-    }
+    [PublicAPI]
+    public ref Body BodyB => ref _internal.BodyB;
 
     /// <summary>
     /// The local anchor point relative to bodyA's origin
     /// </summary>
-    public Vec2 LocalAnchorA
-    {
-        get => _internal.LocalAnchorA;
-        set => _internal.LocalAnchorA = value;
-    }
+    [PublicAPI]
+    public ref Vec2 LocalAnchorA => ref _internal.LocalAnchorA;
 
     /// <summary>
     /// The local anchor point relative to bodyB's origin
     /// </summary>
-    public Vec2 LocalAnchorB
-    {
-        get => _internal.LocalAnchorB;
-        set => _internal.LocalAnchorB = value;
-    }
+    [PublicAPI]
+    public ref Vec2 LocalAnchorB => ref _internal.LocalAnchorB;
 
     /// <summary>
     /// The bodyB angle minus bodyA angle in the reference state (radians).
     /// This defines the zero angle for the joint limit.
     /// </summary>
-    public float ReferenceAngle
-    {
-        get => _internal.ReferenceAngle;
-        set => _internal.ReferenceAngle = value;
-    }
+    [PublicAPI]
+    public ref float ReferenceAngle => ref _internal.ReferenceAngle;
 
     /// <summary>
     /// Enable a rotational spring on the revolute hinge axis
     /// </summary>
-    public bool EnableSpring
-    {
-        get => _internal.EnableSpring;
-        set => _internal.EnableSpring = value;
-    }
+    [PublicAPI]
+    public ref bool EnableSpring => ref _internal.EnableSpring;
 
     /// <summary>
     /// The spring stiffness Hertz, cycles per second
     /// </summary>
-    public float Hertz
-    {
-        get => _internal.Hertz;
-        set => _internal.Hertz = value;
-    }
+    [PublicAPI]
+    public ref float Hertz => ref _internal.Hertz;
 
     /// <summary>
     /// The spring damping ratio, non-dimensional
     /// </summary>
-    public float DampingRatio
-    {
-        get => _internal.DampingRatio;
-        set => _internal.DampingRatio = value;
-    }
+    [PublicAPI]
+    public ref float DampingRatio => ref _internal.DampingRatio;
 
     /// <summary>
     /// A flag to enable joint limits
     /// </summary>
-    public bool EnableLimit
-    {
-        get => _internal.EnableLimit;
-        set => _internal.EnableLimit = value;
-    }
+    [PublicAPI]
+    public ref bool EnableLimit => ref _internal.EnableLimit;
 
     /// <summary>
-    /// The lower angle for the joint limit in radians
+    /// The lower angle for the joint limit in radians. Minimum of -0.95*pi radians.
     /// </summary>
-    public float LowerAngle
-    {
-        get => _internal.LowerAngle;
-        set => _internal.LowerAngle = value;
-    }
+    [PublicAPI]
+    public ref float LowerAngle => ref _internal.LowerAngle;
 
     /// <summary>
-    /// The upper angle for the joint limit in radians
+    /// The upper angle for the joint limit in radians. Maximum of 0.95*pi radians.
     /// </summary>
-    public float UpperAngle
-    {
-        get => _internal.UpperAngle;
-        set => _internal.UpperAngle = value;
-    }
+    [PublicAPI]
+    public ref float UpperAngle => ref _internal.UpperAngle;
 
     /// <summary>
     /// A flag to enable the joint motor
     /// </summary>
-    public bool EnableMotor
-    {
-        get => _internal.EnableMotor;
-        set => _internal.EnableMotor = value;
-    }
+    [PublicAPI]
+    public ref bool EnableMotor => ref _internal.EnableMotor;
 
     /// <summary>
     /// The maximum motor torque, typically in newton-meters
     /// </summary>
-    public float MaxMotorTorque
-    {
-        get => _internal.MaxMotorTorque;
-        set => _internal.MaxMotorTorque = value;
-    }
+    [PublicAPI]
+    public ref float MaxMotorTorque => ref _internal.MaxMotorTorque;
 
     /// <summary>
     /// The desired motor speed in radians per second
     /// </summary>
-    public float MotorSpeed
-    {
-        get => _internal.MotorSpeed;
-        set => _internal.MotorSpeed = value;
-    }
+    [PublicAPI]
+    public ref float MotorSpeed => ref _internal.MotorSpeed;
 
     /// <summary>
     /// Scale the debug draw
     /// </summary>
-    public float DrawSize
-    {
-        get => _internal.DrawSize;
-        set => _internal.DrawSize = value;
-    }
+    [PublicAPI]
+    public ref float DrawSize => ref _internal.DrawSize;
 
     /// <summary>
     /// Set this flag to true if the attached bodies should collide
     /// </summary>
-    public bool CollideConnected
-    {
-        get => _internal.CollideConnected;
-        set => _internal.CollideConnected = value;
-    }
+    [PublicAPI]
+    public ref bool CollideConnected => ref _internal.CollideConnected;
 
     /// <summary>
     /// User data
     /// </summary>
+    [PublicAPI]
     public object? UserData
     {
-        get => Box2D.GetObjectAtPointer(_internal.UserData);
-        set => Box2D.SetObjectAtPointer(ref _internal.UserData, value);
+        get => GetObjectAtPointer(_internal.UserData);
+        set => SetObjectAtPointer(ref _internal.UserData, value);
     }
 }

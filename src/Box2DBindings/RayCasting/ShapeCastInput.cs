@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Runtime.InteropServices;
 
 namespace Box2D;
@@ -7,50 +8,27 @@ namespace Box2D;
 /// cloud wrap with a radius. For example, a circle is a single point with a non-zero radius.
 /// A capsule is two points with a non-zero radius. A box is four points with a zero radius.
 /// </summary>
-public class ShapeCastInput
+[StructLayout(LayoutKind.Sequential, Pack = 4)]
+public struct ShapeCastInput
 {
-    internal ShapeCastInputInternal _internal;
+    /// <summary>
+    /// A generic shape
+    /// </summary>
+    public ShapeProxy Proxy;
     
-    public ShapeCastInput()
-    {
-        _internal = new ShapeCastInputInternal();
-    }
+    /// <summary>
+    /// The translation of the shape cast
+    /// </summary>
+    public Vec2 Translation;
     
-    ~ShapeCastInput()
-    {
-        if (_internal.Points != 0)
-            Marshal.FreeHGlobal(_internal.Points);
-    }
+    /// <summary>
+    /// The maximum fraction of the translation to consider, typically 1
+    /// </summary>
+    public float MaxFraction;
 
-    public unsafe Vec2[] Points
-    {
-        set
-        {
-            if (_internal.Points != 0)
-                Marshal.FreeHGlobal(_internal.Points);
-            _internal.Points = Marshal.AllocHGlobal(value.Length * sizeof(Vec2));
-            for (int i = 0; i < value.Length; i++)
-                ((Vec2*)_internal.Points)[i] = value[i];
-            _internal.Count = value.Length;
-        }
-    }
-
-    public float Radius
-    {
-        get => _internal.Radius;
-        set => _internal.Radius = value;
-    }
-    
-    public Vec2 Translation
-    {
-        get => _internal.Translation;
-        set => _internal.Translation = value;
-    }
-    
-    public float MaxFraction
-    {
-        get => _internal.MaxFraction;
-        set => _internal.MaxFraction = value;
-    }
-    
+    /// <summary>
+    /// Allow shape cast to encroach when initially touching. This only works if the radius is greater than zero.
+    /// </summary>
+    [MarshalAs(UnmanagedType.I1)]
+    public bool CanEncroach;
 }

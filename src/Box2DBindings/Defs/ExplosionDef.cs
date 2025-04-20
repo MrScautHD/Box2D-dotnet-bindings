@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Runtime.InteropServices;
 
 namespace Box2D;
@@ -41,17 +42,19 @@ public struct ExplosionDef
     [FieldOffset(24)]
     public float ImpulsePerLength;
     
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultExplosionDef")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultExplosionDef")]
     private static extern ExplosionDef GetDefault();
     
     /// <summary>
     /// The default explosion definition.
     /// </summary>
+    [PublicAPI]
     public static ExplosionDef Default => GetDefault();
     
     /// <summary>
     /// Creates a new explosion definition with the default values.
     /// </summary>
+    [PublicAPI]
     public ExplosionDef()
     {
         this = Default;

@@ -1,4 +1,5 @@
-using System.Runtime.InteropServices;
+using JetBrains.Annotations;
+using System;
 
 namespace Box2D;
 
@@ -14,167 +15,116 @@ public class PrismaticJointDef
 {
     internal PrismaticJointDefInternal _internal;
 
+    [PublicAPI]
     public PrismaticJointDef()
     {
         _internal = new PrismaticJointDefInternal();
     }
 
-    ~PrismaticJointDef()
-    {
-        Box2D.FreeHandle(_internal.UserData);
-    }
-
     /// <summary>
     /// The first attached body
     /// </summary>
-    public Body BodyA
-    {
-        get => _internal.BodyA;
-        set => _internal.BodyA = value;
-    }
+    [PublicAPI]
+    public ref Body BodyA => ref _internal.BodyA;
 
     /// <summary>
     /// The second attached body
     /// </summary>
-    public Body BodyB
-    {
-        get => _internal.BodyB;
-        set => _internal.BodyB = value;
-    }
-    
+    [PublicAPI]
+    public ref Body BodyB => ref _internal.BodyB;
+
     /// <summary>
     /// The local anchor point relative to bodyA's origin
     /// </summary>
-    public Vec2 LocalAnchorA
-    {
-        get => _internal.LocalAnchorA;
-        set => _internal.LocalAnchorA = value;
-    }
+    [PublicAPI]
+    public ref Vec2 LocalAnchorA => ref _internal.LocalAnchorA;
 
     /// <summary>
     /// The local anchor point relative to bodyB's origin
     /// </summary>
-    public Vec2 LocalAnchorB
-    {
-        get => _internal.LocalAnchorB;
-        set => _internal.LocalAnchorB = value;
-    }
+    [PublicAPI]
+    public ref Vec2 LocalAnchorB => ref _internal.LocalAnchorB;
 
     /// <summary>
     /// The local translation unit axis in bodyA
     /// </summary>
-    public Vec2 LocalAxisA
-    {
-        get => _internal.LocalAxisA;
-        set => _internal.LocalAxisA = value;
-    }
+    [PublicAPI]
+    public ref Vec2 LocalAxisA => ref _internal.LocalAxisA;
 
     /// <summary>
     /// The constrained angle between the bodies: bodyB_angle - bodyA_angle
     /// </summary>
-    public float ReferenceAngle
-    {
-        get => _internal.ReferenceAngle;
-        set => _internal.ReferenceAngle = value;
-    }
+    [PublicAPI]
+    public ref float ReferenceAngle => ref _internal.ReferenceAngle;
 
     /// <summary>
     /// Enable a linear spring along the prismatic joint axis
     /// </summary>
-    public bool EnableSpring
-    {
-        get => _internal.EnableSpring;
-        set => _internal.EnableSpring = value;
-    }
+    [PublicAPI]
+    public ref bool EnableSpring => ref _internal.EnableSpring;
 
     /// <summary>
     /// The spring stiffness Hertz, cycles per second
     /// </summary>
-    public float Hertz
-    {
-        get => _internal.Hertz;
-        set => _internal.Hertz = value;
-    }
+    [PublicAPI]
+    public ref float Hertz => ref _internal.Hertz;
 
     /// <summary>
     /// The spring damping ratio, non-dimensional
     /// </summary>
-    public float DampingRatio
-    {
-        get => _internal.DampingRatio;
-        set => _internal.DampingRatio = value;
-    }
+    [PublicAPI]
+    public ref float DampingRatio => ref _internal.DampingRatio;
 
     /// <summary>
     /// Enable/disable the joint limit
     /// </summary>
-    public bool EnableLimit
-    {
-        get => _internal.EnableLimit;
-        set => _internal.EnableLimit = value;
-    }
+    [PublicAPI]
+    public ref bool EnableLimit => ref _internal.EnableLimit;
 
     /// <summary>
     /// The lower translation limit
     /// </summary>
-    public float LowerTranslation
-    {
-        get => _internal.LowerTranslation;
-        set => _internal.LowerTranslation = value;
-    }
+    [PublicAPI]
+    public ref float LowerTranslation => ref _internal.LowerTranslation;
 
     /// <summary>
     /// The upper translation limit
     /// </summary>
-    public float UpperTranslation
-    {
-        get => _internal.UpperTranslation;
-        set => _internal.UpperTranslation = value;
-    }
+    [PublicAPI]
+    public ref float UpperTranslation => ref _internal.UpperTranslation;
 
     /// <summary>
     /// Enable/disable the joint motor
     /// </summary>
-    public bool EnableMotor
-    {
-        get => _internal.EnableMotor;
-        set => _internal.EnableMotor = value;
-    }
+    [PublicAPI]
+    public ref bool EnableMotor => ref _internal.EnableMotor;
 
     /// <summary>
     /// The maximum motor force, typically in newtons
     /// </summary>
-    public float MaxMotorForce
-    {
-        get => _internal.MaxMotorForce;
-        set => _internal.MaxMotorForce = value;
-    }
+    [PublicAPI]
+    public ref float MaxMotorForce => ref _internal.MaxMotorForce;
 
     /// <summary>
     /// The desired motor speed, typically in meters per second
     /// </summary>
-    public float MotorSpeed
-    {
-        get => _internal.MotorSpeed;
-        set => _internal.MotorSpeed = value;
-    }
+    [PublicAPI]
+    public ref float MotorSpeed => ref _internal.MotorSpeed;
 
     /// <summary>
     /// Set this flag to true if the attached bodies should collide
     /// </summary>
-    public bool CollideConnected
-    {
-        get => _internal.CollideConnected;
-        set => _internal.CollideConnected = value;
-    }
+    [PublicAPI]
+    public ref bool CollideConnected => ref _internal.CollideConnected;
 
     /// <summary>
     /// User data
     /// </summary>
+    [PublicAPI]
     public object? UserData
     {
-        get => Box2D.GetObjectAtPointer(_internal.UserData);
-        set => Box2D.SetObjectAtPointer(ref _internal.UserData, value);
+        get => GetObjectAtPointer(_internal.UserData);
+        set => SetObjectAtPointer(ref _internal.UserData, value);
     }
 
 }

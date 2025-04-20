@@ -16,81 +16,55 @@ struct ShapeDefInternal
     [FieldOffset(0)]
     internal nint UserData;
     
-    /// <summary>
-    /// The Coulomb (dry) friction coefficient, usually in the range [0,1].
-    /// </summary>
     [FieldOffset(8)]
-    internal float Friction;
-
-    /// <summary>
-    /// The coefficient of restitution (bounce) usually in the range [0,1].<br/>
-    /// https://en.wikipedia.org/wiki/Coefficient_of_restitution
-    /// </summary>
-    [FieldOffset(12)]
-    internal float Restitution;
-
-    /// <summary>
-    /// The rolling resistance usually in the range [0,1].
-    /// </summary>
-    [FieldOffset(16)]
-    internal float RollingResistance;
-
-    /// <summary>
-    /// The tangent speed for conveyor belts
-    /// </summary>
-    [FieldOffset(20)]
-    internal float TangentSpeed;
-
-    /// <summary>
-    /// User material identifier. This is passed with query results and to friction and restitution
-    /// combining functions. It is not used internally.
-    /// </summary>
-    [FieldOffset(24)]
-    internal int Material;
-
+    internal SurfaceMaterial Material;
+    
     /// <summary>
     /// The density, usually in kg/m².
+    /// This is not part of the surface material because this is for the interior, which may have
+    /// other considerations, such as being hollow. For example a wood barrel may be hollow or full of water.
     /// </summary>
-    [FieldOffset(28)]
+    [FieldOffset(32)]
     internal float Density;
 
     /// <summary>
     /// Collision filtering data.
     /// </summary>
-    [FieldOffset(32)]
-    internal Filter Filter; // 24 bytes
-
-    /// <summary>
-    /// Custom debug draw color.
-    /// </summary>
-    [FieldOffset(56)]
-    internal HexColor CustomColor;
-
+    [FieldOffset(36)]
+    internal Filter Filter; // 20 bytes
+    
     /// <summary>
     /// A sensor shape generates overlap events but never generates a collision response.
-    /// Sensors do not collide with other sensors and do not have continuous collision.
-    /// Instead, use a ray or shape cast for those scenarios.
+    /// Sensors do not have continuous collision. Instead, use a ray or shape cast for those scenarios.
+    /// Sensors still contribute to the body mass if they have non-zero density.
     /// </summary>
+    /// <remarks>
+    /// <i>Note: Sensor events are disabled by default.</i><br/>
+    /// See <see cref="EnableSensorEvents"/>
+    /// </remarks>
     [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(60)]
+    [FieldOffset(56)]
     internal bool IsSensor;
 
+    /// <summary>
+    /// Enable sensor events for this shape. This applies to sensors and non-sensors. False by default, even for sensors.
+    /// </summary>
     [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(61)]
+    [FieldOffset(57)]
     internal bool EnableSensorEvents;
-
+    
     /// <summary>
     /// Enable contact events for this shape. Only applies to kinematic and dynamic bodies. Ignored for sensors.
     /// </summary>
     [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(62)]
+    [FieldOffset(58)]
     internal bool EnableContactEvents;
 
     /// <summary>
     /// Enable hit events for this shape. Only applies to kinematic and dynamic bodies. Ignored for sensors.
     /// </summary>
     [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(63)]
+    [FieldOffset(59)]
     internal bool EnableHitEvents;
 
     /// <summary>
@@ -98,7 +72,7 @@ struct ShapeDefInternal
     /// and must be carefully handled due to threading. Ignored for sensors.
     /// </summary>
     [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(64)]
+    [FieldOffset(60)]
     internal bool EnablePreSolveEvents;
 
     /// <summary>
@@ -108,26 +82,26 @@ struct ShapeDefInternal
     /// This is implicitly always true for sensors, dynamic bodies, and kinematic bodies.
     /// </summary>
     [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(65)]
+    [FieldOffset(61)]
     internal bool InvokeContactCreation;
 
     /// <summary>
     /// Should the body update the mass properties when this shape is created. Default is true.
     /// </summary>
     [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(66)]
-    internal bool UpdateBodyMass;
+    [FieldOffset(62)]
+    internal bool UpdateBodyMass = true;
 
     /// <summary>
     /// Used internally to detect a valid definition. DO NOT SET.
     /// </summary>
-    [FieldOffset(68)]
+    [FieldOffset(64)]
     private readonly int internalValue;
     
     /// <summary>
     /// The default shape definition.
     /// </summary>
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultShapeDef")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultShapeDef")]
     private static extern ShapeDefInternal GetDefault();
     
     /// <summary>

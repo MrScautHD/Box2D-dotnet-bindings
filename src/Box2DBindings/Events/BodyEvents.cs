@@ -8,18 +8,15 @@ namespace Box2D;
 /// as event arrays after the time step is complete.
 /// <i>Note: this data becomes invalid if bodies are destroyed</i>
 /// </summary>
-[StructLayout(LayoutKind.Explicit)]
+[StructLayout(LayoutKind.Sequential)]
 public unsafe struct BodyEvents
 {
-    [FieldOffset(0)]
-    private nint moveEvents;
+    private BodyMoveEvent* moveEvents;
 
     /// <summary>
     /// Array of move events
     /// </summary>
-    public ReadOnlySpan<BodyMoveEvent> MoveEvents => new((BodyMoveEvent*)moveEvents, moveCount);
-
-    /// Number of move events
-    [FieldOffset(8)]
+    public ReadOnlySpan<BodyMoveEvent> MoveEvents => new(moveEvents, moveCount);
+    
     private int moveCount;
 }

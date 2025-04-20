@@ -2,7 +2,7 @@ using System.Runtime.InteropServices;
 
 namespace Box2D;
 
-[StructLayout(LayoutKind.Explicit)]
+[StructLayout(LayoutKind.Explicit)] // LayoutKind.Explicit is required here to align fields appearing after bools, which must be marshalled as U1
 struct MotorJointDefInternal
 {
     /// <summary>
@@ -66,7 +66,7 @@ struct MotorJointDefInternal
     [FieldOffset(52)]
     internal readonly int internalValue;
 
-    [DllImport(Box2D.libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultMotorJointDef")]
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultMotorJointDef")]
     internal static extern MotorJointDefInternal GetDefault();
     
     /// <summary>

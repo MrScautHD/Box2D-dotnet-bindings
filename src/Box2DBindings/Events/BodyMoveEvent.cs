@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Runtime.InteropServices;
 
 namespace Box2D;
@@ -14,21 +15,30 @@ namespace Box2D;
 /// and it is only populated with bodies that have moved.
 /// <i>Note: If sleeping is disabled all dynamic and kinematic bodies will trigger move events.</i>
 /// </summary>
-[StructLayout(LayoutKind.Explicit)]
+[StructLayout(LayoutKind.Sequential, Pack = 4)]
 public struct BodyMoveEvent
 {
-    [FieldOffset(0)]
+    /// <summary>
+    /// The transform of the body
+    /// </summary>
     public Transform Transform; // 16 bytes
     
-    [FieldOffset(16)]
+    /// <summary>
+    /// The body that moved
+    /// </summary>
     public Body Body;
     
-    [FieldOffset(24)]
     private nint userData;
     
-    public object? UserData => Box2D.GetObjectAtPointer(userData);
+    /// <summary>
+    /// The user data associated with the body
+    /// </summary>
+    [PublicAPI]
+    public object? UserData => GetObjectAtPointer(userData);
 
+    /// <summary>
+    /// The body went to sleep
+    /// </summary>
     [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(32)]
     public bool FellAsleep;
 }

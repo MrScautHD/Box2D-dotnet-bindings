@@ -1,4 +1,5 @@
-using System.Runtime.InteropServices;
+using JetBrains.Annotations;
+using System;
 
 namespace Box2D;
 
@@ -12,85 +13,61 @@ public class MouseJointDef
 {
     internal MouseJointDefInternal _internal;
 
+    [PublicAPI]
     public MouseJointDef()
     {
         _internal = MouseJointDefInternal.Default;
     }
-    
-    ~MouseJointDef()
-    {
-        Box2D.FreeHandle(_internal.UserData);
-    }
-    
+
     /// <summary>
     /// The first attached body. This is assumed to be static.
     /// </summary>
-    public Body BodyA
-    {
-        get => _internal.BodyA;
-        set => _internal.BodyA = value;
-    }
+    [PublicAPI]
+    public ref Body BodyA => ref _internal.BodyA;
 
     /// <summary>
     /// The second attached body.
     /// </summary>
-    public Body BodyB
-    {
-        get => _internal.BodyB;
-        set => _internal.BodyB = value;
-    }
+    [PublicAPI]
+    public ref Body BodyB => ref _internal.BodyB;
 
     /// <summary>
     /// The initial target point in world space
     /// </summary>
-    public Vec2 Target
-    {
-        get => _internal.Target;
-        set => _internal.Target = value;
-    }
+    [PublicAPI]
+    public ref Vec2 Target => ref _internal.Target;
 
     /// <summary>
     /// Stiffness in hertz
     /// </summary>
-    public float Hertz
-    {
-        get => _internal.Hertz;
-        set => _internal.Hertz = value;
-    }
+    [PublicAPI]
+    public ref float Hertz => ref _internal.Hertz;
 
     /// <summary>
     /// Damping ratio, non-dimensional
     /// </summary>
-    public float DampingRatio
-    {
-        get => _internal.DampingRatio;
-        set => _internal.DampingRatio = value;
-    }
+    [PublicAPI]
+    public ref float DampingRatio => ref _internal.DampingRatio;
 
     /// <summary>
     /// Maximum force, typically in newtons
     /// </summary>
-    public float MaxForce
-    {
-        get => _internal.MaxForce;
-        set => _internal.MaxForce = value;
-    }
+    [PublicAPI]
+    public ref float MaxForce => ref _internal.MaxForce;
 
     /// <summary>
     /// Set this flag to true if the attached bodies should collide.
     /// </summary>
-    public bool CollideConnected
-    {
-        get => _internal.CollideConnected;
-        set => _internal.CollideConnected = value;
-    }
+    [PublicAPI]
+    public ref bool CollideConnected => ref _internal.CollideConnected;
 
     /// <summary>
     /// User data pointer
     /// </summary>
+    [PublicAPI]
     public object? UserData
     {
-        get => Box2D.GetObjectAtPointer(_internal.UserData);
-        set => Box2D.SetObjectAtPointer(ref _internal.UserData, value);
+        get => GetObjectAtPointer(_internal.UserData);
+        set => SetObjectAtPointer(ref _internal.UserData, value);
     }
 }

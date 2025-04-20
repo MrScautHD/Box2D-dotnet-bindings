@@ -1,4 +1,5 @@
-using System.Runtime.InteropServices;
+using JetBrains.Annotations;
+using System;
 
 namespace Box2D;
 
@@ -15,142 +16,68 @@ public class ShapeDef
     {
         _internal = ShapeDefInternal.Default;
     }
-    
-    ~ShapeDef()
-    {
-        Box2D.FreeHandle(_internal.UserData);
-    }
-    
+
     /// <summary>
     /// Use this to store application specific shape data.
     /// </summary>
+    [PublicAPI]
     public object? UserData
     {
-        get => Box2D.GetObjectAtPointer(_internal.UserData);
-        set => Box2D.SetObjectAtPointer(ref _internal.UserData, value);
-    }
-
-    /// <summary>
-    /// The Coulomb (dry) friction coefficient, usually in the range [0,1].
-    /// </summary>
-    public float Friction
-    {
-        get => _internal.Friction;
-        set => _internal.Friction = value;
-    }
-
-    /// <summary>
-    /// The coefficient of restitution (bounce) usually in the range [0,1].<br/>
-    /// https://en.wikipedia.org/wiki/Coefficient_of_restitution
-    /// </summary>
-    public float Restitution
-    {
-        get => _internal.Restitution;
-        set => _internal.Restitution = value;
-    }
-
-    /// <summary>
-    /// The rolling resistance usually in the range [0,1].
-    /// </summary>
-    public float RollingResistance
-    {
-        get => _internal.RollingResistance;
-        set => _internal.RollingResistance = value;
-    }
-
-    /// <summary>
-    /// The tangent speed for conveyor belts
-    /// </summary>
-    public float TangentSpeed
-    {
-        get => _internal.TangentSpeed;
-        set => _internal.TangentSpeed = value;
+        get => GetObjectAtPointer(_internal.UserData);
+        set => SetObjectAtPointer(ref _internal.UserData, value);
     }
 
     /// <summary>
     /// User material identifier. This is passed with query results and to friction and restitution
     /// combining functions. It is not used internally.
     /// </summary>
-    public int Material
-    {
-        get => _internal.Material;
-        set => _internal.Material = value;
-    }
+    [PublicAPI]
+    public ref SurfaceMaterial Material => ref _internal.Material;
 
     /// <summary>
     /// The density, usually in kg/m².
     /// </summary>
-    public float Density
-    {
-        get => _internal.Density;
-        set => _internal.Density = value;
-    }
+    [PublicAPI]
+    public ref float Density => ref _internal.Density;
 
     /// <summary>
     /// Collision filtering data.
     /// </summary>
-    public Filter Filter
-    {
-        get => _internal.Filter;
-        set => _internal.Filter = value;
-    }
+    [PublicAPI]
+    public ref Filter Filter => ref _internal.Filter;
 
-    /// <summary>
-    /// Custom debug draw color.
-    /// </summary>
-    public HexColor CustomColor
-    {
-        get => _internal.CustomColor;
-        set => _internal.CustomColor = value;
-    }
-    
     /// <summary>
     /// A sensor shape generates overlap events but never generates a collision response.
     /// Sensors do not have continuous collision. Instead, use a ray or shape cast for those scenarios.
     /// <i>Note: Sensor events are disabled by default.</i>
     /// </summary>
-    public bool IsSensor
-    {
-        get => _internal.IsSensor;
-        set => _internal.IsSensor = value;
-    }
-    
+    [PublicAPI]
+    public ref bool IsSensor => ref _internal.IsSensor;
+
     /// <summary>
     /// Enable sensor events for this shape. This applies to sensors and non-sensors. False by default, even for sensors.
     /// </summary>
-    public bool EnableSensorEvents
-    {
-        get => _internal.EnableSensorEvents;
-        set => _internal.EnableSensorEvents = value;
-    }
+    [PublicAPI]
+    public ref bool EnableSensorEvents => ref _internal.EnableSensorEvents;
 
     /// <summary>
     /// Enable contact events for this shape. Only applies to kinematic and dynamic bodies. Ignored for sensors. False by default.
     /// </summary>
-    public bool EnableContactEvents
-    {
-        get => _internal.EnableContactEvents;
-        set => _internal.EnableContactEvents = value;
-    }
+    [PublicAPI]
+    public ref bool EnableContactEvents => ref _internal.EnableContactEvents;
 
     /// <summary>
     /// Enable hit events for this shape. Only applies to kinematic and dynamic bodies. Ignored for sensors. False by default.
     /// </summary>
-    public bool EnableHitEvents
-    {
-        get => _internal.EnableHitEvents;
-        set => _internal.EnableHitEvents = value;
-    }
+    [PublicAPI]
+    public ref bool EnableHitEvents => ref _internal.EnableHitEvents;
 
     /// <summary>
     /// Enable pre-solve contact events for this shape. Only applies to dynamic bodies. These are expensive
     /// and must be carefully handled due to threading. Ignored for sensors.
     /// </summary>
-    public bool EnablePreSolveEvents
-    {
-        get => _internal.EnablePreSolveEvents;
-        set => _internal.EnablePreSolveEvents = value;
-    }
+    [PublicAPI]
+    public ref bool EnablePreSolveEvents => ref _internal.EnablePreSolveEvents;
 
     /// <summary>
     /// Normally shapes on static bodies don't invoke contact creation when they are added to the world. This overrides
@@ -158,19 +85,12 @@ public class ShapeDef
     /// when there are many static shapes.
     /// This is implicitly always true for sensors, dynamic bodies, and kinematic bodies.
     /// </summary>
-    public bool InvokeContactCreation
-    {
-        get => _internal.InvokeContactCreation;
-        set => _internal.InvokeContactCreation = value;
-    }
+    [PublicAPI]
+    public ref bool InvokeContactCreation => ref _internal.InvokeContactCreation;
 
     /// <summary>
     /// Should the body update the mass properties when this shape is created. Default is true.
     /// </summary>
-    public bool UpdateBodyMass
-    {
-        get => _internal.UpdateBodyMass;
-        set => _internal.UpdateBodyMass = value;
-    }
-
+    [PublicAPI]
+    public ref bool UpdateBodyMass => ref _internal.UpdateBodyMass;
 }
