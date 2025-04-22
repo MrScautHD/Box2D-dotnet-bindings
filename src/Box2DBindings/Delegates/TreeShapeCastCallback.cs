@@ -8,7 +8,7 @@ namespace Box2D;
 /// - return a value of input->maxFraction to continue the ray cast without clipping
 /// </summary>
 /// <returns>Ray cast input</returns>
-public delegate float TreeShapeCastCallback<in TContext>(in ShapeCastInput input, int proxyId, uint64_t userData, TContext context);
+public delegate float TreeShapeCastCallback<in TContext>(in ShapeCastInput input, int proxyId, uint64_t userData, TContext context) where TContext : class;
 
 /// <summary>
 /// This function receives clipped ray cast input for a proxy. The function

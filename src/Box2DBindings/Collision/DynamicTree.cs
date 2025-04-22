@@ -121,15 +121,39 @@ public unsafe struct DynamicTree
     private static extern TreeStats b2DynamicTree_Query(in DynamicTree tree, AABB aabb, uint64_t maskBits,
         TreeQueryNintCallback callback, nint context);
 
+    private static bool TreeQueryCallbackThunk<TContext>(int proxyId, uint64_t userData, nint context) where TContext : class
+    {
+        var contextBuffer = (nint*)context;
+        TContext contextObj = (TContext)GCHandle.FromIntPtr(contextBuffer[0]).Target!;
+        var callback = (TreeQueryCallback<TContext>)GCHandle.FromIntPtr(contextBuffer[1]).Target!;
+        return callback(proxyId, userData, contextObj);
+    }
+    
     /// <summary>
     /// Query an AABB for overlapping proxies. The callback class is called for each proxy that overlaps the supplied AABB.
     /// </summary>
     /// <returns>Performance data</returns>
     [PublicAPI]
-    public TreeStats Query<TContext>(AABB aabb, uint64_t maskBits, TreeQueryCallback<TContext> callback, TContext context)
+    public TreeStats Query<TContext>(AABB aabb, uint64_t maskBits, TreeQueryCallback<TContext> callback, TContext context) where TContext : class
     {
-        bool TreeQueryCallbackPrivate(int proxyId, uint64_t userData, nint _) => callback(proxyId, userData, context);
-        return b2DynamicTree_Query(this, aabb, maskBits, TreeQueryCallbackPrivate, 0);
+        var contextBuffer = stackalloc nint[2];
+        contextBuffer[0] = GCHandle.ToIntPtr(GCHandle.Alloc(context));
+        contextBuffer[1] = GCHandle.ToIntPtr(GCHandle.Alloc(callback));
+        try
+        {
+            return b2DynamicTree_Query(this, aabb, maskBits, TreeQueryCallbackThunk<TContext>, (nint)contextBuffer);            
+        }
+        finally
+        {
+            GCHandle.FromIntPtr(contextBuffer[0]).Free();
+            GCHandle.FromIntPtr(contextBuffer[1]).Free();
+        }
+    }
+    
+    private static bool TreeQueryCallbackThunk(int proxyId, uint64_t userData, nint context)
+    {
+        var callback = (TreeQueryCallback)GCHandle.FromIntPtr(context).Target!;
+        return callback(proxyId, userData);
     }
     
     /// <summary>
@@ -139,8 +163,15 @@ public unsafe struct DynamicTree
     [PublicAPI]
     public TreeStats Query(AABB aabb, uint64_t maskBits, TreeQueryCallback callback)
     {
-        bool TreeQueryCallbackPrivate(int proxyId, uint64_t userData, nint _) => callback(proxyId, userData);
-        return b2DynamicTree_Query(this, aabb, maskBits, TreeQueryCallbackPrivate, 0);
+        nint context = GCHandle.ToIntPtr(GCHandle.Alloc(callback));
+        try
+        {
+            return b2DynamicTree_Query(this, aabb, maskBits, TreeQueryCallbackThunk, context);
+        }
+        finally
+        {
+            GCHandle.FromIntPtr(context).Free();
+        }
     }
     
     /// <summary>
@@ -157,6 +188,15 @@ public unsafe struct DynamicTree
     private static extern TreeStats b2DynamicTree_RayCast(in DynamicTree tree, in RayCastInput input, uint64_t maskBits,
         TreeRayCastNintCallback callback, nint context);
     
+    
+    private static float TreeRayCastCallbackThunk<TContext>(in RayCastInput input, int proxyId, uint64_t userData, nint context) where TContext : class
+    {
+        var contextBuffer = (nint*)context;
+        TContext contextObj = (TContext)GCHandle.FromIntPtr(contextBuffer[0]).Target!;
+        var callback = (TreeRayCastCallback<TContext>)GCHandle.FromIntPtr(contextBuffer[1]).Target!;
+        return callback(input, proxyId, userData, contextObj);
+    }
+    
     /// <summary>
     /// Ray cast against the proxies in the tree. This relies on the callback
     /// to perform a exact ray cast in the case were the proxy contains a shape.
@@ -170,10 +210,26 @@ public unsafe struct DynamicTree
     /// <param name="context">User context that is passed to the callback</param>
     /// <returns>Performance data</returns>
     [PublicAPI]
-    public TreeStats RayCast<TContext>(in RayCastInput input, uint64_t maskBits, TreeRayCastCallback<TContext> callback, TContext context)
+    public TreeStats RayCast<TContext>(in RayCastInput input, uint64_t maskBits, TreeRayCastCallback<TContext> callback, TContext context) where TContext : class
     {
-        float TreeRayCastCallbackPrivate(in RayCastInput input, int proxyId, uint64_t userData, nint _) => callback(input, proxyId, userData, context);
-        return b2DynamicTree_RayCast(this, input, maskBits, TreeRayCastCallbackPrivate, 0);
+        nint* contextBuffer = stackalloc nint[2];
+        contextBuffer[0] = GCHandle.ToIntPtr(GCHandle.Alloc(context));
+        contextBuffer[1] = GCHandle.ToIntPtr(GCHandle.Alloc(callback));
+        try
+        {
+            return b2DynamicTree_RayCast(this, input, maskBits, TreeRayCastCallbackThunk<TContext>, (nint)contextBuffer);
+        }
+        finally
+        {
+            GCHandle.FromIntPtr(contextBuffer[0]).Free();
+            GCHandle.FromIntPtr(contextBuffer[1]).Free();
+        }
+    }
+    
+    private unsafe static float TreeRayCastCallbackThunk(in RayCastInput input, int proxyId, uint64_t userData, nint context)
+    {
+        var callback = (TreeRayCastCallback)GCHandle.FromIntPtr(context).Target!;
+        return callback(input, proxyId, userData);
     }
     
     /// <summary>
@@ -190,8 +246,15 @@ public unsafe struct DynamicTree
     [PublicAPI]
     public TreeStats RayCast(in RayCastInput input, uint64_t maskBits, TreeRayCastCallback callback)
     {
-        float TreeRayCastCallbackPrivate(in RayCastInput input, int proxyId, uint64_t userData, nint _) => callback(input, proxyId, userData);
-        return b2DynamicTree_RayCast(this, input, maskBits, TreeRayCastCallbackPrivate, 0);
+        nint context = GCHandle.ToIntPtr(GCHandle.Alloc(callback));
+        try
+        {
+            return b2DynamicTree_RayCast(this, input, maskBits, TreeRayCastCallbackThunk, context);
+        }
+        finally
+        {
+            GCHandle.FromIntPtr(context).Free();
+        }
     }
     
     /// <summary>
@@ -216,6 +279,14 @@ public unsafe struct DynamicTree
     private static extern TreeStats b2DynamicTree_ShapeCast(in DynamicTree tree, in ShapeCastInput input, uint64_t maskBits,
         TreeShapeCastNintCallback callback, nint context);
 
+    private static float TreeShapeCastCallbackThunk<TContext>(in ShapeCastInput input, int proxyId, uint64_t userData, nint context) where TContext : class
+    {
+        var contextBuffer = (nint*)context;
+        TContext contextObj = (TContext)GCHandle.FromIntPtr(contextBuffer[0]).Target!;
+        var callback = (TreeShapeCastCallback<TContext>)GCHandle.FromIntPtr(contextBuffer[1]).Target!;
+        return callback(input, proxyId, userData, contextObj);
+    }
+    
     /// <summary>
     /// Ray cast against the proxies in the tree. This relies on the callback
     /// to perform a exact ray cast in the case were the proxy contains a shape.
@@ -229,10 +300,26 @@ public unsafe struct DynamicTree
     /// <param name="context">User context that is passed to the callback</param>
     /// <returns>Performance data</returns>
     [PublicAPI]
-    public TreeStats ShapeCast<TContext>(in ShapeCastInput input, uint64_t maskBits, TreeShapeCastCallback<TContext> callback, TContext context)
+    public TreeStats ShapeCast<TContext>(in ShapeCastInput input, uint64_t maskBits, TreeShapeCastCallback<TContext> callback, TContext context) where TContext : class
     {
-        float TreeShapeCastCallbackPrivate(in ShapeCastInput input, int proxyId, uint64_t userData, nint _) => callback(input, proxyId, userData, context);
-        return b2DynamicTree_ShapeCast(this, input, maskBits, TreeShapeCastCallbackPrivate, 0);
+        nint* contextBuffer = stackalloc nint[2];
+        contextBuffer[0] = GCHandle.ToIntPtr(GCHandle.Alloc(context));
+        contextBuffer[1] = GCHandle.ToIntPtr(GCHandle.Alloc(callback));
+        try
+        {
+            return b2DynamicTree_ShapeCast(this, input, maskBits, TreeShapeCastCallbackThunk<TContext>, (nint)contextBuffer);
+        }
+        finally
+        {
+            GCHandle.FromIntPtr(contextBuffer[0]).Free();
+            GCHandle.FromIntPtr(contextBuffer[1]).Free();
+        }
+    }
+    
+    private static float TreeShapeCastCallbackThunk(in ShapeCastInput input, int proxyId, uint64_t userData, nint context)
+    {
+        var callback = (TreeShapeCastCallback)GCHandle.FromIntPtr(context).Target!;
+        return callback(input, proxyId, userData);
     }
     
     /// <summary>
@@ -249,8 +336,15 @@ public unsafe struct DynamicTree
     [PublicAPI]
     public TreeStats ShapeCast(in ShapeCastInput input, uint64_t maskBits, TreeShapeCastCallback callback)
     {
-        float TreeShapeCastCallbackPrivate(in ShapeCastInput input, int proxyId, uint64_t userData, nint _) => callback(input, proxyId, userData);
-        return b2DynamicTree_ShapeCast(this, input, maskBits, TreeShapeCastCallbackPrivate, 0);
+        nint context = GCHandle.ToIntPtr(GCHandle.Alloc(callback));
+        try
+        {
+            return b2DynamicTree_ShapeCast(this, input, maskBits, TreeShapeCastCallbackThunk, context);
+        }
+        finally
+        {
+            GCHandle.FromIntPtr(context).Free();
+        }
     }
     
     /// <summary>

@@ -399,7 +399,7 @@ public struct Shape : IEquatable<Shape>
         get
         {
             int needed = b2Shape_GetContactCapacity(this);
-            ContactData[] buffer = new ContactData[needed];// GC.AllocateUninitializedArray<ContactData>(needed);
+            ContactData[] buffer = new ContactData[needed];
             int written;
             fixed (ContactData* p = buffer)
             {
@@ -429,7 +429,7 @@ public struct Shape : IEquatable<Shape>
         get
         {
             int needed = b2Shape_GetSensorCapacity(this);
-            Shape[] buffer = new Shape[needed];// GC.AllocateUninitializedArray<Shape>(needed);
+            Shape[] buffer = new Shape[needed];
             int written;
             fixed (Shape* p = buffer)
             {
@@ -522,5 +522,35 @@ public struct Shape : IEquatable<Shape>
         
             return worldVertices;
         }
+    }
+
+    internal unsafe Vec2* GetVertices(out int count)
+    {
+        switch (Type)
+        {
+            case ShapeType.Circle:
+                var circle = GetCircle();
+                count = 1;
+                return &circle.Center;
+            case ShapeType.Segment:
+                var segment = GetSegment();
+                count = 2;
+                return &segment.Point1;
+            case ShapeType.Polygon:
+                var readOnlySpan = GetPolygon().Vertices;
+                count = readOnlySpan.Length;
+                Vec2 reference = readOnlySpan.GetPinnableReference();
+                return &reference;
+            case ShapeType.Capsule:
+                var capsule = GetCapsule();
+                count = 2;
+                return &capsule.Center1;
+            case ShapeType.ChainSegment:
+                var chainSegment = GetChainSegment();
+                count = 2;
+                return &chainSegment.Segment.Point1;
+        }
+        count = 0;
+        return (Vec2*)0;
     }
 }

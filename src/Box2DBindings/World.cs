@@ -1,5 +1,7 @@
 using Box2D.Character_Movement;
 using JetBrains.Annotations;
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
@@ -14,7 +16,7 @@ struct WorldId
     internal ushort generation;
 }
 
-public sealed class World
+public sealed partial class World
 {
     private WorldId id;
 
@@ -40,6 +42,7 @@ public sealed class World
     /// <summary>
     /// Destroy this world
     /// </summary>
+    [PublicAPI]
     public void Destroy()
     {
         foreach (var body in bodies.Values)
@@ -62,6 +65,7 @@ public sealed class World
     /// World id validation. Provides validation for up to 64K allocations.
     /// </summary>
     /// <returns>True if the world id is valid</returns>
+    [PublicAPI]
     public bool Valid => b2World_IsValid(id);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_Step")]
@@ -72,6 +76,7 @@ public sealed class World
     /// </summary>
     /// <param name="timeStep">The amount of time to simulate, this should be a fixed number. Usually 1/60.</param>
     /// <param name="subStepCount">The number of sub-steps, increasing the sub-step count can increase accuracy. Usually 4.</param>
+    [PublicAPI]
     public void Step(float timeStep, int subStepCount) => b2World_Step(id, timeStep, subStepCount);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_Draw")]
@@ -81,6 +86,7 @@ public sealed class World
     /// Call this to draw shapes and other debug draw data
     /// </summary>
     /// <param name="draw">The debug draw implementation</param>
+    [PublicAPI]
     public void Draw(in DebugDraw draw) => b2World_Draw(id, ref draw._internal);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetBodyEvents")]
@@ -90,6 +96,7 @@ public sealed class World
     /// Get the body events for the current time step. The event data is transient. Do not store a reference to this data.
     /// </summary>
     /// <returns>The body events</returns>
+    [PublicAPI]
     public BodyEvents BodyEvents => b2World_GetBodyEvents(id);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetSensorEvents")]
@@ -99,6 +106,7 @@ public sealed class World
     /// Get sensor events for the current time step. The event data is transient. Do not store a reference to this data.
     /// </summary>
     /// <returns>The sensor events</returns>
+    [PublicAPI]
     public SensorEvents SensorEvents => b2World_GetSensorEvents(id);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetContactEvents")]
@@ -108,167 +116,11 @@ public sealed class World
     /// Get the contact events for the current time step. The event data is transient. Do not store a reference to this data.
     /// </summary>
     /// <returns>The contact events</returns>
+    [PublicAPI]
     public ContactEvents ContactEvents => b2World_GetContactEvents(id);
 
 
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_CastRayClosest")]
-    private static extern RayResult b2World_CastRayClosest(WorldId worldId, Vec2 origin, Vec2 translation, QueryFilter filter);
-
-    /// <summary>
-    /// Cast a ray into the world to collect the closest hit. This is a convenience function.
-    /// </summary>
-    /// <param name="origin">The start point of the ray</param>
-    /// <param name="translation">The translation of the ray from the start point to the end point</param>
-    /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
-    /// <returns>The ray result</returns>
-    /// <remarks>This is less general than b2World_CastRay() and does not allow for custom filtering</remarks>
-    public RayResult CastRayClosest(Vec2 origin, Vec2 translation, QueryFilter filter) =>
-        b2World_CastRayClosest(id, origin, translation, filter);
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_CastMover")]
-    private static extern float b2World_CastMover(WorldId worldId, in Capsule mover, Vec2 translation, QueryFilter filter);
-
-    /// <summary>
-    /// Cast a capsule mover through the world. This is a special shape cast that handles sliding along other shapes while reducing clipping.
-    /// </summary>
-    /// <param name="mover">The capsule mover</param>
-    /// <param name="translation">The translation of the capsule from the start point to the end point</param>
-    /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
-    /// <returns>The fraction of the translation that was completed before a collision occurred</returns>
-    public float CastMover(in Capsule mover, Vec2 translation, QueryFilter filter) =>
-        b2World_CastMover(id, in mover, translation, filter);
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_CastShape")]
-    private static extern TreeStats b2World_CastShape(WorldId worldId, in ShapeProxy proxy, Vec2 translation, QueryFilter filter, CastResultNintCallback fcn, nint context);
     
-    /// <summary>
-    /// Cast a shape through the world. Similar to a cast ray except that a shape is cast instead of a point.
-    /// </summary>
-    /// <param name="proxy">The shape proxy</param>
-    /// <param name="translation">The translation of the shape from the start point to the end point</param>
-    /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
-    /// <param name="callback">A user implemented callback function</param>
-    /// <param name="context">A user context that is passed along to the callback function</param>
-    public TreeStats CastShape<TContext>(in ShapeProxy proxy, Vec2 translation, QueryFilter filter, CastResultCallback<TContext> callback, TContext context) where TContext : class
-    {
-        float CastResultCallbackPrivate(Shape shape, Vec2 point, Vec2 normal, float fraction, nint _) => callback(shape, point, normal, fraction, context);
-        return b2World_CastShape(id, in proxy, translation, filter, CastResultCallbackPrivate, 0);
-    }
-
-    /// <summary>
-    /// Cast a shape through the world. Similar to a cast ray except that a shape is cast instead of a point.
-    /// </summary>
-    /// <param name="proxy">The shape proxy</param>
-    /// <param name="translation">The translation of the shape from the start point to the end point</param>
-    /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
-    /// <param name="callback">A user implemented callback function</param>
-    public TreeStats CastShape(in ShapeProxy proxy, Vec2 translation, QueryFilter filter, CastResultCallback callback)
-    {
-        float CastResultCallbackPrivate(Shape shape, Vec2 point, Vec2 normal, float fraction, nint _) => callback(shape, point, normal, fraction);
-        return b2World_CastShape(id, in proxy, translation, filter, CastResultCallbackPrivate, 0);
-    }
-    
-    /// <summary>
-    /// Cast a shape through the world. Similar to a cast ray except that a shape is cast instead of a point.
-    /// </summary>
-    /// <param name="proxy">The shape proxy</param>
-    /// <param name="translation">The translation of the shape from the start point to the end point</param>
-    /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
-    /// <param name="callback">A user implemented callback function</param>
-    /// <param name="context">A user context that is passed along to the callback function</param>
-    public TreeStats CastShape(in ShapeProxy proxy, Vec2 translation, QueryFilter filter, CastResultNintCallback callback, nint context)
-    {
-        return b2World_CastShape(id, in proxy, translation, filter, callback, context);
-    }
-    
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_CastRay")]
-    private static extern TreeStats b2World_CastRay(WorldId worldId, Vec2 origin, Vec2 translation, QueryFilter filter, CastResultNintCallback fcn, nint context);
-
-    /// <summary>
-    /// Cast a ray into the world to collect shapes in the path of the ray.
-    /// </summary>
-    /// <param name="origin">The start point of the ray</param>
-    /// <param name="translation">The translation of the ray from the start point to the end point</param>
-    /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
-    /// <param name="callback">A user implemented callback function</param>
-    /// <param name="context">A user context that is passed along to the callback function</param>
-    /// <returns>Traversal performance counters</returns>
-    /// <remarks>Your callback function controls whether you get the closest point, any point, or n-points. The ray-cast ignores shapes that contain the starting point. The callback function may receive shapes in any order</remarks>
-    public TreeStats CastRay<TContext>(Vec2 origin, Vec2 translation, QueryFilter filter, CastResultCallback<TContext> callback, TContext context) where TContext : class
-    {
-        float CastResultCallbackPrivate(Shape shape, Vec2 point, Vec2 normal, float fraction, nint _) => callback(shape, point, normal, fraction, context);
-        return b2World_CastRay(id, origin, translation, filter, CastResultCallbackPrivate, 0);
-    }
-
-    /// <summary>
-    /// Cast a ray into the world to collect shapes in the path of the ray.
-    /// </summary>
-    /// <param name="origin">The start point of the ray</param>
-    /// <param name="translation">The translation of the ray from the start point to the end point</param>
-    /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
-    /// <param name="callback">A user implemented callback function</param>
-    /// <returns>Traversal performance counters</returns>
-    /// <remarks>Your callback function controls whether you get the closest point, any point, or n-points. The ray-cast ignores shapes that contain the starting point. The callback function may receive shapes in any order</remarks>
-    public TreeStats CastRay(Vec2 origin, Vec2 translation, QueryFilter filter, CastResultCallback callback)
-    {
-        float CastResultCallbackPrivate(Shape shape, Vec2 point, Vec2 normal, float fraction, nint _) => callback(shape, point, normal, fraction);
-        return b2World_CastRay(id, origin, translation, filter, CastResultCallbackPrivate, 0);
-    }
-
-    /// <summary>
-    /// Cast a ray into the world to collect shapes in the path of the ray.
-    /// </summary>
-    /// <param name="origin">The start point of the ray</param>
-    /// <param name="translation">The translation of the ray from the start point to the end point</param>
-    /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
-    /// <param name="callback">A user implemented callback function</param>
-    /// /// <param name="context">A user context that is passed along to the callback function</param>
-    /// <returns>Traversal performance counters</returns>
-    /// <remarks>Your callback function controls whether you get the closest point, any point, or n-points. The ray-cast ignores shapes that contain the starting point. The callback function may receive shapes in any order</remarks>
-    public TreeStats CastRay(Vec2 origin, Vec2 translation, QueryFilter filter, CastResultNintCallback callback, nint context)
-    {
-        return b2World_CastRay(id, origin, translation, filter, callback, context);
-    }
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_CollideMover")]
-    private static extern void b2World_CollideMover(WorldId worldId, in Capsule mover, QueryFilter filter, PlaneResultNintCallback fcn, nint context);
-
-    /// <summary>
-    /// Collide a capsule mover with the world, gathering collision planes that can be fed to b2SolvePlanes. Useful for kinematic character movement.
-    /// </summary>
-    /// <param name="mover">The capsule mover</param>
-    /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
-    /// <param name="callback">A user implemented callback function</param>
-    /// <param name="context">A user context that is passed along to the callback function</param>
-    public void CollideMover<TContext>(in Capsule mover, QueryFilter filter, PlaneResultCallback<TContext> callback, TContext context)
-    {
-        bool PlaneResultCallbackPrivate(Shape shapeId, in PlaneResult plane, nint _) => callback(shapeId, plane, context);
-        b2World_CollideMover(id, in mover, filter, PlaneResultCallbackPrivate, 0);
-    }
-
-    /// <summary>
-    /// Collide a capsule mover with the world, gathering collision planes that can be fed to b2SolvePlanes. Useful for kinematic character movement.
-    /// </summary>
-    /// <param name="mover">The capsule mover</param>
-    /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
-    /// <param name="callback">A user implemented callback function</param>
-    public void CollideMover(in Capsule mover, QueryFilter filter, PlaneResultCallback callback)
-    {
-        bool PlaneResultCallbackPrivate(Shape shapeId, in PlaneResult plane, nint _) => callback(shapeId, plane);
-        b2World_CollideMover(id, in mover, filter, PlaneResultCallbackPrivate, 0);
-    }
-
-    /// <summary>
-    /// Collide a capsule mover with the world, gathering collision planes that can be fed to b2SolvePlanes. Useful for kinematic character movement.
-    /// </summary>
-    /// <param name="mover">The capsule mover</param>
-    /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
-    /// <param name="callback">A user implemented callback function</param>
-    /// <param name="context">A user context that is passed along to the callback function</param>
-    public void CollideMover(in Capsule mover, QueryFilter filter, PlaneResultNintCallback callback, nint context)
-    {
-        b2World_CollideMover(id, in mover, filter, callback, context);
-    }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_EnableSleeping")]
     private static extern void b2World_EnableSleeping(WorldId worldId, bool flag);
@@ -279,6 +131,7 @@ public sealed class World
     /// <summary>
     /// Gets or sets the sleeping enabled status of the world. If your application does not need sleeping, you can gain some performance by disabling sleep completely at the world level.
     /// </summary>
+    [PublicAPI]
     public bool SleepingEnabled
     {
         get => b2World_IsSleepingEnabled(id);
@@ -295,12 +148,12 @@ public sealed class World
     /// Gets or sets the continuous collision enabled state of the world.
     /// </summary>
     /// <remarks>Generally you should keep continuous collision enabled to prevent fast moving objects from going through static objects. The performance gain from disabling continuous collision is minor</remarks>
+    [PublicAPI]
     public bool ContinuousEnabled
     {
         get => b2World_IsContinuousEnabled(id);
         set => b2World_EnableContinuous(id, value);
     }
-
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetRestitutionThreshold")]
     private static extern void b2World_SetRestitutionThreshold(WorldId worldId, float value);
@@ -311,6 +164,7 @@ public sealed class World
     /// <summary>
     /// The restitution speed threshold.
     /// </summary>
+    [PublicAPI]
     public float RestitutionThreshold
     {
         get => b2World_GetRestitutionThreshold(id);
@@ -326,6 +180,7 @@ public sealed class World
     /// <summary>
     /// The hit event threshold in meters per second.
     /// </summary>
+    [PublicAPI]
     public float HitEventThreshold
     {
         get => b2World_GetHitEventThreshold(id);
@@ -344,138 +199,126 @@ public sealed class World
         return w;
     }
 
-    /// <summary>
-    /// Register the custom filter callback. This is optional.
-    /// </summary>
-    /// <param name="callback">The custom filter callback function</param>
-    /// <param name="context">The context</param>
-    [PublicAPI]
-    public void SetCustomFilterCallback<TContext>(CustomFilterCallback<TContext> callback, TContext context)
+    private static unsafe bool CustomFilterThunk<TContext>(Shape shapeA, Shape shapeB, nint context) where TContext : class
     {
-        bool Callback(Shape shapeA, Shape shapeB, nint _) => callback(shapeA, shapeB, context);
-        b2World_SetCustomFilterCallback(id, Callback, 0);
+        var contextBuffer = (nint*)context;
+        TContext contextObj = (TContext)GCHandle.FromIntPtr(contextBuffer[0]).Target!;
+        var callback = (CustomFilterCallback<TContext>)GCHandle.FromIntPtr(contextBuffer[1]).Target!;
+        return callback(shapeA, shapeB, contextObj);
     }
 
     /// <summary>
     /// Register the custom filter callback. This is optional.
     /// </summary>
     /// <param name="callback">The custom filter callback function</param>
+    /// <param name="context">The context to be passed to the callback</param>
+    [PublicAPI]
+    public unsafe void SetCustomFilterCallback<TContext>(CustomFilterCallback<TContext> callback, TContext context) where TContext : class
+    {
+        nint* contextBuffer = stackalloc nint[2];
+        contextBuffer[0] = GCHandle.ToIntPtr(GCHandle.Alloc(context));
+        contextBuffer[1] = GCHandle.ToIntPtr(GCHandle.Alloc(callback));
+        try
+        {
+            b2World_SetCustomFilterCallback(id, CustomFilterThunk<TContext>, (nint)contextBuffer);
+        }
+        finally
+        {
+            GCHandle.FromIntPtr(contextBuffer[0]).Free();
+            GCHandle.FromIntPtr(contextBuffer[1]).Free();
+        }
+    }
+    
+    /// <summary>
+    /// Register the custom filter callback. This is optional.
+    /// </summary>
+    /// <param name="callback">The custom filter callback function</param>
+    /// <param name="context">The context to be passed to the callback</param>
+    [PublicAPI]
     public void SetCustomFilterCallback(CustomFilterNintCallback callback, nint context)
     {
         b2World_SetCustomFilterCallback(id, callback, context);
     }
 
+    private static unsafe bool CustomFilterThunk(Shape shapeA, Shape shapeB, nint context)
+    {
+        var callback = (CustomFilterCallback)GCHandle.FromIntPtr(context).Target!;
+        return callback(shapeA, shapeB);
+    }
+    
     /// <summary>
     /// Register the custom filter callback. This is optional.
     /// </summary>
     /// <param name="nintCallback">The custom filter callback function</param>
+    [PublicAPI]
     public void SetCustomFilterCallback(CustomFilterCallback nintCallback)
     {
-        bool Callback(Shape shapeA, Shape shapeB, nint _) => nintCallback(shapeA, shapeB);
-        b2World_SetCustomFilterCallback(id, Callback, 0);
-    }
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_OverlapAABB")]
-    private static extern TreeStats b2World_OverlapAABB(WorldId worldId, AABB aabb, QueryFilter filter, OverlapResultNintCallback fcn, nint context);
-
-    /// <summary>
-    /// Overlap test for all shapes that *potentially* overlap the provided AABB
-    /// </summary>
-    /// <param name="aabb">The AABB</param>
-    /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
-    /// <param name="callback">A user implemented callback function</param>
-    /// <param name="context">The context</param>
-    public TreeStats OverlapAABB<TContext>(AABB aabb, QueryFilter filter, OverlapResultCallback<TContext> callback, TContext context) where TContext : new()
-    {
-        bool OverlapResultCallbackPrivate(Shape shapeId, nint _) => callback(shapeId, context);
-        return b2World_OverlapAABB(id, aabb, filter, OverlapResultCallbackPrivate, 0);
-    }
-
-    /// <summary>
-    /// Overlap test for all shapes that *potentially* overlap the provided AABB
-    /// </summary>
-    /// <param name="aabb">The AABB</param>
-    /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
-    /// <param name="callback">A user implemented callback function</param>
-    public TreeStats OverlapAABB(AABB aabb, QueryFilter filter, OverlapResultCallback callback)
-    {
-        bool OverlapResultCallbackPrivate(Shape shapeId, nint _) => callback(shapeId);
-        return b2World_OverlapAABB(id, aabb, filter, OverlapResultCallbackPrivate, 0);
-    }
-
-        /// <summary>
-    /// Overlap test for all shapes that *potentially* overlap the provided AABB
-    /// </summary>
-    /// <param name="aabb">The AABB</param>
-    /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
-    /// <param name="callback">A user implemented callback function</param>
-    public TreeStats OverlapAABB(AABB aabb, QueryFilter filter, OverlapResultNintCallback callback, nint context)
-    {
-        return b2World_OverlapAABB(id, aabb, filter, callback, context);
-    }
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_OverlapShape")]
-    private static extern TreeStats b2World_OverlapShape(WorldId worldId, in ShapeProxy proxy, QueryFilter filter, OverlapResultNintCallback fcn, nint context);
-
-    /// <summary>
-    /// Overlap test for all shapes that overlap the provided shape proxy
-    /// </summary>
-    /// <param name="proxy">The shape proxy</param>
-    /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
-    /// <param name="callback">A user implemented callback function</param>
-    /// <param name="context">The context</param>
-    public TreeStats OverlapShape<TContext>(in ShapeProxy proxy, QueryFilter filter, OverlapResultCallback<TContext> callback, TContext context) where TContext : new()
-    {
-        bool OverlapResultCallbackPrivate(Shape shapeId, nint _) => callback(shapeId, context);
-        return b2World_OverlapShape(id, in proxy, filter, OverlapResultCallbackPrivate, 0);
-    }
-
-    /// <summary>
-    /// Overlap test for all shapes that overlap the provided shape proxy
-    /// </summary>
-    /// <param name="proxy">The shape proxy</param>
-    /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
-    /// <param name="callback">A user implemented callback function</param>
-    /// <param name="context">The context</param>
-    public TreeStats OverlapShape<TContext>(in ShapeProxy proxy, QueryFilter filter, OverlapResultNintCallback callback, nint context)
-    {
-        return b2World_OverlapShape(id, in proxy, filter, callback, context);
-    }
-
-    /// <summary>
-    /// Overlap test for all shapes that overlap the provided shape proxy
-    /// </summary>
-    /// <param name="proxy">The shape proxy</param>
-    /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
-    /// <param name="callback">A user implemented callback function</param>
-    public TreeStats OverlapShape(in ShapeProxy proxy, QueryFilter filter, OverlapResultCallback callback)
-    {
-        bool OverlapResultCallbackPrivate(Shape shapeId, nint _) => callback(shapeId);
-        return b2World_OverlapShape(id, in proxy, filter, OverlapResultCallbackPrivate, 0);
+        nint context = GCHandle.ToIntPtr(GCHandle.Alloc(nintCallback));
+        try
+        {
+            b2World_SetCustomFilterCallback(id, CustomFilterThunk, context);
+        }
+        finally
+        {
+            GCHandle.FromIntPtr(context).Free();
+        }
     }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetPreSolveCallback")]
     private static extern void b2World_SetPreSolveCallback(WorldId worldId, PreSolveNintCallback fcn, nint context);
 
+    private static unsafe bool PreSolveCallbackThunk<TContext>(Shape shapeA, Shape shapeB, nint manifold, nint context) where TContext : class
+    {
+        var contextBuffer = (nint*)context;
+        TContext contextObj = (TContext)GCHandle.FromIntPtr(contextBuffer[0]).Target!;
+        var callback = (PreSolveCallback<TContext>)GCHandle.FromIntPtr(contextBuffer[1]).Target!;
+        return callback(shapeA, shapeB, *(Manifold*)manifold, contextObj);
+    }
+    
     /// <summary>
     /// Register the pre-solve callback. This is optional.
     /// </summary>
     /// <param name="callback">The pre-solve callback function</param>
     /// <param name="context">The context</param>
-    public void SetPreSolveCallback<TContext>(PreSolveCallback<TContext> callback, TContext context)
+    [PublicAPI]
+    public unsafe void SetPreSolveCallback<TContext>(PreSolveCallback<TContext> callback, TContext context) where TContext : class
     {
-        unsafe bool Callback(Shape shapeA, Shape shapeB, nint manifold, nint _) => callback(shapeA, shapeB, *(Manifold*)manifold, context);
-        b2World_SetPreSolveCallback(id, Callback, 0);
+        nint* contextBuffer = stackalloc nint[2];
+        contextBuffer[0] = GCHandle.ToIntPtr(GCHandle.Alloc(context));
+        contextBuffer[1] = GCHandle.ToIntPtr(GCHandle.Alloc(callback));
+        try
+        {
+            b2World_SetPreSolveCallback(id, PreSolveCallbackThunk<TContext>, (nint)contextBuffer);
+        }
+        finally
+        {
+            GCHandle.FromIntPtr(contextBuffer[0]).Free();
+            GCHandle.FromIntPtr(contextBuffer[1]).Free();
+        }
     }
 
+    private static unsafe bool PreSolveCallbackThunk(Shape shapeA, Shape shapeB, nint manifold, nint context)
+    {
+        var callback = (PreSolveCallback)GCHandle.FromIntPtr(context).Target!;
+        return callback(shapeA, shapeB, *(Manifold*)manifold);
+    }
+    
     /// <summary>
     /// Register the pre-solve callback. This is optional.
     /// </summary>
     /// <param name="callback">The pre-solve callback function</param>
+    [PublicAPI]
     public void SetPreSolveCallback(PreSolveCallback callback)
     {
-        unsafe bool Callback(Shape shapeA, Shape shapeB, nint manifold, nint _) => callback(shapeA, shapeB, *(Manifold*)manifold);
-        b2World_SetPreSolveCallback(id, Callback, 0);
+        nint context = GCHandle.ToIntPtr(GCHandle.Alloc(callback));
+        try
+        {
+            b2World_SetPreSolveCallback(id, PreSolveCallbackThunk, context);
+        }
+        finally
+        {
+            GCHandle.FromIntPtr(context).Free();
+        }
     }
 
     /// <summary>
@@ -483,6 +326,7 @@ public sealed class World
     /// </summary>
     /// <param name="callback">The pre-solve callback function</param>
     /// <param name="context">The context</param>
+    [PublicAPI]
     public void SetPreSolveCallback(PreSolveNintCallback callback, nint context)
     {
         b2World_SetPreSolveCallback(id, callback, context);
@@ -497,6 +341,7 @@ public sealed class World
     /// <summary>
     /// The gravity vector
     /// </summary>
+    [PublicAPI]
     public Vec2 Gravity
     {
         get => b2World_GetGravity(id);
@@ -511,6 +356,7 @@ public sealed class World
     /// </summary>
     /// <param name="explosionDef">The explosion definition</param>
     /// <remarks>Explosions are modeled as a force, not as a collision event</remarks>
+    [PublicAPI]
     public void Explode(in ExplosionDef explosionDef) => b2World_Explode(id, explosionDef);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetContactTuning")]
@@ -523,6 +369,7 @@ public sealed class World
     /// <param name="dampingRatio">The contact bounciness with 1 being critical damping (non-dimensional)</param>
     /// <param name="pushSpeed">The maximum contact constraint push out speed (meters per second)</param>
     /// <remarks><i>Note: Advanced feature</i></remarks>
+    [PublicAPI]
     public void SetContactTuning(float hertz, float dampingRatio, float pushSpeed) =>
         b2World_SetContactTuning(id, hertz, dampingRatio, pushSpeed);
 
@@ -535,6 +382,7 @@ public sealed class World
     /// <param name="hertz">The contact stiffness (cycles per second)</param>
     /// <param name="dampingRatio">The contact bounciness with 1 being critical damping (non-dimensional)</param>
     /// <remarks>Advanced feature</remarks>
+    [PublicAPI]
     public void SetJointTuning(float hertz, float dampingRatio) => b2World_SetJointTuning(id, hertz, dampingRatio);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetMaximumLinearSpeed")]
@@ -546,6 +394,7 @@ public sealed class World
     /// <summary>
     /// The maximum linear speed.
     /// </summary>
+    [PublicAPI]
     public float MaximumLinearSpeed
     {
         get => b2World_GetMaximumLinearSpeed(id);
@@ -562,6 +411,7 @@ public sealed class World
     /// <summary>
     /// Enable/disable constraint warm starting. Advanced feature for testing. Disabling warm starting greatly reduces stability and provides no performance gain.
     /// </summary>
+    [PublicAPI]
     public bool WarmStartingEnabled
     {
         get => b2World_IsWarmStartingEnabled(id);
@@ -575,6 +425,7 @@ public sealed class World
     /// Get the number of awake bodies.
     /// </summary>
     /// <returns>The number of awake bodies</returns>
+    [PublicAPI]
     public int GetAwakeBodyCount() => b2World_GetAwakeBodyCount(id);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetProfile")]
@@ -584,6 +435,7 @@ public sealed class World
     /// Get the current world performance profile
     /// </summary>
     /// <returns>The world performance profile</returns>
+    [PublicAPI]
     public Profile Profile => b2World_GetProfile(id);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetCounters")]
@@ -593,6 +445,7 @@ public sealed class World
     /// Get world counters and sizes
     /// </summary>
     /// <returns>The world counters and sizes</returns>
+    [PublicAPI]
     public Counters Counters => b2World_GetCounters(id);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetUserData")]
@@ -604,6 +457,7 @@ public sealed class World
     /// <summary>
     /// The user data object for this world.
     /// </summary>
+    [PublicAPI]
     public object? UserData
     {
         get => GetObjectAtPointer(b2World_GetUserData, id);
@@ -618,6 +472,7 @@ public sealed class World
     /// </summary>
     /// <param name="callback">The friction callback</param>
     /// <remarks>Passing NULL resets to default</remarks>
+    [PublicAPI]
     public void SetFrictionCallback(FrictionCallback callback) => b2World_SetFrictionCallback(id, callback);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetRestitutionCallback")]
@@ -628,6 +483,7 @@ public sealed class World
     /// </summary>
     /// <param name="callback">The restitution callback</param>
     /// <remarks>Passing NULL resets to default</remarks>
+    [PublicAPI]
     public void SetRestitutionCallback(RestitutionCallback callback) => b2World_SetRestitutionCallback(id, callback);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_DumpMemoryStats")]
@@ -637,6 +493,7 @@ public sealed class World
     /// Dumps memory stats to box2d_memory.txt
     /// </summary>
     /// <remarks>Memory stats are dumped to box2d_memory.txt</remarks>
+    [PublicAPI]
     public void DumpMemoryStats() => b2World_DumpMemoryStats(id);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateBody")]
@@ -647,6 +504,7 @@ public sealed class World
     /// </summary>
     /// <param name="def">The body definition</param>
     /// <returns>The body</returns>
+    [PublicAPI]
     public Body CreateBody(BodyDef def)
     {
         Body body = b2CreateBody(id, def._internal);
@@ -662,6 +520,7 @@ public sealed class World
     /// </summary>
     /// <param name="def">The distance joint definition</param>
     /// <returns>The distance joint</returns>
+    [PublicAPI]
     public DistanceJoint CreateJoint(DistanceJointDef def) => new(b2CreateDistanceJoint(id, def._internal));
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateMotorJoint")]
@@ -672,6 +531,7 @@ public sealed class World
     /// </summary>
     /// <param name="def">The motor joint definition</param>
     /// <returns>The motor joint</returns>
+    [PublicAPI]
     public MotorJoint CreateJoint(MotorJointDef def) => new(b2CreateMotorJoint(id, def._internal));
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateMouseJoint")]
@@ -682,6 +542,7 @@ public sealed class World
     /// </summary>
     /// <param name="def">The mouse joint definition</param>
     /// <returns>The mouse joint</returns>
+    [PublicAPI]
     public MouseJoint CreateJoint(MouseJointDef def) => new(b2CreateMouseJoint(id, def._internal));
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateFilterJoint")]
@@ -693,6 +554,7 @@ public sealed class World
     /// <param name="def">The filter joint definition</param>
     /// <returns>The filter joint</returns>
     /// <remarks>The filter joint is used to disable collision between two bodies. As a side effect of being a joint, it also keeps the two bodies in the same simulation island.</remarks>
+    [PublicAPI]
     public Joint CreateJoint(FilterJointDef def) => new(b2CreateFilterJoint(id, def._internal));
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreatePrismaticJoint")]
@@ -703,6 +565,7 @@ public sealed class World
     /// </summary>
     /// <param name="def">The prismatic joint definition</param>
     /// <returns>The prismatic joint</returns>
+    [PublicAPI]
     public PrismaticJoint CreateJoint(PrismaticJointDef def) => new(b2CreatePrismaticJoint(id, def._internal));
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateRevoluteJoint")]
@@ -713,6 +576,7 @@ public sealed class World
     /// </summary>
     /// <param name="def">The <see cref="RevoluteJointDef"/></param>
     /// <returns>The revolute joint</returns>
+    [PublicAPI]
     public RevoluteJoint CreateJoint(RevoluteJointDef def) => new(b2CreateRevoluteJoint(id, def._internal));
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateWeldJoint")]
@@ -723,6 +587,7 @@ public sealed class World
     /// </summary>
     /// <param name="def">The <see cref="WeldJointDef"/></param>
     /// <returns>The weld joint</returns>
+    [PublicAPI]
     public WeldJoint CreateJoint(WeldJointDef def) => new(b2CreateWeldJoint(id, def._internal));
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateWheelJoint")]
@@ -733,6 +598,7 @@ public sealed class World
     /// </summary>
     /// <param name="def">The wheel joint definition</param>
     /// <returns>The wheel joint</returns>
+    [PublicAPI]
     public WheelJoint CreateJoint(WheelJointDef def) => new(b2CreateWheelJoint(id, def._internal));
 
     public override string ToString() => $"World: {id.index1}:{id.generation}";
@@ -740,5 +606,6 @@ public sealed class World
     /// <summary>
     /// Gets the bodies in this world
     /// </summary>
+    [PublicAPI]
     public IEnumerable<Body> Bodies => bodies.Values;
 }

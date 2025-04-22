@@ -695,7 +695,7 @@ public struct Body: IEquatable<Body>, IComparable<Body>
             if (needed == 0)
                 return [];
 
-            ContactData[] contactData = new ContactData[needed];// GC.AllocateUninitializedArray<ContactData>(needed);
+            ContactData[] contactData = new ContactData[needed];
             int written;
             fixed (ContactData* p = contactData)
             {

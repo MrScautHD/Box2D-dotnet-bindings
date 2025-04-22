@@ -46,7 +46,7 @@ public struct ChainShape
         get
         {
             int needed = b2Chain_GetSegmentCount(this);
-            Shape[] buffer = new Shape[needed];// GC.AllocateUninitializedArray<Shape>(needed);
+            Shape[] buffer = new Shape[needed];
             int written;
             fixed (Shape* p = buffer)
                 written = b2Chain_GetSegments(this, p, buffer.Length);

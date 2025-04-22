@@ -21,7 +21,7 @@ namespace Box2D;
 /// <param name="manifold">The manifold</param>
 /// <param name="context">The context</param>
 /// <returns>true if the contact should be enabled, false otherwise</returns>
-public delegate bool PreSolveCallback<in TContext>(Shape shapeA, Shape shapeB, Manifold manifold, TContext context);
+public delegate bool PreSolveCallback<in TContext>(Shape shapeA, Shape shapeB, Manifold manifold, TContext context) where TContext : class;
 
 /// <summary>
 /// Prototype for a pre-solve callback.<br/>

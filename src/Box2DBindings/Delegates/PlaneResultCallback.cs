@@ -9,7 +9,7 @@ namespace Box2D;
 /// <param name="plane">The plane</param>
 /// <param name="context">The user context</param>
 /// <returns>True to continue gathering planes</returns>
-public delegate bool PlaneResultCallback<in TContext>(Shape shapeId, in PlaneResult plane, TContext context);
+public delegate bool PlaneResultCallback<in TContext>(Shape shapeId, in PlaneResult plane, TContext context) where TContext : class;
 
 /// <summary>
 /// Used to collect collision planes for character movers.

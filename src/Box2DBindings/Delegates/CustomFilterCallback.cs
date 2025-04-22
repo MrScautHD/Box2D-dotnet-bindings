@@ -18,7 +18,7 @@ namespace Box2D;
 /// <param name="shapeB">The second shape</param>
 /// <param name="context">The user context</param>
 /// <returns>true if the collision should be enabled, false otherwise</returns>
-public delegate bool CustomFilterCallback<TContext>(Shape shapeA, Shape shapeB, TContext context);
+public delegate bool CustomFilterCallback<in TContext>(Shape shapeA, Shape shapeB, TContext context) where TContext : class;
 
 /// <summary>
 /// Prototype for a contact filter callback.<br/>

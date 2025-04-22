@@ -1,5 +1,5 @@
 ﻿global using static Box2D.Core;
-
+using JetBrains.Annotations;
 using System;
 using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
@@ -94,25 +94,93 @@ public static class Core
     public static extern CastOutput ShapeCast(in ShapeCastPairInput input);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakeProxy")]
-    private static extern unsafe ShapeProxy MakeProxy([In] Vec2[] points, int count, float radius);
+    private static extern unsafe ShapeProxy MakeProxy(Vec2* points, int count, float radius);
     
     /// <summary>
     /// Make a proxy for use in GJK and related functions.
     /// </summary>
-    public static unsafe ShapeProxy MakeProxy(Vec2[] vertices, float radius)
+    [PublicAPI]
+    public static unsafe ShapeProxy MakeProxy(ReadOnlySpan<Vec2> vertices, float radius)
     {
-        return MakeProxy(vertices, vertices.Length, radius);
+        fixed (Vec2* p = vertices)
+            return MakeProxy(p, vertices.Length, radius);
+    }
+    
+    /// <summary>
+    /// Make a proxy for use in GJK and related functions.
+    /// </summary>
+    [PublicAPI]
+    public static ShapeProxy MakeProxy(Vec2[] vertices, float radius)
+        => MakeProxy(vertices.AsSpan(), radius);
+    
+    /// <summary>
+    /// Make a proxy for use in GJK and related functions.
+    /// </summary>
+    [PublicAPI]
+    public static unsafe ShapeProxy MakeProxy(Vec2 vertex)
+    {
+        Vec2* vertices = &vertex;
+        return MakeProxy(vertices, 1, 0.0f);
     }
 
     /// <summary>
     /// Make a proxy for use in GJK and related functions.
     /// </summary>
-    public static ShapeProxy MakeProxy(in Vec2 vertex, float radius)
+    [PublicAPI]
+    public static unsafe ShapeProxy MakeProxy(Shape shape, float radius)
     {
-        Vec2[] vertices = { vertex };
-        return MakeProxy(vertices, radius);
+        Vec2* vertices = shape.GetVertices(out int count);
+        return MakeProxy(vertices, count, radius);
     }
-
+    
+    /// <summary>
+    /// Make a proxy for use in GJK and related functions.
+    /// </summary>
+    [PublicAPI]
+    public static unsafe ShapeProxy MakeProxy(Segment segment)
+    {
+        Vec2* vertices = &segment.Point1;
+        return MakeProxy(vertices, 2, 0.0f);
+    }
+    
+    /// <summary>
+    /// Make a proxy for use in GJK and related functions.
+    /// </summary>
+    [PublicAPI]
+    public static unsafe ShapeProxy MakeProxy(Circle circle)
+    {
+        Vec2* vertices = &circle.Center;
+        return MakeProxy(vertices, 1, circle.Radius);
+    }
+    
+    /// <summary>
+    /// Make a proxy for use in GJK and related functions.
+    /// </summary>
+    [PublicAPI]
+    public static ShapeProxy MakeProxy(Polygon polygon, float radius)
+    {
+        var readOnlySpan = polygon.Vertices;
+        return MakeProxy(readOnlySpan, radius);
+    }
+    
+    /// <summary>
+    /// Make a proxy for use in GJK and related functions.
+    /// </summary>
+    [PublicAPI]
+    public static unsafe ShapeProxy MakeProxy(Capsule capsule, float radius)
+    {
+        return MakeProxy(&capsule.Center1,2, radius);
+    }
+    
+    /// <summary>
+    /// Make a proxy for use in GJK and related functions.
+    /// </summary>
+    [PublicAPI]
+    public static unsafe ShapeProxy MakeProxy(ChainSegment segment, float radius)
+    {
+        return MakeProxy(&segment.Segment.Point1, 2, radius);
+    }
+    
     /// <summary>
     /// Compute the upper bound on time before two shapes penetrate. Time is represented as
     /// a fraction between [0,tMax]. This uses a swept separating axis and may miss some intermediate,
