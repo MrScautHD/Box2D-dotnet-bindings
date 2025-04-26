@@ -103,13 +103,13 @@ struct DistanceJointDefInternal
     /// <summary>
     /// User data pointer
     /// </summary>
-    [FieldOffset(76)]
+    [FieldOffset(80)]
     internal nint UserData;
 
     /// <summary>
     /// Used internally to detect a valid definition. DO NOT SET.
     /// </summary>
-    [FieldOffset(84)]
+    [FieldOffset(88)]
     internal readonly int internalValue;
     
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultDistanceJointDef")]

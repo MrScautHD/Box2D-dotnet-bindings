@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System;
 using System.Runtime.InteropServices;
 
@@ -7,33 +8,32 @@ namespace Box2D;
 /// A convex hull. Used to create convex polygons.
 /// </summary>
 /// <remarks>
-/// <b>Warning: Do not modify these values directly, instead use <see cref="Hull.Compute"/></b>
+/// <b>Warning: Do not modify these values directly, instead use <see cref="Hull.Compute(Span{Vec2})"/></b>
 /// </remarks>
-[StructLayout(LayoutKind.Explicit)]
-public struct Hull
+[StructLayout(LayoutKind.Sequential)]
+[PublicAPI]
+public partial struct Hull
 {
+    private unsafe fixed float points[B2_MAX_POLYGON_VERTICES * 2];
+
+    private int count;
+    
     /// <summary>
     /// The final points of the hull
     /// </summary>
-    [FieldOffset(0)]
-    [MarshalAs(UnmanagedType.ByValArray, SizeConst = B2_MAX_POLYGON_VERTICES)]
-    private Vec2[] points;
-    
-    public ReadOnlySpan<Vec2> Points
+    public unsafe ReadOnlySpan<Vec2> Points
     {
         get
         {
-            if (points == null)
-                return ReadOnlySpan<Vec2>.Empty;
-            return new ReadOnlySpan<Vec2>(points, 0, count);
+            fixed (float* ptr = points)
+            {
+                if (count > B2_MAX_POLYGON_VERTICES)
+                    throw new ArgumentOutOfRangeException(nameof(count), $"Count cannot be greater than {B2_MAX_POLYGON_VERTICES}");
+                
+                return new ReadOnlySpan<Vec2>(ptr, count);
+            }
         }
     }
-
-    /// <summary>
-    /// The number of points
-    /// </summary>
-    [FieldOffset(8)]
-    private int count;
     
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ComputeHull")]
     private static extern unsafe Hull Compute(Vec2* points, int count);

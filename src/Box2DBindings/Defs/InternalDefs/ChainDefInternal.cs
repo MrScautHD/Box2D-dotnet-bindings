@@ -17,7 +17,7 @@ unsafe struct ChainDefInternal
     [FieldOffset(16)]
     internal int Count;
 
-    [FieldOffset(20)]
+    [FieldOffset(24)]
     internal SurfaceMaterial* Materials;
 	
     /// <summary>
@@ -31,17 +31,17 @@ unsafe struct ChainDefInternal
     internal Filter Filter; // 20 bytes
 
     [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(52)]
+    [FieldOffset(64)]
     internal bool IsLoop;
 
     [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(53)]
+    [FieldOffset(65)]
     internal bool EnableSensorEvents;
     
     /// <summary>
     /// Used internally to detect a valid definition. DO NOT SET.
     /// </summary>
-    [FieldOffset(56)]
+    [FieldOffset(68)]
     private readonly int internalValue;
  
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultChainDef")]

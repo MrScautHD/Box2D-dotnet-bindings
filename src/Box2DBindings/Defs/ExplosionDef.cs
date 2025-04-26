@@ -7,31 +7,28 @@ namespace Box2D;
 /// The explosion definition is used to configure options for explosions. Explosions
 /// consider shape geometry when computing the impulse.
 /// </summary>
-[StructLayout(LayoutKind.Explicit)]
-public struct ExplosionDef
+[StructLayout(LayoutKind.Sequential)]
+[PublicAPI]
+public partial struct ExplosionDef
 {
     /// <summary>
     /// Mask bits to filter shapes
     /// </summary>
-    [FieldOffset(0)]
     public ulong MaskBits;
 
     /// <summary>
     /// The center of the explosion in world space
     /// </summary>
-    [FieldOffset(8)]
     public Vec2 Position;
 
     /// <summary>
     /// The radius of the explosion
     /// </summary>
-    [FieldOffset(16)]
     public float Radius;
 
     /// <summary>
     /// The falloff distance beyond the radius. Impulse is reduced to zero at this distance.
     /// </summary>
-    [FieldOffset(20)]
     public float Falloff;
 
     /// <summary>
@@ -39,7 +36,6 @@ public struct ExplosionDef
     /// is facing the explosion. Explosions only apply to circles, capsules, and polygons. This
     /// may be negative for implosions.
     /// </summary>
-    [FieldOffset(24)]
     public float ImpulsePerLength;
     
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultExplosionDef")]

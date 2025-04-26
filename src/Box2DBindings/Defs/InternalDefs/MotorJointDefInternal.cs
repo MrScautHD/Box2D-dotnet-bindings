@@ -57,13 +57,13 @@ struct MotorJointDefInternal
     /// <summary>
     /// User data pointer
     /// </summary>
-    [FieldOffset(44)]
+    [FieldOffset(48)]
     internal nint UserData;
 
     /// <summary>
     /// Used internally to detect a valid definition. DO NOT SET.
     /// </summary>
-    [FieldOffset(52)]
+    [FieldOffset(56)]
     internal readonly int internalValue;
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultMotorJointDef")]

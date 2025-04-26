@@ -116,13 +116,13 @@ struct PrismaticJointDefInternal
     /// <summary>
     /// User data pointer
     /// </summary>
-    [FieldOffset(84)]
+    [FieldOffset(88)]
     internal nint UserData;
 
     /// <summary>
     /// Used internally to detect a valid definition. DO NOT SET.
     /// </summary>
-    [FieldOffset(92)]
+    [FieldOffset(96)]
     private readonly int internalValue;
     
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultPrismaticJointDef")]
