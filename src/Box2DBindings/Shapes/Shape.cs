@@ -17,6 +17,9 @@ public struct Shape : IEquatable<Shape>
     
     public override int GetHashCode() => HashCode.Combine(index1, world0, generation);
     
+    public static bool operator ==(Shape left, Shape right) => left.Equals(right);
+    public static bool operator !=(Shape left, Shape right) => !left.Equals(right);
+    
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DestroyShape")]
     private static extern void b2DestroyShape(Shape shapeId, bool updateBodyMass);
 
