@@ -10,7 +10,7 @@ namespace Box2D;
 [StructLayout(LayoutKind.Explicit)]
 struct ShapeDefInternal
 {
-    /// <summary>
+ /// <summary>
     /// Use this to store application specific shape data.
     /// </summary>
     [FieldOffset(0)]
@@ -30,7 +30,7 @@ struct ShapeDefInternal
     /// <summary>
     /// Collision filtering data.
     /// </summary>
-    [FieldOffset(36)]
+    [FieldOffset(40)]
     internal Filter Filter; // 20 bytes
     
     /// <summary>
@@ -43,28 +43,28 @@ struct ShapeDefInternal
     /// See <see cref="EnableSensorEvents"/>
     /// </remarks>
     [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(56)]
+    [FieldOffset(64)]
     internal bool IsSensor;
 
     /// <summary>
     /// Enable sensor events for this shape. This applies to sensors and non-sensors. False by default, even for sensors.
     /// </summary>
     [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(57)]
+    [FieldOffset(65)]
     internal bool EnableSensorEvents;
     
     /// <summary>
     /// Enable contact events for this shape. Only applies to kinematic and dynamic bodies. Ignored for sensors.
     /// </summary>
     [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(58)]
+    [FieldOffset(66)]
     internal bool EnableContactEvents;
 
     /// <summary>
     /// Enable hit events for this shape. Only applies to kinematic and dynamic bodies. Ignored for sensors.
     /// </summary>
     [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(59)]
+    [FieldOffset(67)]
     internal bool EnableHitEvents;
 
     /// <summary>
@@ -72,7 +72,7 @@ struct ShapeDefInternal
     /// and must be carefully handled due to threading. Ignored for sensors.
     /// </summary>
     [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(60)]
+    [FieldOffset(68)]
     internal bool EnablePreSolveEvents;
 
     /// <summary>
@@ -82,20 +82,20 @@ struct ShapeDefInternal
     /// This is implicitly always true for sensors, dynamic bodies, and kinematic bodies.
     /// </summary>
     [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(61)]
+    [FieldOffset(69)]
     internal bool InvokeContactCreation;
 
     /// <summary>
     /// Should the body update the mass properties when this shape is created. Default is true.
     /// </summary>
     [MarshalAs(UnmanagedType.U1)]
-    [FieldOffset(62)]
+    [FieldOffset(70)]
     internal bool UpdateBodyMass = true;
 
     /// <summary>
     /// Used internally to detect a valid definition. DO NOT SET.
     /// </summary>
-    [FieldOffset(64)]
+    [FieldOffset(72)]
     private readonly int internalValue;
     
     /// <summary>
