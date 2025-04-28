@@ -11,7 +11,7 @@ While it's not impossible to implement in C# - intrinsics have been available si
 ## How is this better than Hexa.NET.Box2D or Box2D.NET?
 Hexa.NET.Box2D and Box2D.NET are auto-generated with code generators, and are direct mappings of the Box2D API. This, by contrast, is a hand-crafted API that is designed to be more idiomatic to dotnet coders.
 These bindings also have full XmlDoc comments and fully defined delegates.
-In this case "better" is probably subjective: Hexa.NET.Box2D and Box2D.NET are API-complete in that they include DynamicTree functions, while this library brings quality of life improvements. *This API is complete up to 3.0.0 and will be upgraded to 3.1.0 as early as possible.* 
+In this case "better" is probably subjective: Hexa.NET.Box2D and Box2D.NET are API-complete in that they include DynamicTree functions, while this library brings quality of life improvements. *This API is complete up to 3.1.0 and will be upgraded as new Box2D versions are released.* 
 
 ## Getting things working
 Just install this package. It should work. If not, *please* raise an issue in the github repository: https://github.com/HughPH/Box2D-dotnet-bindings/issues

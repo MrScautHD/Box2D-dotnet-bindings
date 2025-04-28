@@ -10,16 +10,16 @@ public struct Shape : IEquatable<Shape>
     private int index1;
     private ushort world0;
     private ushort generation;
-    
+
     public bool Equals(Shape other) => index1 == other.index1 && world0 == other.world0 && generation == other.generation;
-    
+
     public override bool Equals(object? obj) => obj is Shape other && Equals(other);
-    
+
     public override int GetHashCode() => HashCode.Combine(index1, world0, generation);
-    
+
     public static bool operator ==(Shape left, Shape right) => left.Equals(right);
     public static bool operator !=(Shape left, Shape right) => !left.Equals(right);
-    
+
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DestroyShape")]
     private static extern void b2DestroyShape(Shape shapeId, bool updateBodyMass);
 
@@ -35,30 +35,30 @@ public struct Shape : IEquatable<Shape>
         nint userDataPtr = b2Shape_GetUserData(this);
         FreeHandle(ref userDataPtr);
         b2Shape_SetUserData(this, 0);
-        
+
         b2DestroyShape(this, updateBodyMass);
     }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_IsValid")]
     private static extern bool b2Shape_IsValid(Shape shapeId);
-    
+
     /// <summary>
     /// Checks if this shape is valid
     /// </summary>
     /// <returns>true if this shape is valid</returns>
     /// <remarks>Provides validation for up to 64K allocations</remarks>
     [PublicAPI]
-    public bool IsValid() => b2Shape_IsValid(this);
+    public bool Valid => b2Shape_IsValid(this);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetType")]
     private static extern ShapeType b2Shape_GetType(Shape shapeId);
-    
+
     /// <summary>
     /// Gets the type of this shape
     /// </summary>
     /// <returns>The type of this shape</returns>
     [PublicAPI]
-    public ShapeType Type => b2Shape_GetType(this);
+    public ShapeType Type => Valid ? b2Shape_GetType(this) : throw new InvalidOperationException("Shape is not valid");
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetBody")]
     private static extern Body b2Shape_GetBody(Shape shapeId);
@@ -68,17 +68,17 @@ public struct Shape : IEquatable<Shape>
     /// </summary>
     /// <returns>The body that this shape is attached to</returns>
     [PublicAPI]
-    public Body Body => b2Shape_GetBody(this);
-    
+    public Body Body => Valid ? b2Shape_GetBody(this) : throw new InvalidOperationException("Shape is not valid");
+
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetWorld")]
     private static extern WorldId b2Shape_GetWorld(Shape shapeId);
-    
+
     [PublicAPI]
-    public World World => World.GetWorld(b2Shape_GetWorld(this));
-    
+    public World World => Valid ? World.GetWorld(b2Shape_GetWorld(this)) : throw new InvalidOperationException("Shape is not valid");
+
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_IsSensor")]
     private static extern bool b2Shape_IsSensor(Shape shapeId);
-    
+
     /// <summary>
     /// Checks if this shape is a sensor
     /// </summary>
@@ -87,43 +87,53 @@ public struct Shape : IEquatable<Shape>
     /// from sensor to solid dynamically because this breaks the contract for
     /// sensor events.</remarks>
     [PublicAPI]
-    public bool Sensor => b2Shape_IsSensor(this);
-    
+    public bool Sensor => Valid ? b2Shape_IsSensor(this) : throw new InvalidOperationException("Shape is not valid");
+
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_EnableSensorEvents")]
     private static extern void b2Shape_EnableSensorEvents(Shape shapeId, bool flag);
-    
+
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_AreSensorEventsEnabled")]
     private static extern bool b2Shape_AreSensorEventsEnabled(Shape shapeId);
-    
+
     /// <summary>
     /// Gets or sets the Sensor Events Enabled state for this shape
     /// </summary>
     [PublicAPI]
     private bool SensorEventsEnabled
     {
-        get => b2Shape_AreSensorEventsEnabled(this);
-        set => b2Shape_EnableSensorEvents(this, value);
+        get => Valid ? b2Shape_AreSensorEventsEnabled(this) : throw new InvalidOperationException("Shape is not valid");
+        set
+        {
+            if (!Valid)
+                throw new InvalidOperationException("Shape is not valid");
+            b2Shape_EnableSensorEvents(this, value);
+        }
     }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_SetUserData")]
     private static extern void b2Shape_SetUserData(Shape shapeId, nint userData);
-    
+
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetUserData")]
     private static extern nint b2Shape_GetUserData(Shape shapeId);
-    
+
     /// <summary>
     /// The user data object for this shape.
     /// </summary>
     [PublicAPI]
     public object? UserData
     {
-        get => GetObjectAtPointer(b2Shape_GetUserData,this);
-        set => SetObjectAtPointer(b2Shape_GetUserData, b2Shape_SetUserData, this, value);
+        get => Valid ? GetObjectAtPointer(b2Shape_GetUserData, this) : throw new InvalidOperationException("Shape is not valid");
+        set
+        {
+            if (!Valid)
+                throw new InvalidOperationException("Shape is not valid");
+            SetObjectAtPointer(b2Shape_GetUserData, b2Shape_SetUserData, this, value);
+        }
     }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_SetDensity")]
     private static extern void b2Shape_SetDensity(Shape shapeId, float density, bool updateBodyMass);
-    
+
     /// <summary>
     /// Sets the mass density of this shape
     /// </summary>
@@ -135,7 +145,7 @@ public struct Shape : IEquatable<Shape>
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetDensity")]
     private static extern float b2Shape_GetDensity(Shape shapeId);
-    
+
     /// <summary>
     /// The mass density of this shape
     /// </summary>
@@ -143,62 +153,82 @@ public struct Shape : IEquatable<Shape>
     [PublicAPI]
     public float Density
     {
-        get => b2Shape_GetDensity(this);
-        set => b2Shape_SetDensity(this, value, true);
+        get => Valid ? b2Shape_GetDensity(this) : throw new InvalidOperationException("Shape is not valid");
+        set
+        {
+            if (!Valid)
+                throw new InvalidOperationException("Shape is not valid");
+            b2Shape_SetDensity(this, value, true);
+        }
     }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_SetFriction")]
     private static extern void b2Shape_SetFriction(Shape shapeId, float friction);
-    
+
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetFriction")]
     private static extern float b2Shape_GetFriction(Shape shapeId);
-    
+
     /// <summary>
     /// The friction on this shape
     /// </summary>
     [PublicAPI]
     public float Friction
     {
-        get => b2Shape_GetFriction(this);
-        set => b2Shape_SetFriction(this, value);
+        get => Valid ? b2Shape_GetFriction(this) : throw new InvalidOperationException("Shape is not valid");
+        set
+        {
+            if (!Valid)
+                throw new InvalidOperationException("Shape is not valid");
+            b2Shape_SetFriction(this, value);
+        }
     }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_SetRestitution")]
     private static extern void b2Shape_SetRestitution(Shape shapeId, float restitution);
-    
+
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetRestitution")]
     private static extern float b2Shape_GetRestitution(Shape shapeId);
-    
+
     [PublicAPI]
     public float Restitution
     {
-        get => b2Shape_GetRestitution(this);
-        set => b2Shape_SetRestitution(this, value);
+        get => Valid ? b2Shape_GetRestitution(this) : throw new InvalidOperationException("Shape is not valid");
+        set
+        {
+            if (!Valid)
+                throw new InvalidOperationException("Shape is not valid");
+            b2Shape_SetRestitution(this, value);
+        }
     }
-    
+
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_SetMaterial")]
     private static extern void b2Shape_SetMaterial(Shape shapeId, int material);
-    
+
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetMaterial")]
     private static extern int b2Shape_GetMaterial(Shape shapeId);
-    
+
     /// <summary>
     /// The material for this shape
     /// </summary>
     [PublicAPI]
     public int Material
     {
-        get => b2Shape_GetMaterial(this);
-        set => b2Shape_SetMaterial(this, value);
+        get => Valid ? b2Shape_GetMaterial(this) : throw new InvalidOperationException("Shape is not valid");
+        set
+        {
+            if (!Valid)
+                throw new InvalidOperationException("Shape is not valid");
+            b2Shape_SetMaterial(this, value);
+        }
     }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetFilter")]
     private static extern Filter b2Shape_GetFilter(Shape shapeId);
-    
-    
+
+
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_SetFilter")]
     private static extern void b2Shape_SetFilter(Shape shapeId, Filter filter);
-    
+
     /// <summary>
     /// The filter for this shape
     /// </summary>
@@ -208,29 +238,39 @@ public struct Shape : IEquatable<Shape>
     [PublicAPI]
     public Filter Filter
     {
-        get => b2Shape_GetFilter(this);
-        set => b2Shape_SetFilter(this, value);
+        get => Valid ? b2Shape_GetFilter(this) : throw new InvalidOperationException("Shape is not valid");
+        set
+        {
+            if (!Valid)
+                throw new InvalidOperationException("Shape is not valid");
+            b2Shape_SetFilter(this, value);
+        }
     }
-    
+
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_EnableContactEvents")]
     private static extern void b2Shape_EnableContactEvents(Shape shapeId, bool flag);
-    
+
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_AreContactEventsEnabled")]
     private static extern bool b2Shape_AreContactEventsEnabled(Shape shapeId);
-    
+
     /// <summary>
     /// Contact enabled state for this shape
     /// </summary>
     [PublicAPI]
     public bool ContactEventsEnabled
     {
-        get => b2Shape_AreContactEventsEnabled(this);
-        set => b2Shape_EnableContactEvents(this, value);
+        get => Valid ? b2Shape_AreContactEventsEnabled(this) : throw new InvalidOperationException("Shape is not valid");
+        set
+        {
+            if (!Valid)
+                throw new InvalidOperationException("Shape is not valid");
+            b2Shape_EnableContactEvents(this, value);
+        }
     }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_EnablePreSolveEvents")]
     private static extern void b2Shape_EnablePreSolveEvents(Shape shapeId, bool flag);
-    
+
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_ArePreSolveEventsEnabled")]
     private static extern bool b2Shape_ArePreSolveEventsEnabled(Shape shapeId);
 
@@ -241,29 +281,39 @@ public struct Shape : IEquatable<Shape>
     [PublicAPI]
     public bool PreSolveEventsEnabled
     {
-        get => b2Shape_ArePreSolveEventsEnabled(this);
-        set => b2Shape_EnablePreSolveEvents(this, value);
+        get => Valid ? b2Shape_ArePreSolveEventsEnabled(this) : throw new InvalidOperationException("Shape is not valid");
+        set
+        {
+            if (!Valid)
+                throw new InvalidOperationException("Shape is not valid");
+            b2Shape_EnablePreSolveEvents(this, value);
+        }
     }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_EnableHitEvents")]
     private static extern void b2Shape_EnableHitEvents(Shape shapeId, bool flag);
-    
+
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_AreHitEventsEnabled")]
     private static extern bool b2Shape_AreHitEventsEnabled(Shape shapeId);
-    
+
     /// <summary>
     /// Hit events enabled state for this shape
     /// </summary>
     [PublicAPI]
     public bool HitEventsEnabled
     {
-        get => b2Shape_AreHitEventsEnabled(this);
-        set => b2Shape_EnableHitEvents(this, value);
+        get => Valid ? b2Shape_AreHitEventsEnabled(this) : throw new InvalidOperationException("Shape is not valid");
+        set
+        {
+            if (!Valid)
+                throw new InvalidOperationException("Shape is not valid");
+            b2Shape_EnableHitEvents(this, value);
+        }
     }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_TestPoint")]
     private static extern bool b2Shape_TestPoint(Shape shapeId, Vec2 point);
-    
+
     /// <summary>
     /// Tests a point for overlap with this shape
     /// </summary>
@@ -274,7 +324,7 @@ public struct Shape : IEquatable<Shape>
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_RayCast")]
     private static extern CastOutput b2Shape_RayCast(Shape shapeId, in RayCastInput input);
-    
+
     /// <summary>
     /// Ray casts this shape directly
     /// </summary>
@@ -285,7 +335,7 @@ public struct Shape : IEquatable<Shape>
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetCircle")]
     private static extern Circle b2Shape_GetCircle(Shape shapeId);
-    
+
     /// <summary>
     /// Gets a copy of the shape's circle
     /// </summary>
@@ -296,7 +346,7 @@ public struct Shape : IEquatable<Shape>
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetSegment")]
     private static extern Segment b2Shape_GetSegment(Shape shapeId);
-    
+
     /// <summary>
     /// Gets a copy of the shape's line segment
     /// </summary>
@@ -304,10 +354,10 @@ public struct Shape : IEquatable<Shape>
     /// <remarks>Asserts the type is correct</remarks>
     [PublicAPI]
     public Segment GetSegment() => b2Shape_GetSegment(this);
-    
+
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetChainSegment")]
     private static extern ChainSegment b2Shape_GetChainSegment(Shape shapeId);
-    
+
     /// <summary>
     /// Gets a copy of the shape's chain segment
     /// </summary>
@@ -317,7 +367,7 @@ public struct Shape : IEquatable<Shape>
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetCapsule")]
     private static extern Capsule b2Shape_GetCapsule(Shape shapeId);
-    
+
     /// <summary>
     /// Gets a copy of the shape's capsule
     /// </summary>
@@ -328,7 +378,7 @@ public struct Shape : IEquatable<Shape>
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetPolygon")]
     private static extern Polygon b2Shape_GetPolygon(Shape shapeId);
-    
+
     /// <summary>
     /// Gets a copy of the shape's convex polygon
     /// </summary>
@@ -336,10 +386,10 @@ public struct Shape : IEquatable<Shape>
     /// <remarks>Asserts the type is correct</remarks>
     [PublicAPI]
     public Polygon GetPolygon() => b2Shape_GetPolygon(this);
-    
+
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_SetCircle")]
     private static extern void b2Shape_SetCircle(Shape shapeId, in Circle circle);
-    
+
     /// <summary>
     /// Allows you to change this shape to be a circle or update the current circle
     /// </summary>
@@ -350,7 +400,7 @@ public struct Shape : IEquatable<Shape>
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_SetCapsule")]
     private static extern void b2Shape_SetCapsule(Shape shapeId, in Capsule capsule);
-    
+
     /// <summary>
     /// Allows you to change this shape to be a capsule or update the current capsule
     /// </summary>
@@ -361,7 +411,7 @@ public struct Shape : IEquatable<Shape>
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_SetSegment")]
     private static extern void b2Shape_SetSegment(Shape shapeId, in Segment segment);
-    
+
     /// <summary>
     /// Allows you to change this shape to be a segment or update the current segment
     /// </summary>
@@ -371,7 +421,7 @@ public struct Shape : IEquatable<Shape>
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_SetPolygon")]
     private static extern void b2Shape_SetPolygon(Shape shapeId, in Polygon polygon);
-    
+
     /// <summary>
     /// Allows you to change this shape to be a polygon or update the current polygon
     /// </summary>
@@ -382,25 +432,27 @@ public struct Shape : IEquatable<Shape>
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetParentChain")]
     private static extern ChainShape b2Shape_GetParentChain(Shape shapeId);
-    
+
     /// <summary>
     /// Gets the parent chain id if the shape type is a chain segment
     /// </summary>
     /// <returns>The parent chain id if the shape type is a chain segment, otherwise returns 0</returns>
     [PublicAPI]
     public ChainShape GetParentChain() => b2Shape_GetParentChain(this);
-    
+
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetContactCapacity")]
     private static extern int b2Shape_GetContactCapacity(Shape shapeId);
-    
+
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetContactData")]
-    private static extern unsafe int b2Shape_GetContactData(Shape shapeId, ContactData*  contactData, int capacity);
+    private static extern unsafe int b2Shape_GetContactData(Shape shapeId, ContactData* contactData, int capacity);
 
     [PublicAPI]
     public unsafe ReadOnlySpan<ContactData> ContactData
     {
         get
         {
+            if (!Valid)
+                throw new InvalidOperationException("Shape is not valid");
             int needed = b2Shape_GetContactCapacity(this);
             ContactData[] buffer = new ContactData[needed];
             int written;
@@ -411,10 +463,10 @@ public struct Shape : IEquatable<Shape>
             return buffer.AsSpan(0, written);
         }
     }
-    
+
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetSensorCapacity")]
     private static extern int b2Shape_GetSensorCapacity(Shape shapeId);
-    
+
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetSensorOverlaps")]
     private static extern unsafe int b2Shape_GetSensorOverlaps(Shape shapeId, Shape* overlaps, int capacity);
 
@@ -423,7 +475,7 @@ public struct Shape : IEquatable<Shape>
     /// </summary>
     /// <returns>The number of elements filled in the provided array</returns>
     /// <remarks>
-    /// Overlaps may contain destroyed shapes so use <see cref="IsValid"/> to confirm each overlap.<br/><br/>
+    /// Overlaps may contain destroyed shapes so use <see cref="Valid"/> to confirm each overlap.<br/><br/>
     /// <b>Warning: Do not fetch this property during the contact callbacks</b>
     /// </remarks>
     [PublicAPI]
@@ -431,6 +483,8 @@ public struct Shape : IEquatable<Shape>
     {
         get
         {
+            if (!Valid)
+                throw new InvalidOperationException("Shape is not valid");
             int needed = b2Shape_GetSensorCapacity(this);
             Shape[] buffer = new Shape[needed];
             int written;
@@ -439,32 +493,32 @@ public struct Shape : IEquatable<Shape>
                 written = b2Shape_GetSensorOverlaps(this, p, buffer.Length);
             }
             return buffer.AsSpan(0, written);
-        }     
+        }
     }
-    
+
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetAABB")]
     private static extern AABB b2Shape_GetAABB(Shape shapeId);
-    
+
     /// <summary>
     /// Gets the current world AABB
     /// </summary>
     /// <returns>The current world AABB</returns>
     /// <remarks>This is the axis-aligned bounding box in world coordinates</remarks>
     [PublicAPI]
-    public AABB AABB => b2Shape_GetAABB(this);
+    public AABB AABB => Valid ? b2Shape_GetAABB(this) : throw new InvalidOperationException("Shape is not valid");
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetMassData")]
     private static extern MassData b2Shape_GetMassData(Shape shapeId);
-    
+
     /// <summary>
     /// Gets the mass data for this shape
     /// </summary>
     [PublicAPI]
-    public MassData MassData => b2Shape_GetMassData(this);
+    public MassData MassData => Valid ? b2Shape_GetMassData(this) : throw new InvalidOperationException("Shape is not valid");
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetClosestPoint")]
     private static extern Vec2 b2Shape_GetClosestPoint(Shape shapeId, Vec2 target);
-    
+
     /// <summary>
     /// Gets the closest point on this shape to a target point
     /// </summary>
@@ -485,10 +539,12 @@ public struct Shape : IEquatable<Shape>
     {
         get
         {
+            if (!Valid)
+                throw new InvalidOperationException("Shape is not valid");
             switch (Type)
             {
                 case ShapeType.Circle:
-                    return new ([GetCircle().Center]);
+                    return new([GetCircle().Center]);
                 case ShapeType.Segment:
                     var segment = GetSegment();
                     return new([segment.Point1, segment.Point2]);
@@ -514,15 +570,18 @@ public struct Shape : IEquatable<Shape>
     {
         get
         {
+            if (!Valid)
+                throw new InvalidOperationException("Shape is not valid");
+
             var localVertices = LocalVertices;
-        
+
             Vec2[] worldVertices = new Vec2[localVertices.Length];
-        
+
             var body = Body;
-        
+
             for (int i = 0; i < localVertices.Length; i++)
                 worldVertices[i] = body.GetWorldPoint(localVertices[i]);
-        
+
             return worldVertices;
         }
     }

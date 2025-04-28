@@ -8,13 +8,13 @@ namespace Box2D;
 /// </summary>
 public class Joint
 {
-	internal JointId id;
-    
+    internal JointId id;
+
     internal Joint(JointId id)
     {
         this.id = id;
     }
-    
+
     internal static Joint GetJoint(JointId id)
     {
         JointType t = b2Joint_GetType(id);
@@ -38,13 +38,13 @@ public class Joint
                 return new Joint(id);
             default:
                 throw new NotSupportedException($"Joint type {t} is not supported");
-            
+
         }
     }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DestroyJoint")]
     private static extern void b2DestroyJoint(JointId jointId);
-    
+
     /// <summary>
     /// Destroys this joint
     /// </summary>
@@ -53,13 +53,13 @@ public class Joint
         nint userDataPtr = b2Joint_GetUserData(id);
         FreeHandle(ref userDataPtr);
         b2Joint_SetUserData(id, 0);
-        
+
         b2DestroyJoint(id);
     }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_IsValid")]
     private static extern bool b2Joint_IsValid(JointId jointId);
-    
+
     /// <summary>
     /// Checks if this joint is valid
     /// </summary>
@@ -69,12 +69,12 @@ public class Joint
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetType")]
     private static extern JointType b2Joint_GetType(JointId jointId);
-    
+
     /// <summary>
     /// Gets the joint type
     /// </summary>
     /// <returns>The joint type</returns>
-    public JointType Type => b2Joint_GetType(id);
+    public JointType Type => Valid ? b2Joint_GetType(id) : throw new InvalidOperationException("Joint is not valid");
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetBodyA")]
     private static extern Body b2Joint_GetBodyA(JointId jointId);
@@ -83,73 +83,83 @@ public class Joint
     /// Gets body A on this joint
     /// </summary>
     /// <returns>The body A on this joint</returns>
-    public Body BodyA => b2Joint_GetBodyA(id);
-    
+    public Body BodyA => Valid ? b2Joint_GetBodyA(id) : throw new InvalidOperationException("Joint is not valid");
+
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetBodyB")]
     private static extern Body b2Joint_GetBodyB(JointId jointId);
-    
+
     /// <summary>
     /// Gets body B on this joint
     /// </summary>
     /// <returns>The body B on this joint</returns>
-    public Body BodyB => b2Joint_GetBodyB(id);
+    public Body BodyB => Valid ? b2Joint_GetBodyB(id) : throw new InvalidOperationException("Joint is not valid");
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetWorld")]
     private static extern WorldId b2Joint_GetWorld(JointId jointId);
-    
+
     /// <summary>
     /// Gets the world that owns this joint
     /// </summary>
-    public World World => World.GetWorld(b2Joint_GetWorld(id));
-    
+    public World World => Valid ? World.GetWorld(b2Joint_GetWorld(id)) : throw new InvalidOperationException("Joint is not valid");
+
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetLocalAnchorA")]
     private static extern Vec2 b2Joint_GetLocalAnchorA(JointId jointId);
-    
+
     /// <summary>
     /// Gets the local anchor on body A
     /// </summary>
     /// <returns>The local anchor on body A</returns>
-    public Vec2 LocalAnchorA => b2Joint_GetLocalAnchorA(id);
-    
+    public Vec2 LocalAnchorA => Valid ? b2Joint_GetLocalAnchorA(id) : throw new InvalidOperationException("Joint is not valid");
+
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetLocalAnchorB")]
     private static extern Vec2 b2Joint_GetLocalAnchorB(JointId jointId);
-    
+
     /// <summary>
     /// Gets the local anchor on body B
     /// </summary>
     /// <returns>The local anchor on body B</returns>
-    public Vec2 LocalAnchorB => b2Joint_GetLocalAnchorB(id);
+    public Vec2 LocalAnchorB => Valid ? b2Joint_GetLocalAnchorB(id) : throw new InvalidOperationException("Joint is not valid");
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_SetCollideConnected")]
     private static extern void b2Joint_SetCollideConnected(JointId jointId, bool shouldCollide);
-    
+
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetCollideConnected")]
     private static extern bool b2Joint_GetCollideConnected(JointId jointId);
-    
+
     public bool CollideConnected
     {
-        get => b2Joint_GetCollideConnected(id);
-        set => b2Joint_SetCollideConnected(id, value);
+        get => Valid ? b2Joint_GetCollideConnected(id) : throw new InvalidOperationException("Joint is not valid");
+        set
+        {
+            if (!Valid)
+                throw new InvalidOperationException("Joint is not valid");
+            b2Joint_SetCollideConnected(id, value);
+        }
     }
-    
+
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_SetUserData")]
     private static extern void b2Joint_SetUserData(JointId jointId, nint userData);
-    
+
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetUserData")]
     private static extern nint b2Joint_GetUserData(JointId jointId);
-    
+
     /// <summary>
     /// The user data object for this joint.
     /// </summary>
     public object? UserData
     {
-        get => GetObjectAtPointer(b2Joint_GetUserData, id);
-        set => SetObjectAtPointer(b2Joint_GetUserData, b2Joint_SetUserData, id, value);
+        get => Valid ? GetObjectAtPointer(b2Joint_GetUserData, id) : throw new InvalidOperationException("Joint is not valid");
+        set
+        {
+            if (!Valid)
+                throw new InvalidOperationException("Joint is not valid");
+            SetObjectAtPointer(b2Joint_GetUserData, b2Joint_SetUserData, id, value);
+        }
     }
-    
+
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_WakeBodies")]
     private static extern void b2Joint_WakeBodies(JointId jointId);
-    
+
     /// <summary>
     /// Wakes the bodies connected to this joint
     /// </summary>
@@ -157,21 +167,21 @@ public class Joint
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetConstraintForce")]
     private static extern Vec2 b2Joint_GetConstraintForce(JointId jointId);
-    
+
     /// <summary>
     /// Gets the current constraint force for this joint
     /// </summary>
     /// <returns>The current constraint force for this joint</returns>
     /// <remarks>Usually in Newtons</remarks>
-    public Vec2 ConstraintForce => b2Joint_GetConstraintForce(id);
+    public Vec2 ConstraintForce => Valid ? b2Joint_GetConstraintForce(id) : throw new InvalidOperationException("Joint is not valid");
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetConstraintTorque")]
     private static extern float b2Joint_GetConstraintTorque(JointId jointId);
-    
+
     /// <summary>
     /// Gets the current constraint torque for this joint
     /// </summary>
     /// <returns>The current constraint torque for this joint</returns>
     /// <remarks>Usually in Newton * meters</remarks>
-    public float ConstraintTorque => b2Joint_GetConstraintTorque(id);
+    public float ConstraintTorque => Valid ? b2Joint_GetConstraintTorque(id) : throw new InvalidOperationException("Joint is not valid");
 }

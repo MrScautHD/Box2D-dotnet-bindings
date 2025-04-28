@@ -13,13 +13,13 @@ public struct ContactEndTouchEvent
 {
     /// <summary>
     /// The first shape
-    ///	<b>Warning: this shape may have been destroyed. Use Shape.IsValid</b>
+    ///	<b>Warning: this shape may have been destroyed. Use Shape.Valid</b>
     /// </summary>
     public Shape ShapeA;
 
     /// <summary>
     /// The second shape
-    ///	<b>Warning: this shape may have been destroyed. Use Shape.IsValid</b>
+    ///	<b>Warning: this shape may have been destroyed. Use Shape.Valid</b>
     /// </summary>
     public Shape ShapeB;
 }

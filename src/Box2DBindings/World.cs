@@ -15,7 +15,6 @@ struct WorldId
     [FieldOffset(2)]
     internal ushort generation;
 }
-
 public sealed partial class World
 {
     private WorldId id;
@@ -53,7 +52,7 @@ public sealed partial class World
         if (userDataPtr != 0)
             FreeHandle(ref userDataPtr);
         b2World_SetUserData(id, 0);
-        
+
         b2DestroyWorld(id);
         bodies.Remove(id.index1);
     }
@@ -97,7 +96,7 @@ public sealed partial class World
     /// </summary>
     /// <returns>The body events</returns>
     [PublicAPI]
-    public BodyEvents BodyEvents => b2World_GetBodyEvents(id);
+    public BodyEvents BodyEvents => Valid ? b2World_GetBodyEvents(id) : throw new InvalidOperationException("World is not valid");
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetSensorEvents")]
     private static extern SensorEvents b2World_GetSensorEvents(WorldId worldId);
@@ -107,7 +106,7 @@ public sealed partial class World
     /// </summary>
     /// <returns>The sensor events</returns>
     [PublicAPI]
-    public SensorEvents SensorEvents => b2World_GetSensorEvents(id);
+    public SensorEvents SensorEvents => Valid ? b2World_GetSensorEvents(id) : throw new InvalidOperationException("World is not valid");
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetContactEvents")]
     private static extern ContactEvents b2World_GetContactEvents(WorldId worldId);
@@ -117,10 +116,7 @@ public sealed partial class World
     /// </summary>
     /// <returns>The contact events</returns>
     [PublicAPI]
-    public ContactEvents ContactEvents => b2World_GetContactEvents(id);
-
-
-    
+    public ContactEvents ContactEvents => Valid ? b2World_GetContactEvents(id) : throw new InvalidOperationException("World is not valid");
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_EnableSleeping")]
     private static extern void b2World_EnableSleeping(WorldId worldId, bool flag);
@@ -134,8 +130,13 @@ public sealed partial class World
     [PublicAPI]
     public bool SleepingEnabled
     {
-        get => b2World_IsSleepingEnabled(id);
-        set => b2World_EnableSleeping(id, value);
+        get => Valid ? b2World_IsSleepingEnabled(id) : throw new InvalidOperationException("World is not valid");
+        set
+        {
+            if (!Valid)
+                throw new InvalidOperationException("World is not valid");
+            b2World_EnableSleeping(id, value);
+        }
     }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_EnableContinuous")]
@@ -151,8 +152,13 @@ public sealed partial class World
     [PublicAPI]
     public bool ContinuousEnabled
     {
-        get => b2World_IsContinuousEnabled(id);
-        set => b2World_EnableContinuous(id, value);
+        get => Valid ? b2World_IsContinuousEnabled(id) : throw new InvalidOperationException("World is not valid");
+        set
+        {
+            if (!Valid)
+                throw new InvalidOperationException("World is not valid");
+            b2World_EnableContinuous(id, value);
+        }
     }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetRestitutionThreshold")]
@@ -167,8 +173,13 @@ public sealed partial class World
     [PublicAPI]
     public float RestitutionThreshold
     {
-        get => b2World_GetRestitutionThreshold(id);
-        set => b2World_SetRestitutionThreshold(id, value);
+        get => Valid ? b2World_GetRestitutionThreshold(id) : throw new InvalidOperationException("World is not valid");
+        set
+        {
+            if (!Valid)
+                throw new InvalidOperationException("World is not valid");
+            b2World_SetRestitutionThreshold(id, value);
+        }
     }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetHitEventThreshold")]
@@ -183,8 +194,13 @@ public sealed partial class World
     [PublicAPI]
     public float HitEventThreshold
     {
-        get => b2World_GetHitEventThreshold(id);
-        set => b2World_SetHitEventThreshold(id, value);
+        get => Valid ? b2World_GetHitEventThreshold(id) : throw new InvalidOperationException("World is not valid");
+        set
+        {
+            if (!Valid)
+                throw new InvalidOperationException("World is not valid");
+            b2World_SetHitEventThreshold(id, value);
+        }
     }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetCustomFilterCallback")]
@@ -206,7 +222,7 @@ public sealed partial class World
         var callback = (CustomFilterCallback<TContext>)GCHandle.FromIntPtr(contextBuffer[1]).Target!;
         return callback(shapeA, shapeB, contextObj);
     }
-    
+
     private static unsafe bool CustomFilterRefThunk<TContext>(Shape shapeA, Shape shapeB, nint context) where TContext : unmanaged
     {
         var contextBuffer = (nint*)context;
@@ -236,7 +252,7 @@ public sealed partial class World
             GCHandle.FromIntPtr(contextBuffer[1]).Free();
         }
     }
-    
+
     /// <summary>
     /// Register the custom filter callback. This is optional.
     /// </summary>
@@ -261,7 +277,7 @@ public sealed partial class World
         }
     }
 
-    
+
     /// <summary>
     /// Register the custom filter callback. This is optional.
     /// </summary>
@@ -278,7 +294,7 @@ public sealed partial class World
         var callback = (CustomFilterCallback)GCHandle.FromIntPtr(context).Target!;
         return callback(shapeA, shapeB);
     }
-    
+
     /// <summary>
     /// Register the custom filter callback. This is optional.
     /// </summary>
@@ -307,7 +323,7 @@ public sealed partial class World
         var callback = (PreSolveCallback<TContext>)GCHandle.FromIntPtr(contextBuffer[1]).Target!;
         return callback(shapeA, shapeB, *(Manifold*)manifold, contextObj);
     }
-    
+
     private static unsafe bool PreSolveCallbackRefThunk<TContext>(Shape shapeA, Shape shapeB, nint manifold, nint context) where TContext : unmanaged
     {
         var contextBuffer = (nint*)context;
@@ -315,7 +331,7 @@ public sealed partial class World
         var callback = (PreSolveRefCallback<TContext>)GCHandle.FromIntPtr(contextBuffer[1]).Target!;
         return callback(shapeA, shapeB, *(Manifold*)manifold, ref contextObj);
     }
-    
+
     /// <summary>
     /// Register the pre-solve callback. This is optional.
     /// </summary>
@@ -337,7 +353,7 @@ public sealed partial class World
             GCHandle.FromIntPtr(contextBuffer[1]).Free();
         }
     }
-    
+
     /// <summary>
     /// Register the pre-solve callback. This is optional.
     /// </summary>
@@ -367,7 +383,7 @@ public sealed partial class World
         var callback = (PreSolveCallback)GCHandle.FromIntPtr(context).Target!;
         return callback(shapeA, shapeB, *(Manifold*)manifold);
     }
-    
+
     /// <summary>
     /// Register the pre-solve callback. This is optional.
     /// </summary>
@@ -409,8 +425,13 @@ public sealed partial class World
     [PublicAPI]
     public Vec2 Gravity
     {
-        get => b2World_GetGravity(id);
-        set => b2World_SetGravity(id, value);
+        get => Valid ? b2World_GetGravity(id) : throw new InvalidOperationException("World is not valid");
+        set
+        {
+            if (!Valid)
+                throw new InvalidOperationException("World is not valid");
+            b2World_SetGravity(id, value);
+        }
     }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_Explode")]
@@ -462,8 +483,13 @@ public sealed partial class World
     [PublicAPI]
     public float MaximumLinearSpeed
     {
-        get => b2World_GetMaximumLinearSpeed(id);
-        set => b2World_SetMaximumLinearSpeed(id, value);
+        get => Valid ? b2World_GetMaximumLinearSpeed(id) : throw new InvalidOperationException("World is not valid");
+        set
+        {
+            if (!Valid)
+                throw new InvalidOperationException("World is not valid");
+            b2World_SetMaximumLinearSpeed(id, value);
+        }
     }
 
 
@@ -479,8 +505,13 @@ public sealed partial class World
     [PublicAPI]
     public bool WarmStartingEnabled
     {
-        get => b2World_IsWarmStartingEnabled(id);
-        set => b2World_EnableWarmStarting(id, value);
+        get => Valid ? b2World_IsWarmStartingEnabled(id) : throw new InvalidOperationException("World is not valid");
+        set
+        {
+            if (!Valid)
+                throw new InvalidOperationException("World is not valid");
+            b2World_EnableWarmStarting(id, value);
+        }
     }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetAwakeBodyCount")]
@@ -491,7 +522,7 @@ public sealed partial class World
     /// </summary>
     /// <returns>The number of awake bodies</returns>
     [PublicAPI]
-    public int GetAwakeBodyCount() => b2World_GetAwakeBodyCount(id);
+    public int AwakeBodyCount => Valid ? b2World_GetAwakeBodyCount(id) : throw new InvalidOperationException("World is not valid");
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetProfile")]
     private static extern Profile b2World_GetProfile(WorldId worldId);
@@ -501,7 +532,7 @@ public sealed partial class World
     /// </summary>
     /// <returns>The world performance profile</returns>
     [PublicAPI]
-    public Profile Profile => b2World_GetProfile(id);
+    public Profile Profile => Valid ? b2World_GetProfile(id) : throw new InvalidOperationException("World is not valid");
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetCounters")]
     private static extern Counters b2World_GetCounters(WorldId worldId);
@@ -525,8 +556,13 @@ public sealed partial class World
     [PublicAPI]
     public object? UserData
     {
-        get => GetObjectAtPointer(b2World_GetUserData, id);
-        set => SetObjectAtPointer(b2World_GetUserData, b2World_SetUserData, id, value);
+        get => Valid ? GetObjectAtPointer(b2World_GetUserData, id) : throw new InvalidOperationException("World is not valid");
+        set
+        {
+            if (!Valid)
+                throw new InvalidOperationException("World is not valid");
+            SetObjectAtPointer(b2World_GetUserData, b2World_SetUserData, id, value);
+        }
     }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetFrictionCallback")]
@@ -672,5 +708,5 @@ public sealed partial class World
     /// Gets the bodies in this world
     /// </summary>
     [PublicAPI]
-    public IEnumerable<Body> Bodies => bodies.Values;
+    public IEnumerable<Body> Bodies => Valid ? bodies.Values : throw new InvalidOperationException("World is not valid");
 }
