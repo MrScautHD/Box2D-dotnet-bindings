@@ -21,6 +21,14 @@ public partial class World
         return callback(shape, point, normal, fraction, contextObj);
     }
 
+    private static unsafe float CastResultRefThunk<TContext>(Shape shape, Vec2 point, Vec2 normal, float fraction, nint ctx) where TContext : unmanaged
+    {
+        var contextBuffer = (nint*)ctx;
+        ref TContext contextObj = ref *(TContext*)contextBuffer[0];
+        var callback = (CastResultRefCallback<TContext>)GCHandle.FromIntPtr(contextBuffer[1]).Target!;
+        return callback(shape, point, normal, fraction, ref contextObj);
+    }
+
     private static bool PlaneResultThunk(Shape shape, in PlaneResult plane, nint context)
     {
         var callback = (PlaneResultCallback)GCHandle.FromIntPtr(context).Target!;
@@ -34,6 +42,14 @@ public partial class World
         var callback = (PlaneResultCallback<TContext>)GCHandle.FromIntPtr(contextBuffer[1]).Target!;
         return callback(shape, plane, contextObj);
     }
+    
+    private static unsafe bool PlaneResultRefThunk<TContext>(Shape shape, in PlaneResult plane, nint context) where TContext : unmanaged
+    {
+        var contextBuffer = (nint*)context;
+        ref TContext contextObj = ref *(TContext*)contextBuffer[0];
+        var callback = (PlaneResultRefCallback<TContext>)GCHandle.FromIntPtr(contextBuffer[1]).Target!;
+        return callback(shape, plane, ref contextObj);
+    }
 
     private static unsafe bool OverlapResultThunk<TContext>(Shape shape, nint ptr) where TContext : class
     {
@@ -41,6 +57,14 @@ public partial class World
         TContext context = (TContext)GCHandle.FromIntPtr(contextBuffer[0]).Target!;
         var callback = (OverlapResultCallback<TContext>)GCHandle.FromIntPtr(contextBuffer[1]).Target!;
         return callback(shape, context);
+    }
+    
+    private static unsafe bool OverlapResultRefThunk<TContext>(Shape shape, nint ptr) where TContext : unmanaged
+    {
+        var contextBuffer = (nint*)ptr;
+        ref TContext context = ref *(TContext*)contextBuffer[0];
+        var callback = (OverlapResultRefCallback<TContext>)GCHandle.FromIntPtr(contextBuffer[1]).Target!;
+        return callback(shape, ref context);
     }
 
     private static bool OverlapResultThunk(Shape shape, nint ptr)
@@ -102,6 +126,35 @@ public partial class World
         }
     }
 
+    /// <summary>
+    /// Cast a ray into the world to collect shapes in the path of the ray.
+    /// </summary>
+    /// <param name="origin">The start point of the ray</param>
+    /// <param name="translation">The translation of the ray from the start point to the end point</param>
+    /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
+    /// <param name="callback">A user implemented callback function</param>
+    /// <param name="context">A user context that is passed along to the callback function</param>
+    /// <returns>Traversal performance counters</returns>
+    /// <remarks>Your callback function controls whether you get the closest point, any point, or n-points. The ray-cast ignores shapes that contain the starting point. The callback function may receive shapes in any order</remarks>
+    [PublicAPI]
+    public unsafe TreeStats CastRay<TContext>(Vec2 origin, Vec2 translation, QueryFilter filter, CastResultRefCallback<TContext> callback, ref TContext context) where TContext : unmanaged
+    {
+        fixed (TContext* contextPtr = &context)
+        {
+            nint* contextBuffer = stackalloc nint[2];
+            contextBuffer[0] = (nint)contextPtr;
+            contextBuffer[1] = GCHandle.ToIntPtr(GCHandle.Alloc(callback));
+            try
+            {
+                return b2World_CastRay(id, origin, translation, filter, CastResultRefThunk<TContext>, (nint)contextBuffer);
+            }
+            finally
+            {
+                GCHandle.FromIntPtr(contextBuffer[1]).Free();
+            }
+        }
+    }
+    
     /// <summary>
     /// Cast a ray into the world to collect shapes in the path of the ray.
     /// </summary>
@@ -173,6 +226,33 @@ public partial class World
         }
     }
 
+    /// <summary>
+    /// Cast a shape through the world. Similar to a cast ray except that a shape is cast instead of a point.
+    /// </summary>
+    /// <param name="proxy">The shape proxy</param>
+    /// <param name="translation">The translation of the shape from the start point to the end point</param>
+    /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
+    /// <param name="callback">A user implemented callback function</param>
+    /// <param name="context">A user context that is passed along to the callback function</param>
+    [PublicAPI]
+    public unsafe TreeStats CastShape<TContext>(in ShapeProxy proxy, Vec2 translation, QueryFilter filter, CastResultRefCallback<TContext> callback, ref TContext context) where TContext : unmanaged
+    {
+        fixed (TContext* contextPtr = &context)
+        {
+            nint* contextBuffer = stackalloc nint[2];
+            contextBuffer[0] = (nint)contextPtr;
+            contextBuffer[1] = GCHandle.ToIntPtr(GCHandle.Alloc(callback));
+            try
+            {
+                return b2World_CastShape(id, in proxy, translation, filter, CastResultRefThunk<TContext>, (nint)contextBuffer);
+            }
+            finally
+            {
+                GCHandle.FromIntPtr(contextBuffer[1]).Free();
+            }
+        }
+    }
+    
     /// <summary>
     /// Cast a shape through the world. Similar to a cast ray except that a shape is cast instead of a point.
     /// </summary>
@@ -257,6 +337,32 @@ public partial class World
             GCHandle.FromIntPtr(contextBuffer[1]).Free();
         }
     }
+    
+    /// <summary>
+    /// Collide a capsule mover with the world, gathering collision planes that can be fed to b2SolvePlanes. Useful for kinematic character movement.
+    /// </summary>
+    /// <param name="mover">The capsule mover</param>
+    /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
+    /// <param name="callback">A user implemented callback function</param>
+    /// <param name="context">A user context that is passed along to the callback function</param>
+    [PublicAPI]
+    public unsafe void CollideMover<TContext>(in Capsule mover, QueryFilter filter, PlaneResultRefCallback<TContext> callback, ref TContext context) where TContext : unmanaged
+    {
+        fixed (TContext* contextPtr = &context)
+        {
+            nint* contextBuffer = stackalloc nint[2];
+            contextBuffer[0] = (nint)contextPtr;
+            contextBuffer[1] = GCHandle.ToIntPtr(GCHandle.Alloc(callback));
+            try
+            {
+                b2World_CollideMover(id, in mover, filter, PlaneResultRefThunk<TContext>, (nint)contextBuffer);
+            }
+            finally
+            {
+                GCHandle.FromIntPtr(contextBuffer[1]).Free();
+            }
+        }
+    }
 
     /// <summary>
     /// Collide a capsule mover with the world, gathering collision planes that can be fed to b2SolvePlanes. Useful for kinematic character movement.
@@ -327,6 +433,32 @@ public partial class World
     /// <param name="aabb">The AABB</param>
     /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
     /// <param name="callback">A user implemented callback function</param>
+    /// <param name="context">The context</param>
+    [PublicAPI]
+    public unsafe TreeStats OverlapAABB<TContext>(AABB aabb, QueryFilter filter, OverlapResultRefCallback<TContext> callback, ref TContext context) where TContext : unmanaged
+    {
+        fixed (TContext* contextPtr = &context)
+        {
+            nint* contextBuffer = stackalloc nint[2];
+            contextBuffer[0] = (nint)contextPtr;
+            contextBuffer[1] = GCHandle.ToIntPtr(GCHandle.Alloc(callback));
+            try
+            {
+                return b2World_OverlapAABB(id, aabb, filter, OverlapResultRefThunk<TContext>, (nint)contextBuffer);
+            }
+            finally
+            {
+                GCHandle.FromIntPtr(contextBuffer[1]).Free();
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Overlap test for all shapes that *potentially* overlap the provided AABB
+    /// </summary>
+    /// <param name="aabb">The AABB</param>
+    /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
+    /// <param name="callback">A user implemented callback function</param>
     [PublicAPI]
     public TreeStats OverlapAABB(AABB aabb, QueryFilter filter, ref OverlapResultCallback callback)
     {
@@ -382,6 +514,32 @@ public partial class World
         {
             GCHandle.FromIntPtr(contextBuffer[0]).Free();
             GCHandle.FromIntPtr(contextBuffer[1]).Free();
+        }
+    }
+    
+    /// <summary>
+    /// Overlap test for all shapes that overlap the provided shape proxy
+    /// </summary>
+    /// <param name="proxy">The shape proxy</param>
+    /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
+    /// <param name="callback">A user implemented callback function</param>
+    /// <param name="context">The context</param>
+    [PublicAPI]
+    public unsafe TreeStats OverlapShape<TContext>(in ShapeProxy proxy, QueryFilter filter, OverlapResultRefCallback<TContext> callback, ref TContext context) where TContext : unmanaged
+    {
+        fixed (TContext* contextPtr = &context)
+        {
+            nint* contextBuffer = stackalloc nint[2];
+            contextBuffer[0] = (nint)contextPtr;
+            contextBuffer[1] = GCHandle.ToIntPtr(GCHandle.Alloc(callback));
+            try
+            {
+                return b2World_OverlapShape(id, in proxy, filter, OverlapResultRefThunk<TContext>, (nint)contextBuffer);
+            }
+            finally
+            {
+                GCHandle.FromIntPtr(contextBuffer[1]).Free();
+            }
         }
     }
 

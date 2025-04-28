@@ -129,6 +129,14 @@ public unsafe struct DynamicTree
         return callback(proxyId, userData, contextObj);
     }
     
+    private static bool TreeQueryCallbackRefThunk<TContext>(int proxyId, uint64_t userData, nint context) where TContext : unmanaged
+    {
+        var contextBuffer = (nint*)context;
+        ref TContext contextObj = ref *(TContext*)contextBuffer[0];
+        var callback = (TreeQueryRefCallback<TContext>)GCHandle.FromIntPtr(contextBuffer[1]).Target!;
+        return callback(proxyId, userData, ref contextObj);
+    }
+    
     /// <summary>
     /// Query an AABB for overlapping proxies. The callback class is called for each proxy that overlaps the supplied AABB.
     /// </summary>
@@ -147,6 +155,29 @@ public unsafe struct DynamicTree
         {
             GCHandle.FromIntPtr(contextBuffer[0]).Free();
             GCHandle.FromIntPtr(contextBuffer[1]).Free();
+        }
+    }
+    
+    /// <summary>
+    /// Query an AABB for overlapping proxies. The callback class is called for each proxy that overlaps the supplied AABB.
+    /// </summary>
+    /// <returns>Performance data</returns>
+    [PublicAPI]
+    public TreeStats Query<TContext>(AABB aabb, uint64_t maskBits, TreeQueryRefCallback<TContext> callback, ref TContext context) where TContext : unmanaged
+    {
+        fixed (TContext* contextPtr = &context)
+        {
+            var contextBuffer = stackalloc nint[2];
+            contextBuffer[0] = (nint)contextPtr;
+            contextBuffer[1] = GCHandle.ToIntPtr(GCHandle.Alloc(callback));
+            try
+            {
+                return b2DynamicTree_Query(this, aabb, maskBits, TreeQueryCallbackRefThunk<TContext>, (nint)contextBuffer);
+            }
+            finally
+            {
+                GCHandle.FromIntPtr(contextBuffer[1]).Free();
+            }
         }
     }
     
@@ -188,13 +219,20 @@ public unsafe struct DynamicTree
     private static extern TreeStats b2DynamicTree_RayCast(in DynamicTree tree, in RayCastInput input, uint64_t maskBits,
         TreeRayCastNintCallback callback, nint context);
     
-    
     private static float TreeRayCastCallbackThunk<TContext>(in RayCastInput input, int proxyId, uint64_t userData, nint context) where TContext : class
     {
         var contextBuffer = (nint*)context;
         TContext contextObj = (TContext)GCHandle.FromIntPtr(contextBuffer[0]).Target!;
         var callback = (TreeRayCastCallback<TContext>)GCHandle.FromIntPtr(contextBuffer[1]).Target!;
         return callback(input, proxyId, userData, contextObj);
+    }
+    
+    private static float TreeRayCastCallbackRefThunk<TContext>(in RayCastInput input, int proxyId, uint64_t userData, nint context) where TContext : unmanaged
+    {
+        var contextBuffer = (nint*)context;
+        ref TContext contextObj = ref *(TContext*)contextBuffer[0];
+        var callback = (TreeRayCastRefCallback<TContext>)GCHandle.FromIntPtr(contextBuffer[1]).Target!;
+        return callback(input, proxyId, userData, ref contextObj);
     }
     
     /// <summary>
@@ -223,6 +261,36 @@ public unsafe struct DynamicTree
         {
             GCHandle.FromIntPtr(contextBuffer[0]).Free();
             GCHandle.FromIntPtr(contextBuffer[1]).Free();
+        }
+    }
+    
+    /// <summary>
+    /// Ray cast against the proxies in the tree. This relies on the callback
+    /// to perform a exact ray cast in the case were the proxy contains a shape.
+    /// The callback also performs the any collision filtering. This has performance
+    /// roughly equal to k * log(n), where k is the number of collisions and n is the
+    /// number of proxies in the tree.
+    /// </summary>
+    /// <param name="input">The ray cast input data. The ray extends from p1 to p1 + maxFraction * (p2 - p1)</param>
+    /// <param name="maskBits">Mask bit hint: `bool accept = (maskBits &amp; node-&gt;categoryBits) != 0;`</param>
+    /// <param name="callback">A callback class that is called for each proxy that is hit by the ray</param>
+    /// <param name="context">User context that is passed to the callback</param>
+    /// <returns>Performance data</returns>
+    [PublicAPI]
+    public TreeStats RayCast<TContext>(in RayCastInput input, uint64_t maskBits, TreeRayCastRefCallback<TContext> callback, ref TContext context) where TContext : unmanaged
+    {
+        fixed(TContext* contextPtr = &context){
+            nint* contextBuffer = stackalloc nint[2];
+            contextBuffer[0] = (nint)contextPtr;
+            contextBuffer[1] = GCHandle.ToIntPtr(GCHandle.Alloc(callback));
+            try
+            {
+                return b2DynamicTree_RayCast(this, input, maskBits, TreeRayCastCallbackRefThunk<TContext>, (nint)contextBuffer);
+            }
+            finally
+            {
+                GCHandle.FromIntPtr(contextBuffer[1]).Free();
+            }
         }
     }
     
@@ -287,6 +355,14 @@ public unsafe struct DynamicTree
         return callback(input, proxyId, userData, contextObj);
     }
     
+    private static float TreeShapeCastCallbackRefThunk<TContext>(in ShapeCastInput input, int proxyId, uint64_t userData, nint context) where TContext : unmanaged
+    {
+        var contextBuffer = (nint*)context;
+        ref TContext contextObj = ref *(TContext*)contextBuffer[0];
+        var callback = (TreeShapeCastRefCallback<TContext>)GCHandle.FromIntPtr(contextBuffer[1]).Target!;
+        return callback(input, proxyId, userData, ref contextObj);
+    }
+    
     /// <summary>
     /// Ray cast against the proxies in the tree. This relies on the callback
     /// to perform a exact ray cast in the case were the proxy contains a shape.
@@ -313,6 +389,37 @@ public unsafe struct DynamicTree
         {
             GCHandle.FromIntPtr(contextBuffer[0]).Free();
             GCHandle.FromIntPtr(contextBuffer[1]).Free();
+        }
+    }
+    
+    /// <summary>
+    /// Ray cast against the proxies in the tree. This relies on the callback
+    /// to perform a exact ray cast in the case were the proxy contains a shape.
+    /// The callback also performs the any collision filtering. This has performance
+    /// roughly equal to k * log(n), where k is the number of collisions and n is the
+    /// number of proxies in the tree.
+    /// </summary>
+    /// <param name="input">The ray cast input data. The ray extends from p1 to p1 + maxFraction * (p2 - p1).</param>
+    /// <param name="maskBits">Filter bits: `bool accept = (maskBits &amp; node-&gt;categoryBits) != 0;`</param>
+    /// <param name="callback">A callback class that is called for each proxy that is hit by the shape</param>
+    /// <param name="context">User context that is passed to the callback</param>
+    /// <returns>Performance data</returns>
+    [PublicAPI]
+    public TreeStats ShapeCast<TContext>(in ShapeCastInput input, uint64_t maskBits, TreeShapeCastRefCallback<TContext> callback, ref TContext context) where TContext : unmanaged
+    {
+        fixed (TContext* contextPtr = &context)
+        {
+            nint* contextBuffer = stackalloc nint[2];
+            contextBuffer[0] = (nint)contextPtr;
+            contextBuffer[1] = GCHandle.ToIntPtr(GCHandle.Alloc(callback));
+            try
+            {
+                return b2DynamicTree_ShapeCast(this, input, maskBits, TreeShapeCastCallbackRefThunk<TContext>, (nint)contextBuffer);
+            }
+            finally
+            {
+                GCHandle.FromIntPtr(contextBuffer[1]).Free();
+            }
         }
     }
     

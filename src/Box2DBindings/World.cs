@@ -206,6 +206,14 @@ public sealed partial class World
         var callback = (CustomFilterCallback<TContext>)GCHandle.FromIntPtr(contextBuffer[1]).Target!;
         return callback(shapeA, shapeB, contextObj);
     }
+    
+    private static unsafe bool CustomFilterRefThunk<TContext>(Shape shapeA, Shape shapeB, nint context) where TContext : unmanaged
+    {
+        var contextBuffer = (nint*)context;
+        ref TContext contextObj = ref *(TContext*)contextBuffer[0];
+        var callback = (CustomFilterRefCallback<TContext>)GCHandle.FromIntPtr(contextBuffer[1]).Target!;
+        return callback(shapeA, shapeB, ref contextObj);
+    }
 
     /// <summary>
     /// Register the custom filter callback. This is optional.
@@ -228,6 +236,31 @@ public sealed partial class World
             GCHandle.FromIntPtr(contextBuffer[1]).Free();
         }
     }
+    
+    /// <summary>
+    /// Register the custom filter callback. This is optional.
+    /// </summary>
+    /// <param name="callback">The custom filter callback function</param>
+    /// <param name="context">The context to be passed to the callback</param>
+    [PublicAPI]
+    public unsafe void SetCustomFilterCallback<TContext>(CustomFilterRefCallback<TContext> callback, ref TContext context) where TContext : unmanaged
+    {
+        fixed (TContext* contextPtr = &context)
+        {
+            nint* contextBuffer = stackalloc nint[2];
+            contextBuffer[0] = (nint)contextPtr;
+            contextBuffer[1] = GCHandle.ToIntPtr(GCHandle.Alloc(callback));
+            try
+            {
+                b2World_SetCustomFilterCallback(id, CustomFilterRefThunk<TContext>, (nint)contextBuffer);
+            }
+            finally
+            {
+                GCHandle.FromIntPtr(contextBuffer[1]).Free();
+            }
+        }
+    }
+
     
     /// <summary>
     /// Register the custom filter callback. This is optional.
@@ -275,6 +308,14 @@ public sealed partial class World
         return callback(shapeA, shapeB, *(Manifold*)manifold, contextObj);
     }
     
+    private static unsafe bool PreSolveCallbackRefThunk<TContext>(Shape shapeA, Shape shapeB, nint manifold, nint context) where TContext : unmanaged
+    {
+        var contextBuffer = (nint*)context;
+        ref TContext contextObj = ref *(TContext*)contextBuffer[0];
+        var callback = (PreSolveRefCallback<TContext>)GCHandle.FromIntPtr(contextBuffer[1]).Target!;
+        return callback(shapeA, shapeB, *(Manifold*)manifold, ref contextObj);
+    }
+    
     /// <summary>
     /// Register the pre-solve callback. This is optional.
     /// </summary>
@@ -294,6 +335,30 @@ public sealed partial class World
         {
             GCHandle.FromIntPtr(contextBuffer[0]).Free();
             GCHandle.FromIntPtr(contextBuffer[1]).Free();
+        }
+    }
+    
+    /// <summary>
+    /// Register the pre-solve callback. This is optional.
+    /// </summary>
+    /// <param name="callback">The pre-solve callback function</param>
+    /// <param name="context">The context</param>
+    [PublicAPI]
+    public unsafe void SetPreSolveCallback<TContext>(PreSolveRefCallback<TContext> callback, ref TContext context) where TContext : unmanaged
+    {
+        fixed (TContext* contextPtr = &context)
+        {
+            nint* contextBuffer = stackalloc nint[2];
+            contextBuffer[0] = (nint)contextPtr;
+            contextBuffer[1] = GCHandle.ToIntPtr(GCHandle.Alloc(callback));
+            try
+            {
+                b2World_SetPreSolveCallback(id, PreSolveCallbackRefThunk<TContext>, (nint)contextBuffer);
+            }
+            finally
+            {
+                GCHandle.FromIntPtr(contextBuffer[1]).Free();
+            }
         }
     }
 
