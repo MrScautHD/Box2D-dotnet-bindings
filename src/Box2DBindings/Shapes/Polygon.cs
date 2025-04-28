@@ -33,7 +33,15 @@ public unsafe struct Polygon
     /// The number of polygon vertices
     /// </summary>
     private int count;
-    
+
+    public Polygon(Span<Vec2> points, float radius)
+    {
+        if (points.Length > B2_MAX_POLYGON_VERTICES)
+            throw new ArgumentOutOfRangeException(nameof(points), $"Count must be less than {B2_MAX_POLYGON_VERTICES}");
+        
+        this = MakePolygon(points, radius);
+    }
+
     /// <summary>
     /// The polygon vertices
     /// </summary>
@@ -71,6 +79,18 @@ public unsafe struct Polygon
     public static extern Polygon MakePolygon(in Hull hull, float radius);
     
     /// <summary>
+    /// Make a convex polygon from a set of points. This will create a hull and assert if it is not valid.
+    /// </summary>
+    [PublicAPI]
+    public static Polygon MakePolygon(Span<Vec2> points, float radius)
+    {
+        if (points.Length > B2_MAX_POLYGON_VERTICES)
+            throw new ArgumentOutOfRangeException(nameof(points), $"Count must be less than {B2_MAX_POLYGON_VERTICES}");
+        var hull = Hull.Compute(points);
+        return MakePolygon(hull, radius);
+    }
+    
+    /// <summary>
     /// Make an offset convex polygon from a convex hull. This will assert if the hull is not valid.
     /// </summary>
     /// <remarks>
@@ -79,6 +99,18 @@ public unsafe struct Polygon
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakeOffsetPolygon")]
     [PublicAPI]
     public static extern Polygon MakeOffsetPolygon(in Hull hull, Vec2 position, Rotation rotation);
+    
+    /// <summary>
+    /// Make an offset convex polygon from a set of points. This will create a hull and assert if it is not valid.
+    /// </summary>
+    [PublicAPI]
+    public static  Polygon MakeOffsetPolygon(Span<Vec2> points, Vec2 position, Rotation rotation)
+    {
+        if (points.Length > B2_MAX_POLYGON_VERTICES)
+            throw new ArgumentOutOfRangeException(nameof(points), $"Count must be less than {B2_MAX_POLYGON_VERTICES}");
+        var hull = Hull.Compute(points);
+        return MakeOffsetPolygon(hull, position, rotation);
+    }
     
     /// <summary>
     /// Make an offset convex polygon from a convex hull. This will assert if the hull is not valid.
@@ -90,6 +122,18 @@ public unsafe struct Polygon
     [PublicAPI]
     public static extern Polygon MakeOffsetRoundedPolygon(in Hull hull, Vec2 position, Rotation rotation, float radius);
 
+    /// <summary>
+    /// Make an offset convex polygon from a set of points. This will create a hull and assert if it is not valid.
+    /// </summary>
+    [PublicAPI]
+    public static  Polygon MakeOffsetRoundedPolygon(Span<Vec2> points, Vec2 position, Rotation rotation, float radius)
+    {
+        if (points.Length > B2_MAX_POLYGON_VERTICES)
+            throw new ArgumentOutOfRangeException(nameof(points), $"Count must be less than {B2_MAX_POLYGON_VERTICES}");
+        var hull = Hull.Compute(points);
+        return MakeOffsetRoundedPolygon(hull, position, rotation, radius);
+    }
+    
     /// <summary>
     /// Make a square polygon, bypassing the need for a convex hull.
     /// </summary>

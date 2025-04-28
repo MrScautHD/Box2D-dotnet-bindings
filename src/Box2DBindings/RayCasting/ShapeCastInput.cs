@@ -29,6 +29,6 @@ public struct ShapeCastInput
     /// <summary>
     /// Allow shape cast to encroach when initially touching. This only works if the radius is greater than zero.
     /// </summary>
-    [MarshalAs(UnmanagedType.I1)]
+    [MarshalAs(UnmanagedType.U1)]
     public bool CanEncroach;
 }

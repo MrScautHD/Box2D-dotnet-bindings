@@ -12,7 +12,19 @@ public struct Rotation : IEquatable<Rotation>
     
     public static readonly Rotation Identity = new()
             { Cos = 1, Sin = 0 };
-    
+
+    public Rotation(float cos, float sin)
+    {
+        Cos = cos;
+        Sin = sin;
+    }
+
+    public Rotation(float radians)
+    {
+        Cos = MathF.Cos(radians);
+        Sin = MathF.Sin(radians);
+    }
+        
     public static implicit operator Rotation((float Cos, float Sin) tuple) => new() { Cos = tuple.Cos, Sin = tuple.Sin };
     public static implicit operator (float, float)(Rotation rotation) => (rotation.Cos, rotation.Sin);
     

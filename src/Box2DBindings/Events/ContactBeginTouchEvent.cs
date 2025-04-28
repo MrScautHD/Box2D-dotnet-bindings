@@ -11,16 +11,16 @@ public struct ContactBeginTouchEvent
     /// <summary>
     /// The first shape
     /// </summary>
-    public Shape ShapeA;
+    public readonly Shape ShapeA;
 
     /// <summary>
     /// The second shape
     /// </summary>
-    public Shape ShapeB;
+    public readonly Shape ShapeB;
 
     /// <summary>
     /// The initial contact manifold. This is recorded before the solver is called,
     /// so all the impulses will be zero.
     /// </summary>
-    public Manifold Manifold;
+    public readonly Manifold Manifold;
 }

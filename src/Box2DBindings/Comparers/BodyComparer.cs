@@ -1,7 +1,9 @@
+using JetBrains.Annotations;
 using System.Collections.Generic;
 
 namespace Box2D.Comparers
 {
+    [PublicAPI]
     sealed class BodyComparer : IEqualityComparer<Body>, IComparer<Body>
     {
         public static readonly BodyComparer Instance = new();

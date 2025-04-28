@@ -9,7 +9,7 @@ namespace Box2D;
 [StructLayout(LayoutKind.Sequential)]
 public struct ContactData
 {
-    public Shape ShapeA;
-    public Shape ShapeB;
-    public Manifold Manifold;
+    public readonly Shape ShapeA;
+    public readonly Shape ShapeB;
+    public readonly Manifold Manifold;
 }

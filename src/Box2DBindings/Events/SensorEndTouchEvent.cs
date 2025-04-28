@@ -15,11 +15,11 @@ public struct SensorEndTouchEvent
     /// The id of the sensor shape
     ///	<b>Warning: this shape may have been destroyed</b>
     /// </summary>
-    public Shape SensorShapeId;
+    public readonly Shape SensorShapeId;
 
     /// <summary>
     /// The id of the dynamic shape that stopped touching the sensor shape
     ///	<b>Warning: this shape may have been destroyed</b>
     /// </summary>
-    public Shape VisitorShapeId;
+    public readonly Shape VisitorShapeId;
 }

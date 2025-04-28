@@ -11,10 +11,10 @@ public struct Simplex
     /// <summary>
     /// Vertices
     /// </summary>
-    public SimplexVertex V1, V2, V3; // 40 bytes each
+    public readonly SimplexVertex V1, V2, V3; // 40 bytes each
 
     /// <summary>
     /// Number of valid vertices
     /// </summary>
-    public int Count;
+    public readonly int Count;
 }

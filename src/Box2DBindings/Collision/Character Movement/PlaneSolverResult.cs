@@ -11,10 +11,10 @@ public struct PlaneSolverResult
     /// <summary>
     /// The final position of the mover.
     /// </summary>
-    public Vec2 Position;
+    public readonly Vec2 Position;
 
     /// <summary>
     /// The number of iterations used by the plane solver. For diagnostics.
     /// </summary>
-    public int IterationCount;
+    public readonly int IterationCount;
 }

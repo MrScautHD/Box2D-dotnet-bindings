@@ -11,11 +11,11 @@ public struct PlaneResult
     /// <summary>
     /// The collision plane between the mover and a convex shape.
     /// </summary>
-    public Plane Plane;
+    public readonly Plane Plane;
 
     /// <summary>
     /// Did the collision register a hit? If not this plane should be ignored.
     /// </summary>
-    [MarshalAs(UnmanagedType.I1)]
-    public bool Hit;
+    [MarshalAs(UnmanagedType.U1)]
+    public readonly bool Hit;
 }

@@ -11,10 +11,10 @@ public struct SensorBeginTouchEvent
     /// <summary>
     /// The id of the sensor shape
     /// </summary>
-    public Shape SensorShape;
+    public readonly Shape SensorShape;
 
     /// <summary>
     /// The id of the dynamic shape that began touching the sensor shape
     /// </summary>
-    public Shape VisitorShape;
+    public readonly Shape VisitorShape;
 }

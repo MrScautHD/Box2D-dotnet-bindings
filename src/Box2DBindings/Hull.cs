@@ -18,6 +18,11 @@ public partial struct Hull
 
     private int count;
     
+    public Hull(Span<Vec2> points)
+    {
+        this = Compute(points);
+    }
+    
     /// <summary>
     /// The final points of the hull
     /// </summary>

@@ -11,25 +11,25 @@ public struct ContactHitEvent
     /// <summary>
     /// The first shape
     /// </summary>
-    public Shape ShapeA;
+    public readonly Shape ShapeA;
 
     /// <summary>
     /// The second shape
     /// </summary>
-    public Shape ShapeB;
+    public readonly Shape ShapeB;
 
     /// <summary>
     /// Point where the shapes hit
     /// </summary>
-    public Vec2 Point;
+    public readonly Vec2 Point;
 
     /// <summary>
     /// Normal vector pointing from shape A to shape B
     /// </summary>
-    public Vec2 Normal;
+    public readonly Vec2 Normal;
 
     /// <summary>
     /// The speed the shapes are approaching. Always positive. Typically in meters per second.
     /// </summary>
-    public float ApproachSpeed;
+    public readonly float ApproachSpeed;
 }

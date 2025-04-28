@@ -24,6 +24,13 @@ public struct Capsule
     /// The radius of the semicircles
     /// </summary>
     public float Radius;
+
+    public Capsule(Vec2 center1, Vec2 center2, float radius)
+    {
+        Center1 = center1;
+        Center2 = center2;
+        Radius = radius;
+    }
     
     /// <summary>
     /// Compute mass properties of a capsule

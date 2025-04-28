@@ -11,10 +11,10 @@ public struct TreeStats
     /// <summary>
     /// Number of internal nodes visited during the query
     /// </summary>
-    public int NodeVisits;
+    public readonly int NodeVisits;
 
     /// <summary>
     /// Number of leaf nodes visited during the query
     /// </summary>
-    public int LeafVisits;
+    public readonly int LeafVisits;
 }

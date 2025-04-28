@@ -11,10 +11,10 @@ public struct TOIOutput
     /// <summary>
     /// The type of result
     /// </summary>
-    public TOIState State;
+    public readonly TOIState State;
 
     /// <summary>
     /// The sweep time of the collision
     /// </summary>
-    public float Fraction;
+    public readonly float Fraction;
 }

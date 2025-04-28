@@ -9,6 +9,12 @@ public struct AABB : IEquatable<AABB>
 {
     public Vec2 LowerBound;
     public Vec2 UpperBound;
+
+    public AABB(Vec2 lowerBound, Vec2 upperBound)
+    {
+        LowerBound = lowerBound;
+        UpperBound = upperBound;
+    }
     
     [PublicAPI]
     public float Width => UpperBound.X - LowerBound.X;

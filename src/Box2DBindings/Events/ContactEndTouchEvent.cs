@@ -15,11 +15,11 @@ public struct ContactEndTouchEvent
     /// The first shape
     ///	<b>Warning: this shape may have been destroyed. Use Shape.Valid</b>
     /// </summary>
-    public Shape ShapeA;
+    public readonly Shape ShapeA;
 
     /// <summary>
     /// The second shape
     ///	<b>Warning: this shape may have been destroyed. Use Shape.Valid</b>
     /// </summary>
-    public Shape ShapeB;
+    public readonly Shape ShapeB;
 }

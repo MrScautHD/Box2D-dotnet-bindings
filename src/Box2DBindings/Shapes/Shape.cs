@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace Box2D;
@@ -11,6 +12,11 @@ public struct Shape : IEquatable<Shape>
     private ushort world0;
     private ushort generation;
 
+    [PublicAPI]
+    public static IComparer<Shape> DefaultComparer { get; } = Comparers.ShapeComparer.Instance;
+    [PublicAPI]
+    public static IEqualityComparer<Shape> DefaultEqualityComparer { get; } = Comparers.ShapeComparer.Instance;
+    
     public bool Equals(Shape other) => index1 == other.index1 && world0 == other.world0 && generation == other.generation;
 
     public override bool Equals(object? obj) => obj is Shape other && Equals(other);

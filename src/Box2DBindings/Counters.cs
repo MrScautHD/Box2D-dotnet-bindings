@@ -8,15 +8,15 @@ namespace Box2D;
 [StructLayout(LayoutKind.Sequential)]
 public unsafe struct Counters
 {
-    public int BodyCount;
-    public int ShapeCount;
-    public int ContactCount;
-    public int JointCount;
-    public int IslandCount;
-    public int StackUsed;
-    public int StaticTreeHeight;
-    public int TreeHeight;
-    public int ByteCount;
-    public int TaskCount;
+    public readonly int BodyCount;
+    public readonly int ShapeCount;
+    public readonly int ContactCount;
+    public readonly int JointCount;
+    public readonly int IslandCount;
+    public readonly int StackUsed;
+    public readonly int StaticTreeHeight;
+    public readonly int TreeHeight;
+    public readonly int ByteCount;
+    public readonly int TaskCount;
     public fixed int ColorCounts[12];
 }

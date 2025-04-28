@@ -11,30 +11,30 @@ public struct DistanceOutput
     /// <summary>
     /// Closest point on shape A
     /// </summary>
-    public Vec2 PointA;
+    public readonly Vec2 PointA;
 
     /// <summary>
     /// Closest point on shape B
     /// </summary>
-    public Vec2 PointB;
+    public readonly Vec2 PointB;
 
     /// <summary>
     /// Normal vector that points from A to B
     /// </summary>
-    public Vec2 Normal;
+    public readonly Vec2 Normal;
     
     /// <summary>
     /// The final distance, zero if overlapped
     /// </summary>
-    public float Distance;
+    public readonly float Distance;
 
     /// <summary>
     /// Number of GJK iterations used
     /// </summary>
-    public int Iterations;
+    public readonly int Iterations;
 
     /// <summary>
     /// The number of simplexes stored in the simplex array
     /// </summary>
-    public int SimplexCount;
+    public readonly int SimplexCount;
 }

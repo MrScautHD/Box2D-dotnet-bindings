@@ -41,6 +41,6 @@ public struct ShapeCastPairInput
     /// <summary>
     /// Allows shapes with a radius to move slightly closer if already touching
     /// </summary>
-    [MarshalAs(UnmanagedType.I1)]
+    [MarshalAs(UnmanagedType.U1)]
     public bool CanEncroach;
 }

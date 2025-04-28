@@ -9,7 +9,7 @@ namespace Box2D.Delegates.Generic
     /// <param name="radius">The radius</param>
     /// <param name="color">The color</param>
     /// <param name="context">The context</param>
-    public delegate void DrawCircleDelegate<in TContext>(Vec2 center, float radius, HexColor color, TContext context);
+    public delegate void DrawCircleDelegate<in TContext>(Vec2 center, float radius, HexColor color, TContext context) where TContext : class;
     
     /// <summary>
     /// Draw a point.
@@ -18,7 +18,7 @@ namespace Box2D.Delegates.Generic
     /// <param name="size">The size</param>
     /// <param name="color">The color</param>
     /// <param name="context">The context</param>
-    public delegate void DrawPointDelegate<in TContext>(Vec2 p, float size, HexColor color, TContext context);
+    public delegate void DrawPointDelegate<in TContext>(Vec2 p, float size, HexColor color, TContext context) where TContext : class;
 
     /// <summary>
     /// Draw a closed polygon provided in CCW order.
@@ -27,7 +27,7 @@ namespace Box2D.Delegates.Generic
     /// <param name="vertexCount">The vertex count</param>
     /// <param name="color">The color</param>
     /// <param name="context">The context</param>
-    public unsafe delegate void DrawPolygonDelegate<in TContext>(ReadOnlySpan<Vec2> vertices, HexColor color, TContext context);
+    public unsafe delegate void DrawPolygonDelegate<in TContext>(ReadOnlySpan<Vec2> vertices, HexColor color, TContext context) where TContext : class;
 
     /// <summary>
     /// Draw a line segment.
@@ -36,7 +36,7 @@ namespace Box2D.Delegates.Generic
     /// <param name="p2">The second point</param>
     /// <param name="color">The color</param>
     /// <param name="context">The context</param>
-    public delegate void DrawSegmentDelegate<in TContext>(Vec2 p1, Vec2 p2, HexColor color, TContext context);
+    public delegate void DrawSegmentDelegate<in TContext>(Vec2 p1, Vec2 p2, HexColor color, TContext context) where TContext : class;
 
     /// <summary>
     /// Draw a solid capsule.
@@ -46,7 +46,7 @@ namespace Box2D.Delegates.Generic
     /// <param name="radius">The radius</param>
     /// <param name="color">The color</param>
     /// <param name="context">The context</param>
-    public delegate void DrawSolidCapsuleDelegate<in TContext>(Vec2 p1, Vec2 p2, float radius, HexColor color, TContext context);
+    public delegate void DrawSolidCapsuleDelegate<in TContext>(Vec2 p1, Vec2 p2, float radius, HexColor color, TContext context) where TContext : class;
 
     /// <summary>
     /// Draw a solid circle.
@@ -55,7 +55,7 @@ namespace Box2D.Delegates.Generic
     /// <param name="radius">The radius</param>
     /// <param name="color">The color</param>
     /// <param name="context">The context</param>
-    public delegate void DrawSolidCircleDelegate<in TContext>(Transform transform, float radius, HexColor color, TContext context);
+    public delegate void DrawSolidCircleDelegate<in TContext>(Transform transform, float radius, HexColor color, TContext context) where TContext : class;
 
     /// <summary>
     /// Draw a solid closed polygon provided in CCW order.
@@ -66,7 +66,7 @@ namespace Box2D.Delegates.Generic
     /// <param name="radius">The radius</param>
     /// <param name="color">The color</param>
     /// <param name="context">The context</param>
-    public unsafe delegate void DrawSolidPolygonDelegate<in TContext>(Transform transform, ReadOnlySpan<Vec2> vertices, float radius, HexColor color, TContext context);
+    public unsafe delegate void DrawSolidPolygonDelegate<in TContext>(Transform transform, ReadOnlySpan<Vec2> vertices, float radius, HexColor color, TContext context) where TContext : class;
  
     /// <summary>
     /// Draw a string in world space
@@ -75,7 +75,7 @@ namespace Box2D.Delegates.Generic
     /// <param name="s">The string</param>
     /// <param name="color">The color</param>
     /// <param name="context">The context</param>
-    public delegate void DrawStringDelegate<in TContext>(Vec2 point, string? text, HexColor color, TContext context);
+    public delegate void DrawStringDelegate<in TContext>(Vec2 point, string? text, HexColor color, TContext context) where TContext : class;
 
     /// <summary>
     /// Draw a transform.
@@ -83,6 +83,6 @@ namespace Box2D.Delegates.Generic
     /// <param name="transform">The transform</param>
     /// <param name="context">The context</param>
     /// <remarks>Choose your own length scale</remarks>
-    public delegate void DrawTransformDelegate<in TContext>(Transform transform, TContext context);
+    public delegate void DrawTransformDelegate<in TContext>(Transform transform, TContext context) where TContext : class;
 
 }

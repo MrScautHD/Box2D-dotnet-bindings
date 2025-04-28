@@ -14,12 +14,12 @@ public unsafe struct Manifold
     /// <summary>
     /// The unit normal vector in world space, points from shape A to bodyB
     /// </summary>
-    public Vec2 Normal;
+    public readonly Vec2 Normal;
 
     /// <summary>
     /// Angular impulse applied for rolling resistance. N * m * s = kg * m² / s
     /// </summary>
-    public float RollingImpulse;
+    public readonly float RollingImpulse;
 
     private ManifoldPoint manifoldPoint0;
     private ManifoldPoint manifoldPoint1;

@@ -7,7 +7,7 @@ namespace Box2D
     /// <summary>
     /// This class holds callbacks you can implement to draw a Box2D world.
     /// </summary>
-    public class DebugDrawGeneric<TContext> : DebugDraw
+    public class DebugDrawGeneric<TContext> : DebugDraw where TContext:class
     {
         private TContext context;
 

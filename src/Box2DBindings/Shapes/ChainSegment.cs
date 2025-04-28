@@ -13,20 +13,20 @@ public struct ChainSegment
     /// <summary>
     /// The tail ghost vertex
     /// </summary>
-    public Vec2 Ghost1;
+    public readonly Vec2 Ghost1;
 
     /// <summary>
     /// The line segment
     /// </summary>
-    public Segment Segment; // 16 bytes
+    public readonly Segment Segment; // 16 bytes
 
     /// <summary>
     /// The head ghost vertex
     /// </summary>
-    public Vec2 Ghost2;
+    public readonly Vec2 Ghost2;
 
     /// <summary>
     /// The owning chain shape index (internal usage only)
     /// </summary>
-    public int ChainId;
+    private readonly int ChainId;
 }

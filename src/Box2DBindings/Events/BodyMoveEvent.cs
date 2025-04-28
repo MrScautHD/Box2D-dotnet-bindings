@@ -21,12 +21,12 @@ public struct BodyMoveEvent
     /// <summary>
     /// The transform of the body
     /// </summary>
-    public Transform Transform; // 16 bytes
+    public readonly Transform Transform;
     
     /// <summary>
     /// The body that moved
     /// </summary>
-    public Body Body;
+    public readonly Body Body;
     
     private nint userData;
     
@@ -40,5 +40,5 @@ public struct BodyMoveEvent
     /// The body went to sleep
     /// </summary>
     [MarshalAs(UnmanagedType.U1)]
-    public bool FellAsleep;
+    public readonly bool FellAsleep;
 }

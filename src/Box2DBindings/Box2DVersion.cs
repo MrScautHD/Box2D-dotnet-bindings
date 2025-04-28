@@ -6,15 +6,15 @@ public struct Box2DVersion
     /// <summary>
     /// Significant changes
     /// </summary>
-    public int Major;
+    public readonly int Major;
 
     /// <summary>
     /// Incremental changes
     /// </summary>
-    public int Minor;
+    public readonly int Minor;
 
     /// <summary>
     /// Bug fixes
     /// </summary>
-    public int Revision;
+    public readonly int Revision;
 }

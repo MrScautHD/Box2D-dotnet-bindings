@@ -15,7 +15,13 @@ public struct Transform : IEquatable<Transform>
             Position = Vec2.Zero,
             Rotation = Rotation.Identity
         };
-        
+
+    public Transform(Vec2 position, Rotation rotation)
+    {
+        Position = position;
+        Rotation = rotation;
+    }
+    
     public override string ToString()
     {
         return $"Transform(Position: {Position}, Rotation: {Rotation})";

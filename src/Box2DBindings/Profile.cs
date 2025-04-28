@@ -8,26 +8,26 @@ namespace Box2D;
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
 public struct Profile
 {
-    public float Step;
-    public float Pairs;
-    public float Collide;
-    public float Solve;
-    public float MergeIslands;
-    public float PrepareStages;
-    public float SolveConstraints;
-    public float PrepareConstraints;
-    public float UntegrateVelocities;
-    public float WarmStart;
-    public float SolveImpulses;
-    public float IntegratePositions;
-    public float RelaxImpulses;
-    public float ApplyRestitution;
-    public float StoreImpulses;
-    public float SplitIslands;
-    public float Transforms;
-    public float HitEvents;
-    public float Refit;
-    public float Bullets;
-    public float SleepIslands;
-    public float Sensors;
+    public readonly float Step;
+    public readonly float Pairs;
+    public readonly float Collide;
+    public readonly float Solve;
+    public readonly float MergeIslands;
+    public readonly float PrepareStages;
+    public readonly float SolveConstraints;
+    public readonly float PrepareConstraints;
+    public readonly float UntegrateVelocities;
+    public readonly float WarmStart;
+    public readonly float SolveImpulses;
+    public readonly float IntegratePositions;
+    public readonly float RelaxImpulses;
+    public readonly float ApplyRestitution;
+    public readonly float StoreImpulses;
+    public readonly float SplitIslands;
+    public readonly float Transforms;
+    public readonly float HitEvents;
+    public readonly float Refit;
+    public readonly float Bullets;
+    public readonly float SleepIslands;
+    public readonly float Sensors;
 }
