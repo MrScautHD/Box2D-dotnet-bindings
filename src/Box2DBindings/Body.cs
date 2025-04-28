@@ -278,16 +278,6 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetKinematicTarget")]
     private static extern void b2Body_SetKinematicTarget(Body bodyId, Transform target, float timeStep);
 
-    /// <summary>
-    /// Set the velocity to reach the given transform after a given time step.
-    /// The result will be close but maybe not exact. This is meant for kinematic bodies.
-    /// This will automatically wake the body if asleep.
-    /// </summary>
-    /// <param name="target">The target transform</param>
-    /// <param name="timeStep">The time step</param>
-    [PublicAPI]
-    public void SetKinematicTarget(Transform target, float timeStep) => b2Body_SetKinematicTarget(this, target, timeStep);
-
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetLocalPointVelocity")]
     private static extern Vec2 b2Body_GetLocalPointVelocity(Body bodyId, Vec2 localPoint);
 
