@@ -1,3 +1,4 @@
+using Box2D.Comparers;
 using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
@@ -5,28 +6,83 @@ using System.Runtime.InteropServices;
 
 namespace Box2D;
 
+/// <summary>
+/// A Box2D physics body. The body's transform is the base transform for all
+/// shapes attached to this body.
+/// </summary>
 [StructLayout(LayoutKind.Sequential)]
+[PublicAPI]
 public struct Body : IEquatable<Body>, IComparable<Body>
 {
-    public int index1;
+    internal int index1;
     private ushort world0;
     private ushort generation;
 
-    [PublicAPI]
-    public static IComparer<Body> DefaultComparer { get; } = Comparers.BodyComparer.Instance;
-    [PublicAPI]
-    public static IEqualityComparer<Body> DefaultEqualityComparer { get; } = Comparers.BodyComparer.Instance;
+    /// <summary>
+    /// Default comparer for Body instances. This is used for sorting and
+    /// comparing Body instances. Using the default comparer is recommended
+    /// to avoid boxing and unboxing overhead.
+    /// </summary>
+    public static IComparer<Body> DefaultComparer { get; } = BodyComparer.Instance;
+    
+    /// <summary>
+    /// Default equality comparer for Body instances. This is used for
+    /// comparing Body instances. Using the default equality comparer is
+    /// recommended to avoid boxing and unboxing overhead.
+    /// </summary>
+    public static IEqualityComparer<Body> DefaultEqualityComparer { get; } = BodyComparer.Instance;
 
-    [PublicAPI]
+    /// <summary>
+    /// Check if two Body objects represent the same Body.
+    /// </summary>
+    /// <param name="other">The other Body object to compare with</param>
+    /// <returns>True if the two Body objects are equal, false otherwise</returns>
     public bool Equals(Body other) => index1 == other.index1 && world0 == other.world0 && generation == other.generation;
+    
+    /// <summary>
+    /// Check if this Body object is equal to another object.
+    /// </summary>
+    /// <param name="obj">The object to compare with</param>
+    /// <returns>True if the object is a Body and equal to this Body, false otherwise</returns>
     public override bool Equals(object? obj) => obj is Body other && Equals(other);
+    
+    /// <summary>
+    /// Get the hash code for this Body object.
+    /// </summary>
+    /// <returns>The hash code for this Body object</returns>
     public override int GetHashCode() => HashCode.Combine(index1, world0, generation);
 
     // equality operator
+    /// <summary>
+    /// Check if two Body objects are equal.
+    /// </summary>
+    /// <param name="left">The first Body object</param>
+    /// <param name="right">The second Body object</param>
+    /// <returns>True if the two Body objects are equal, false otherwise</returns>
     public static bool operator ==(Body left, Body right) => left.Equals(right);
+    
+    /// <summary>
+    /// Check if two Body objects are not equal
+    /// </summary>
+    /// <param name="left">The first Body object</param>
+    /// <param name="right">The second Body object</param>
+    /// <returns>True if the two Body objects are not equal, false otherwise</returns>
     public static bool operator !=(Body left, Body right) => !(left == right);
+    
+    /// <summary>
+    /// Check if this Body object refers to the same Body as another Body object.
+    /// </summary>
+    /// <param name="other">The other Body object to compare with</param>
+    /// <returns>True if this Body object refers to the same Body as the other Body object, false otherwise</returns>
     public bool ReferenceEquals(Body other) => this == other;
 
+    /// <summary>
+    /// Compare this Body object with another Body object.
+    /// </summary>
+    /// <param name="other">The other Body object to compare with</param>
+    /// <returns>A negative number if this Body object should be ordered before the other Body object,
+    /// a positive number if this Body object should be ordered after the other Body object,
+    /// or zero if they are equal</returns>
     public int CompareTo(Body other)
     {
         int index1Comparison = index1.CompareTo(other.index1);
@@ -66,7 +122,6 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// </summary>
     /// <returns>True if the body id is valid</returns>
     /// <remarks>Can be used to detect orphaned ids. Provides validation for up to 64K allocations</remarks>
-    [PublicAPI]
     public bool Valid => b2Body_IsValid(this);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetType")]
@@ -78,7 +133,6 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <summary>
     /// The body type: static, kinematic, or dynamic.
     /// </summary>
-    [PublicAPI]
     public BodyType Type
     {
         get => Valid ? b2Body_GetType(this) : throw new InvalidOperationException("Body is not valid");
@@ -99,7 +153,6 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <summary>
     /// The body name.
     /// </summary>
-    [PublicAPI]
     public string? Name
     {
         get => Valid ? Marshal.PtrToStringAnsi(b2Body_GetName(this)) : throw new InvalidOperationException("Body is not valid");
@@ -120,7 +173,6 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <summary>
     /// The user data object for this body.
     /// </summary>
-    [PublicAPI]
     public object? UserData
     {
         get => Valid ? GetObjectAtPointer(b2Body_GetUserData, this) : throw new InvalidOperationException("Body is not valid");
@@ -139,7 +191,6 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// The world position of the body.
     /// </summary>
     /// <remarks>This is the location of the body origin</remarks>
-    [PublicAPI]
     public Vec2 Position => Valid ? b2Body_GetPosition(this) : throw new InvalidOperationException("Body is not valid");
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetRotation")]
@@ -148,7 +199,6 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <summary>
     /// The world rotation of this body as a cosine/sine pair (complex number).
     /// </summary>
-    [PublicAPI]
     public Rotation Rotation => Valid ? b2Body_GetRotation(this) : throw new InvalidOperationException("Body is not valid");
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetTransform")]
@@ -162,7 +212,6 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// </summary>
     /// <remarks>Setting this acts as a teleport and is fairly expensive.<br/>
     /// <i>Note: Generally you should create a body with the intended transform.</i></remarks>
-    [PublicAPI]
     public Transform Transform
     {
         get => Valid ? b2Body_GetTransform(this) : throw new InvalidOperationException("Body is not valid");
@@ -182,7 +231,6 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// </summary>
     /// <param name="worldPoint">The world point</param>
     /// <returns>The local point on the body</returns>
-    [PublicAPI]
     public Vec2 GetLocalPoint(Vec2 worldPoint) => Valid ? b2Body_GetLocalPoint(this, worldPoint) : throw new InvalidOperationException("Body is not valid");
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetWorldPoint")]
@@ -193,7 +241,6 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// </summary>
     /// <param name="localPoint">The local point</param>
     /// <returns>The world point on the body</returns>
-    [PublicAPI]
     public Vec2 GetWorldPoint(Vec2 localPoint) => Valid ? b2Body_GetWorldPoint(this, localPoint) : throw new InvalidOperationException("Body is not valid");
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetLocalVector")]
@@ -204,7 +251,6 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// </summary>
     /// <param name="worldVector">The world vector</param>
     /// <returns>The local vector on the body</returns>
-    [PublicAPI]
     public Vec2 GetLocalVector(Vec2 worldVector) => Valid ? b2Body_GetLocalVector(this, worldVector) : throw new InvalidOperationException("Body is not valid");
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetWorldVector")]
@@ -215,7 +261,6 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// </summary>
     /// <param name="localVector">The local vector</param>
     /// <returns>The world vector on the body</returns>
-    [PublicAPI]
     public Vec2 GetWorldVector(Vec2 localVector) => Valid ? b2Body_GetWorldVector(this, localVector) : throw new InvalidOperationException("Body is not valid");
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetLinearVelocity")]
@@ -228,7 +273,6 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// The linear velocity of the body's center of mass.
     /// </summary>
     /// <remarks>Usually in meters per second</remarks>
-    [PublicAPI]
     public Vec2 LinearVelocity
     {
         get => Valid ? b2Body_GetLinearVelocity(this) : throw new InvalidOperationException("Body is not valid");
@@ -250,7 +294,6 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// The angular velocity of the body in radians per second.
     /// </summary>
     /// <remarks>In radians per second</remarks>
-    [PublicAPI]
     public float AngularVelocity
     {
         get => Valid ? b2Body_GetAngularVelocity(this) : throw new InvalidOperationException("Body is not valid");
@@ -272,11 +315,7 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// </summary>
     /// <param name="target">The target transform</param>
     /// <param name="timeStep">The time step</param>
-    [PublicAPI]
     public void SetTargetTransform(Transform target, float timeStep) => b2Body_SetTargetTransform(this, target, timeStep);
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetKinematicTarget")]
-    private static extern void b2Body_SetKinematicTarget(Body bodyId, Transform target, float timeStep);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetLocalPointVelocity")]
     private static extern Vec2 b2Body_GetLocalPointVelocity(Body bodyId, Vec2 localPoint);
@@ -287,7 +326,6 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <param name="localPoint">The local point</param>
     /// <returns>The linear velocity of the local point attached to the body, usually in meters per second</returns>
     /// <remarks>Usually in meters per second</remarks>
-    [PublicAPI]
     public Vec2 GetLocalPointVelocity(Vec2 localPoint) => b2Body_GetLocalPointVelocity(this, localPoint);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetWorldPointVelocity")]
@@ -299,7 +337,6 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <param name="worldPoint">The world point</param>
     /// <returns>The linear velocity of the world point attached to the body, usually in meters per second</returns>
     /// <remarks>Usually in meters per second</remarks>
-    [PublicAPI]
     public Vec2 GetWorldPointVelocity(Vec2 worldPoint) => b2Body_GetWorldPointVelocity(this, worldPoint);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ApplyForce")]
@@ -312,7 +349,6 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <param name="point">The world position of the point of application</param>
     /// <param name="wake">Option to wake up the body</param>
     /// <remarks>If the force is not applied at the center of mass, it will generate a torque and affect the angular velocity. The force is ignored if the body is not awake</remarks>
-    [PublicAPI]
     public void ApplyForce(Vec2 force, Vec2 point, bool wake) => b2Body_ApplyForce(this, force, point, wake);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ApplyForceToCenter")]
@@ -325,7 +361,6 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <param name="wake">Option to wake up the body</param>
     /// <remarks>This wakes up the body</remarks>
     /// <remarks>If the force is not applied at the center of mass, it will generate a torque and affect the angular velocity. The force is ignored if the body is not awake</remarks>
-    [PublicAPI]
     public void ApplyForceToCenter(Vec2 force, bool wake) => b2Body_ApplyForceToCenter(this, force, wake);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ApplyTorque")]
@@ -337,7 +372,6 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <param name="torque">The torque about the z-axis (out of the screen), usually in N*m</param>
     /// <param name="wake">Option to wake up the body</param>
     /// <remarks>This affects the angular velocity without affecting the linear velocity. The torque is ignored if the body is not awake</remarks>
-    [PublicAPI]
     public void ApplyTorque(float torque, bool wake) => b2Body_ApplyTorque(this, torque, wake);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ApplyLinearImpulse")]
@@ -351,7 +385,6 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <param name="wake">Option to wake up the body</param>
     /// <remarks>This immediately modifies the velocity. It also modifies the angular velocity if the point of application is not at the center of mass. The impulse is ignored if the body is not awake
     /// <br/><br/><b>Warning: This should be used for one-shot impulses. If you need a steady force, use a force instead, which will work better with the sub-stepping solver</b></remarks>
-    [PublicAPI]
     public void ApplyLinearImpulse(Vec2 impulse, Vec2 point, bool wake) => b2Body_ApplyLinearImpulse(this, impulse, point, wake);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ApplyLinearImpulseToCenter")]
@@ -376,7 +409,6 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <param name="wake">Option to wake up the body</param>
     /// <remarks>The impulse is ignored if the body is not awake
     /// <br/><br/><b>Warning: This should be used for one-shot impulses. If you need a steady force, use a force instead, which will work better with the sub-stepping solver</b></remarks>
-    [PublicAPI]
     public void ApplyAngularImpulse(float impulse, bool wake) => b2Body_ApplyAngularImpulse(this, impulse, wake);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetMass")]
@@ -385,7 +417,6 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <summary>
     /// The mass of the body, usually in kilograms.
     /// </summary>
-    [PublicAPI]
     public float Mass => Valid ? b2Body_GetMass(this) : throw new InvalidOperationException("Body is not valid");
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetRotationalInertia")]
@@ -394,7 +425,6 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <summary>
     /// The rotational inertia of the body, usually in kg*m².
     /// </summary>
-    [PublicAPI]
     public float RotationalInertia => Valid ? b2Body_GetRotationalInertia(this) : throw new InvalidOperationException("Body is not valid");
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetLocalCenterOfMass")]
@@ -403,7 +433,6 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <summary>
     /// The center of mass position of the body in local space.
     /// </summary>
-    [PublicAPI]
     public Vec2 LocalCenterOfMass => Valid ? b2Body_GetLocalCenterOfMass(this) : throw new InvalidOperationException("Body is not valid");
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetWorldCenterOfMass")]
@@ -412,7 +441,6 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <summary>
     /// The center of mass position of the body in world space.
     /// </summary>
-    [PublicAPI]
     public Vec2 WorldCenterOfMass => Valid ? b2Body_GetWorldCenterOfMass(this) : throw new InvalidOperationException("Body is not valid");
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetMassData")]
@@ -424,7 +452,6 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <summary>
     /// The mass data for this body.
     /// </summary>
-    [PublicAPI]
     public MassData MassData
     {
         get => Valid ? b2Body_GetMassData(this) : throw new InvalidOperationException("Body is not valid");
@@ -442,10 +469,9 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <summary>
     /// This updates the mass properties to the sum of the mass properties of the shapes
     /// </summary>
-    /// <remarks>This normally does not need to be called unless you called SetMassData to override the mass and you later want to reset the mass. You may also use this when automatic mass computation has been disabled. You should call this regardless of body type<br/>
+    /// <remarks>This normally does not need to be called unless you called SetMassData to override the mass, and you later want to reset the mass. You may also use this when automatic mass computation has been disabled. You should call this regardless of body type<br/>
     /// <i>Note: Sensor shapes may have mass.</i>
     /// </remarks>
-    [PublicAPI]
     public void ApplyMassFromShapes() => b2Body_ApplyMassFromShapes(this);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetLinearDamping")]
@@ -458,7 +484,6 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// The linear damping.
     /// </summary>
     /// <remarks>Normally this is set in BodyDef before creation</remarks>
-    [PublicAPI]
     public float LinearDamping
     {
         get => Valid ? b2Body_GetLinearDamping(this) : throw new InvalidOperationException("Body is not valid");
@@ -480,7 +505,6 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// The angular damping.
     /// </summary>
     /// <remarks>Normally this is set in BodyDef before creation</remarks>
-    [PublicAPI]
     public float AngularDamping
     {
         get => Valid ? b2Body_GetAngularDamping(this) : throw new InvalidOperationException("Body is not valid");
@@ -502,7 +526,6 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// The gravity scale.
     /// </summary>
     /// <remarks>Normally this is set in BodyDef before creation</remarks>
-    [PublicAPI]
     public float GravityScale
     {
         get => Valid ? b2Body_GetGravityScale(this) : throw new InvalidOperationException("Body is not valid");
@@ -527,7 +550,6 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// This wakes the entire island the body is touching.
     /// <b>Warning: Putting a body to sleep will put the entire island of bodies touching this body to sleep, which can be expensive and possibly unintuitive.</b>
     /// </remarks>
-    [PublicAPI]
     public bool Awake
     {
         get => Valid ? b2Body_IsAwake(this) : throw new InvalidOperationException("Body is not valid");
@@ -549,7 +571,6 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// Option to enable or disable sleeping for this body.
     /// </summary>
     /// <remarks>If sleeping is disabled the body will wake</remarks>
-    [PublicAPI]
     public bool SleepEnabled
     {
         get => Valid ? b2Body_IsSleepEnabled(this) : throw new InvalidOperationException("Body is not valid");
@@ -570,7 +591,6 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <summary>
     /// The sleep threshold, usually in meters per second.
     /// </summary>
-    [PublicAPI]
     public float SleepThreshold
     {
         get => Valid ? b2Body_GetSleepThreshold(this) : throw new InvalidOperationException("Body is not valid");
@@ -594,7 +614,6 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <summary>
     /// The body enabled flag. 
     /// </summary>
-    [PublicAPI]
     public bool Enabled
     {
         get => Valid ? b2Body_IsEnabled(this) : throw new InvalidOperationException("Body is not valid");
@@ -608,8 +627,7 @@ public struct Body : IEquatable<Body>, IComparable<Body>
                 b2Body_Disable(this);
         }
     }
-
-
+    
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetFixedRotation")]
     private static extern void b2Body_SetFixedRotation(Body bodyId, bool flag);
 
@@ -620,7 +638,6 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// The fixed rotation flag of the body.
     /// </summary>
     /// <remarks>Setting this causes the mass to be reset in all cases</remarks>
-    [PublicAPI]
     public bool FixedRotation
     {
         get => Valid ? b2Body_IsFixedRotation(this) : throw new InvalidOperationException("Body is not valid");
@@ -642,7 +659,6 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// The bullet flag of the body.
     /// </summary>
     /// <remarks>A bullet does continuous collision detection against dynamic bodies (but not other bullets)</remarks>
-    [PublicAPI]
     public bool Bullet
     {
         get => Valid ? b2Body_IsBullet(this) : throw new InvalidOperationException("Body is not valid");
@@ -662,7 +678,6 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// </summary>
     /// <param name="flag">Option to enable or disable contact events on all shapes</param>
     /// <remarks><b>Warning: Changing this at runtime may cause mismatched begin/end touch events.</b></remarks>
-    [PublicAPI]
     public void EnableContactEvents(bool flag) => b2Body_EnableContactEvents(this, flag);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_EnableHitEvents")]
@@ -672,7 +687,6 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// Enable/disable hit events on all shapes
     /// </summary>
     /// <param name="flag">Option to enable or disable hit events on all shapes</param>
-    [PublicAPI]
     public void EnableHitEvents(bool flag) => b2Body_EnableHitEvents(this, flag);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetWorld")]
@@ -681,7 +695,6 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <summary>
     /// The world that owns this body.
     /// </summary>
-    [PublicAPI]
     public World World => Valid ? World.GetWorld(b2Body_GetWorld(this)) : throw new InvalidOperationException("Body is not valid");
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetShapeCount")]
@@ -693,7 +706,6 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <summary>
     /// The shapes attached to this body.
     /// </summary>
-    [PublicAPI]
     public unsafe ReadOnlySpan<Shape> Shapes
     {
         get
@@ -723,7 +735,6 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <summary>
     /// The joints attached to this body.
     /// </summary>
-    [PublicAPI]
     public unsafe ReadOnlySpan<Joint> Joints
     {
         get
@@ -759,7 +770,6 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <remarks>
     /// <i>Note: Box2D uses speculative collision so some contact points may be separated.</i>
     /// </remarks>
-    [PublicAPI]
     public unsafe ReadOnlySpan<ContactData> Contacts
     {
         get
@@ -788,7 +798,6 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// The current world AABB that contains all the attached shapes.
     /// </summary>
     /// <remarks>Note that this may not encompass the body origin. If there are no shapes attached then the returned AABB is empty and centered on the body origin</remarks>
-    [PublicAPI]
     public AABB AABB => Valid ? b2Body_ComputeAABB(this) : throw new InvalidOperationException("Body is not valid");
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateCircleShape")]
@@ -801,7 +810,6 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <param name="circle">The circle</param>
     /// <returns>The shape</returns>
     /// <remarks>The shape definition and geometry are fully cloned. Contacts are not created until the next time step</remarks>
-    [PublicAPI]
     public Shape CreateShape(in ShapeDef def, in Circle circle) => b2CreateCircleShape(this, in def._internal, circle);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateSegmentShape")]
@@ -814,7 +822,6 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <param name="segment">The segment</param>
     /// <returns>The shape</returns>
     /// <remarks>The shape definition and geometry are fully cloned. Contacts are not created until the next time step</remarks>
-    [PublicAPI]
     public Shape CreateShape(in ShapeDef def, in Segment segment) => b2CreateSegmentShape(this, in def._internal, segment);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateCapsuleShape")]
@@ -827,7 +834,6 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <param name="capsule">The capsule</param>
     /// <returns>The shape</returns>
     /// <remarks>The shape definition and geometry are fully cloned. Contacts are not created until the next time step</remarks>
-    [PublicAPI]
     public Shape CreateShape(in ShapeDef def, in Capsule capsule) => b2CreateCapsuleShape(this, in def._internal, capsule);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreatePolygonShape")]
@@ -840,7 +846,6 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <param name="polygon">The polygon</param>
     /// <returns>The shape</returns>
     /// <remarks>The shape definition and geometry are fully cloned. Contacts are not created until the next time step</remarks>
-    [PublicAPI]
     public Shape CreateShape(in ShapeDef def, in Polygon polygon) => b2CreatePolygonShape(this, in def._internal, polygon);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateChain")]

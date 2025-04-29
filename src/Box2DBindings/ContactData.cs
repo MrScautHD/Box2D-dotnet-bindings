@@ -9,7 +9,16 @@ namespace Box2D;
 [StructLayout(LayoutKind.Sequential)]
 public struct ContactData
 {
+    /// <summary>
+    /// The first shape in the contact
+    /// </summary>
     public readonly Shape ShapeA;
+    /// <summary>
+    /// The second shape in the contact
+    /// </summary>
     public readonly Shape ShapeB;
+    /// <summary>
+    /// The contact manifold
+    /// </summary>
     public readonly Manifold Manifold;
 }

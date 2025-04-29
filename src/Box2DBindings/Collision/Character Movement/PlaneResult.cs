@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Runtime.InteropServices;
 
 namespace Box2D.Character_Movement;
@@ -5,7 +6,8 @@ namespace Box2D.Character_Movement;
 /// <summary>
 /// These are the collision planes returned from b2World_CollideMover.
 /// </summary>
-[StructLayout(LayoutKind.Sequential, Pack = 4)]
+[StructLayout(LayoutKind.Sequential)]
+[PublicAPI]
 public struct PlaneResult
 {
     /// <summary>

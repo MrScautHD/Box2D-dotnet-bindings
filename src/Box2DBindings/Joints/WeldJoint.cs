@@ -10,6 +10,7 @@ namespace Box2D;
 /// can have damped springs.<br/>
 /// <b>Note: The accuracy of weld joint is limited by the accuracy of the solver. Long chains of weld joints may flex.</b>
 /// </summary>
+[PublicAPI]
 public class WeldJoint : Joint
 {
     internal WeldJoint(JointId id) : base(id)
@@ -21,7 +22,9 @@ public class WeldJoint : Joint
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WeldJoint_SetReferenceAngle")]
     private static extern void b2WeldJoint_SetReferenceAngle(JointId jointId, float angleInRadians);
 
-    [PublicAPI]
+    /// <summary>
+    /// The reference angle in radians on this weld joint
+    /// </summary>
     public float ReferenceAngle
     {
         get => b2WeldJoint_GetReferenceAngle(id);

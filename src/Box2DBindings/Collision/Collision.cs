@@ -3,6 +3,9 @@ using System.Runtime.InteropServices;
 
 namespace Box2D;
 
+/// <summary>
+/// Functions for computing contact manifolds.
+/// </summary>
 public static class Collision
 {
     /// <summary>

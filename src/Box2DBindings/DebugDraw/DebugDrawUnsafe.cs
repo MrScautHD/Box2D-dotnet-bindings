@@ -1,26 +1,30 @@
 using Box2D.Delegates.Unsafe;
+using JetBrains.Annotations;
 
 namespace Box2D;
 
 /// <summary>
 /// This class holds callbacks you can implement to draw a Box2D world.
 /// </summary>
-public class DebugDrawUnsafe : DebugDraw
+[PublicAPI]
+public sealed class DebugDrawUnsafe : DebugDraw
 {
+    internal override ref DebugDrawInternal Internal => ref @internal;
+    
     /// <summary>
     /// Callback function to draw a closed polygon provided in CCW order.
     /// </summary>
-    public unsafe DrawPolygonDelegate DrawPolygon
+    public DrawPolygonDelegate DrawPolygon
     {
-        set => _internal.DrawPolygon = value;
+        set => @internal.DrawPolygon = value;
     }
 
     /// <summary>
     /// Callback function to draw a solid closed polygon provided in CCW order.
     /// </summary>
-    public unsafe DrawSolidPolygonDelegate DrawSolidPolygon
+    public DrawSolidPolygonDelegate DrawSolidPolygon
     {
-        set => _internal.DrawSolidPolygon = value;
+        set => @internal.DrawSolidPolygon = value;
     }
 
     /// <summary>
@@ -28,7 +32,7 @@ public class DebugDrawUnsafe : DebugDraw
     /// </summary>
     public DrawCircleDelegate DrawCircle
     {
-        set => _internal.DrawCircle = value;
+        set => @internal.DrawCircle = value;
     }
 
     /// <summary>
@@ -36,7 +40,7 @@ public class DebugDrawUnsafe : DebugDraw
     /// </summary>
     public DrawSolidCircleDelegate DrawSolidCircle
     {
-        set => _internal.DrawSolidCircle = value;
+        set => @internal.DrawSolidCircle = value;
     }
         
     /// <summary>
@@ -44,7 +48,7 @@ public class DebugDrawUnsafe : DebugDraw
     /// </summary>
     public DrawSolidCapsuleDelegate DrawSolidCapsule
     {
-        set => _internal.DrawSolidCapsule = value;
+        set => @internal.DrawSolidCapsule = value;
     }
 
     /// <summary>
@@ -52,7 +56,7 @@ public class DebugDrawUnsafe : DebugDraw
     /// </summary>
     public DrawSegmentDelegate DrawSegment
     {
-        set => _internal.DrawSegment = value;
+        set => @internal.DrawSegment = value;
     }
 
     /// <summary>
@@ -60,7 +64,7 @@ public class DebugDrawUnsafe : DebugDraw
     /// </summary>
     public DrawTransformDelegate DrawTransform
     {
-        set => _internal.DrawTransform = value;
+        set => @internal.DrawTransform = value;
     }
 
     /// <summary>
@@ -68,7 +72,7 @@ public class DebugDrawUnsafe : DebugDraw
     /// </summary>
     public DrawPointDelegate DrawPoint
     {
-        set => _internal.DrawPoint = value;
+        set => @internal.DrawPoint = value;
     }
 
     /// <summary>
@@ -76,6 +80,6 @@ public class DebugDrawUnsafe : DebugDraw
     /// </summary>
     public DrawStringDelegate DrawString
     {
-        set => _internal.DrawString = value;
+        set => @internal.DrawString = value;
     }
 }

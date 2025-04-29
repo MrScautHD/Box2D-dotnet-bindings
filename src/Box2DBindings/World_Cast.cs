@@ -1,5 +1,4 @@
 using Box2D.Character_Movement;
-using JetBrains.Annotations;
 using System.Runtime.InteropServices;
 
 namespace Box2D;
@@ -88,7 +87,6 @@ public partial class World
     /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
     /// <returns>The ray result</returns>
     /// <remarks>This is less general than b2World_CastRay() and does not allow for custom filtering</remarks>
-    [PublicAPI]
     public RayResult CastRayClosest(Vec2 origin, Vec2 translation, QueryFilter filter) =>
         b2World_CastRayClosest(id, origin, translation, filter);
 
@@ -109,7 +107,6 @@ public partial class World
     /// <param name="context">A user context that is passed along to the callback function</param>
     /// <returns>Traversal performance counters</returns>
     /// <remarks>Your callback function controls whether you get the closest point, any point, or n-points. The ray-cast ignores shapes that contain the starting point. The callback function may receive shapes in any order</remarks>
-    [PublicAPI]
     public unsafe TreeStats CastRay<TContext>(Vec2 origin, Vec2 translation, QueryFilter filter, CastResultCallback<TContext> callback, TContext context) where TContext : class
     {
         nint* contextBuffer = stackalloc nint[2];
@@ -136,7 +133,6 @@ public partial class World
     /// <param name="context">A user context that is passed along to the callback function</param>
     /// <returns>Traversal performance counters</returns>
     /// <remarks>Your callback function controls whether you get the closest point, any point, or n-points. The ray-cast ignores shapes that contain the starting point. The callback function may receive shapes in any order</remarks>
-    [PublicAPI]
     public unsafe TreeStats CastRay<TContext>(Vec2 origin, Vec2 translation, QueryFilter filter, CastResultRefCallback<TContext> callback, ref TContext context) where TContext : unmanaged
     {
         fixed (TContext* contextPtr = &context)
@@ -164,7 +160,6 @@ public partial class World
     /// <param name="callback">A user implemented callback function</param>
     /// <returns>Traversal performance counters</returns>
     /// <remarks>Your callback function controls whether you get the closest point, any point, or n-points. The ray-cast ignores shapes that contain the starting point. The callback function may receive shapes in any order</remarks>
-    [PublicAPI]
     public TreeStats CastRay(Vec2 origin, Vec2 translation, QueryFilter filter, CastResultCallback callback)
     {
         nint contextBuffer = GCHandle.ToIntPtr(GCHandle.Alloc(callback));
@@ -188,7 +183,6 @@ public partial class World
     /// /// <param name="context">A user context that is passed along to the callback function</param>
     /// <returns>Traversal performance counters</returns>
     /// <remarks>Your callback function controls whether you get the closest point, any point, or n-points. The ray-cast ignores shapes that contain the starting point. The callback function may receive shapes in any order</remarks>
-    [PublicAPI]
     public TreeStats CastRay(Vec2 origin, Vec2 translation, QueryFilter filter, CastResultNintCallback callback, nint context)
     {
         return b2World_CastRay(id, origin, translation, filter, callback, context);
@@ -209,7 +203,6 @@ public partial class World
     /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
     /// <param name="callback">A user implemented callback function</param>
     /// <param name="context">A user context that is passed along to the callback function</param>
-    [PublicAPI]
     public unsafe TreeStats CastShape<TContext>(in ShapeProxy proxy, Vec2 translation, QueryFilter filter, CastResultCallback<TContext> callback, TContext context) where TContext : class
     {
         nint* contextBuffer = stackalloc nint[2];
@@ -234,7 +227,6 @@ public partial class World
     /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
     /// <param name="callback">A user implemented callback function</param>
     /// <param name="context">A user context that is passed along to the callback function</param>
-    [PublicAPI]
     public unsafe TreeStats CastShape<TContext>(in ShapeProxy proxy, Vec2 translation, QueryFilter filter, CastResultRefCallback<TContext> callback, ref TContext context) where TContext : unmanaged
     {
         fixed (TContext* contextPtr = &context)
@@ -260,7 +252,6 @@ public partial class World
     /// <param name="translation">The translation of the shape from the start point to the end point</param>
     /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
     /// <param name="callback">A user implemented callback function</param>
-    [PublicAPI]
     public TreeStats CastShape(in ShapeProxy proxy, Vec2 translation, QueryFilter filter, CastResultCallback callback)
     {
         nint contextBuffer = GCHandle.ToIntPtr(GCHandle.Alloc(callback));
@@ -282,7 +273,6 @@ public partial class World
     /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
     /// <param name="callback">A user implemented callback function</param>
     /// <param name="context">A user context that is passed along to the callback function</param>
-    [PublicAPI]
     public TreeStats CastShape(in ShapeProxy proxy, Vec2 translation, QueryFilter filter, CastResultNintCallback callback, nint context)
     {
         return b2World_CastShape(id, in proxy, translation, filter, callback, context);
@@ -302,7 +292,6 @@ public partial class World
     /// <param name="translation">The translation of the capsule from the start point to the end point</param>
     /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
     /// <returns>The fraction of the translation that was completed before a collision occurred</returns>
-    [PublicAPI]
     public float CastMover(in Capsule mover, Vec2 translation, QueryFilter filter) =>
         b2World_CastMover(id, in mover, translation, filter);
 
@@ -320,7 +309,6 @@ public partial class World
     /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
     /// <param name="callback">A user implemented callback function</param>
     /// <param name="context">A user context that is passed along to the callback function</param>
-    [PublicAPI]
     public unsafe void CollideMover<TContext>(in Capsule mover, QueryFilter filter, PlaneResultCallback<TContext> callback, TContext context) where TContext : class
     {
         nint* contextBuffer = stackalloc nint[2];
@@ -345,7 +333,6 @@ public partial class World
     /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
     /// <param name="callback">A user implemented callback function</param>
     /// <param name="context">A user context that is passed along to the callback function</param>
-    [PublicAPI]
     public unsafe void CollideMover<TContext>(in Capsule mover, QueryFilter filter, PlaneResultRefCallback<TContext> callback, ref TContext context) where TContext : unmanaged
     {
         fixed (TContext* contextPtr = &context)
@@ -370,8 +357,7 @@ public partial class World
     /// <param name="mover">The capsule mover</param>
     /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
     /// <param name="callback">A user implemented callback function</param>
-    [PublicAPI]
-    public unsafe void CollideMover(in Capsule mover, QueryFilter filter, PlaneResultCallback callback)
+    public void CollideMover(in Capsule mover, QueryFilter filter, PlaneResultCallback callback)
     {
         nint contextBuffer = GCHandle.ToIntPtr(GCHandle.Alloc(callback));
         try
@@ -391,7 +377,6 @@ public partial class World
     /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
     /// <param name="callback">A user implemented callback function</param>
     /// <param name="context">A user context that is passed along to the callback function</param>
-    [PublicAPI]
     public void CollideMover(in Capsule mover, QueryFilter filter, PlaneResultNintCallback callback, nint context) =>
         b2World_CollideMover(id, in mover, filter, callback, context);
 
@@ -409,7 +394,6 @@ public partial class World
     /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
     /// <param name="callback">A user implemented callback function</param>
     /// <param name="context">The context</param>
-    [PublicAPI]
     public unsafe TreeStats OverlapAABB<TContext>(AABB aabb, QueryFilter filter, OverlapResultCallback<TContext> callback, TContext context) where TContext : class
     {
         nint* contextBuffer = stackalloc nint[2];
@@ -434,7 +418,6 @@ public partial class World
     /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
     /// <param name="callback">A user implemented callback function</param>
     /// <param name="context">The context</param>
-    [PublicAPI]
     public unsafe TreeStats OverlapAABB<TContext>(AABB aabb, QueryFilter filter, OverlapResultRefCallback<TContext> callback, ref TContext context) where TContext : unmanaged
     {
         fixed (TContext* contextPtr = &context)
@@ -459,7 +442,6 @@ public partial class World
     /// <param name="aabb">The AABB</param>
     /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
     /// <param name="callback">A user implemented callback function</param>
-    [PublicAPI]
     public TreeStats OverlapAABB(AABB aabb, QueryFilter filter, ref OverlapResultCallback callback)
     {
         nint contextBuffer = GCHandle.ToIntPtr(GCHandle.Alloc(callback));
@@ -480,7 +462,7 @@ public partial class World
     /// <param name="aabb">The AABB</param>
     /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
     /// <param name="callback">A user implemented callback function</param>
-    [PublicAPI]
+    /// <param name="context">The context</param>
     public TreeStats OverlapAABB(AABB aabb, QueryFilter filter, OverlapResultNintCallback callback, nint context)
     {
         return b2World_OverlapAABB(id, aabb, filter, callback, context);
@@ -500,7 +482,6 @@ public partial class World
     /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
     /// <param name="callback">A user implemented callback function</param>
     /// <param name="context">The context</param>
-    [PublicAPI]
     public unsafe TreeStats OverlapShape<TContext>(in ShapeProxy proxy, QueryFilter filter, OverlapResultCallback<TContext> callback, TContext context) where TContext : class
     {
         nint* contextBuffer = stackalloc nint[2];
@@ -524,7 +505,6 @@ public partial class World
     /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
     /// <param name="callback">A user implemented callback function</param>
     /// <param name="context">The context</param>
-    [PublicAPI]
     public unsafe TreeStats OverlapShape<TContext>(in ShapeProxy proxy, QueryFilter filter, OverlapResultRefCallback<TContext> callback, ref TContext context) where TContext : unmanaged
     {
         fixed (TContext* contextPtr = &context)
@@ -550,7 +530,6 @@ public partial class World
     /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
     /// <param name="callback">A user implemented callback function</param>
     /// <param name="context">The context</param>
-    [PublicAPI]
     public TreeStats OverlapShape<TContext>(in ShapeProxy proxy, QueryFilter filter, OverlapResultNintCallback callback, nint context)
     {
         return b2World_OverlapShape(id, in proxy, filter, callback, context);
@@ -562,7 +541,6 @@ public partial class World
     /// <param name="proxy">The shape proxy</param>
     /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
     /// <param name="callback">A user implemented callback function</param>
-    [PublicAPI]
     public TreeStats OverlapShape(in ShapeProxy proxy, QueryFilter filter, OverlapResultCallback callback)
     {
         nint contextBuffer = GCHandle.ToIntPtr(GCHandle.Alloc(callback));

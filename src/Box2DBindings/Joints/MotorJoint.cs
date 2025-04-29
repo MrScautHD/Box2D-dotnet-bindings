@@ -8,6 +8,7 @@ namespace Box2D;
 /// a relative position and rotation and applies the forces and torques needed to achieve
 /// that relative transform over time.
 /// </summary>
+[PublicAPI]
 public class MotorJoint : Joint
 {
     internal MotorJoint(JointId id) : base(id)
@@ -22,7 +23,6 @@ public class MotorJoint : Joint
     /// <summary>
     /// The linear offset target on this motor joint
     /// </summary>
-    [PublicAPI]
     public Vec2 LinearOffset
     {
         get => b2MotorJoint_GetLinearOffset(id);
@@ -38,7 +38,6 @@ public class MotorJoint : Joint
     /// <summary>
     /// The angular offset target in radians on this motor joint
     /// </summary>
-    [PublicAPI]
     public float AngularOffset
     {
         get => b2MotorJoint_GetAngularOffset(id);
@@ -51,7 +50,9 @@ public class MotorJoint : Joint
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MotorJoint_GetMaxForce")]
     private static extern float b2MotorJoint_GetMaxForce(JointId jointId);
 
-    [PublicAPI]
+    /// <summary>
+    /// The maximum force on this motor joint
+    /// </summary>
     public float MaxForce
     {
         get => b2MotorJoint_GetMaxForce(id);
@@ -67,7 +68,6 @@ public class MotorJoint : Joint
     /// <summary>
     /// The maximum torque on this motor joint
     /// </summary>
-    [PublicAPI]
     public float MaxTorque
     {
         get => b2MotorJoint_GetMaxTorque(id);
@@ -84,7 +84,6 @@ public class MotorJoint : Joint
     /// The correction factor on this motor joint
     /// </summary>
     /// <remarks>0 means no correction, 1 means full correction</remarks>
-    [PublicAPI]
     public float CorrectionFactor
     {
         get => b2MotorJoint_GetCorrectionFactor(id);

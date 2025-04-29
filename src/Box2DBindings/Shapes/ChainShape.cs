@@ -4,7 +4,11 @@ using System.Runtime.InteropServices;
 
 namespace Box2D;
 
+/// <summary>
+/// A chain shape is a series of connected line segments.
+/// </summary>
 [StructLayout(LayoutKind.Sequential)]
+[PublicAPI]
 public struct ChainShape
 {
     private int index1;

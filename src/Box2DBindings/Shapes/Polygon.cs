@@ -13,11 +13,12 @@ namespace Box2D;
 /// MakePolygon or MakeBox.</b>
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
+[PublicAPI]
 public unsafe struct Polygon
 {
-    private fixed float vertices[B2_MAX_POLYGON_VERTICES * 2];
+    private fixed float vertices[MAX_POLYGON_VERTICES * 2];
 
-    private fixed float normals[B2_MAX_POLYGON_VERTICES * 2];
+    private fixed float normals[MAX_POLYGON_VERTICES * 2];
 
     /// <summary>
     /// The centroid of the polygon
@@ -34,10 +35,19 @@ public unsafe struct Polygon
     /// </summary>
     private int count;
 
+    /// <summary>
+    /// Construct a polygon shape with a set of vertices and an optional radius
+    /// </summary>
+    /// <remarks>
+    /// This constructor implicitly creates a Hull from the points. The hull is
+    /// computed in the order of the points. The hull is assumed to be convex.<br/>
+    /// A radius greater than 0 will create a rounded polygon. A negative radius
+    /// is invalid.
+    /// </remarks>
     public Polygon(Span<Vec2> points, float radius)
     {
-        if (points.Length > B2_MAX_POLYGON_VERTICES)
-            throw new ArgumentOutOfRangeException(nameof(points), $"Count must be less than {B2_MAX_POLYGON_VERTICES}");
+        if (points.Length > MAX_POLYGON_VERTICES)
+            throw new ArgumentOutOfRangeException(nameof(points), $"Count must be less than {MAX_POLYGON_VERTICES}");
         
         this = MakePolygon(points, radius);
     }
@@ -45,7 +55,6 @@ public unsafe struct Polygon
     /// <summary>
     /// The polygon vertices
     /// </summary>
-    [PublicAPI]
     public ReadOnlySpan<Vec2> Vertices
     {
         get
@@ -58,7 +67,6 @@ public unsafe struct Polygon
     /// <summary>
     /// The outward normal vectors of the polygon sides
     /// </summary>
-    [PublicAPI]
     public ReadOnlySpan<Vec2> Normals
     {
         get
@@ -75,17 +83,15 @@ public unsafe struct Polygon
     /// <b>Warning: Do not manually fill in the hull data, it must come directly from b2ComputeHull</b>
     /// </remarks>
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakePolygon")]
-    [PublicAPI]
     public static extern Polygon MakePolygon(in Hull hull, float radius);
     
     /// <summary>
     /// Make a convex polygon from a set of points. This will create a hull and assert if it is not valid.
     /// </summary>
-    [PublicAPI]
     public static Polygon MakePolygon(Span<Vec2> points, float radius)
     {
-        if (points.Length > B2_MAX_POLYGON_VERTICES)
-            throw new ArgumentOutOfRangeException(nameof(points), $"Count must be less than {B2_MAX_POLYGON_VERTICES}");
+        if (points.Length > MAX_POLYGON_VERTICES)
+            throw new ArgumentOutOfRangeException(nameof(points), $"Count must be less than {MAX_POLYGON_VERTICES}");
         var hull = Hull.Compute(points);
         return MakePolygon(hull, radius);
     }
@@ -97,17 +103,15 @@ public unsafe struct Polygon
     /// <b>Warning: Do not manually fill in the hull data, it must come directly from b2ComputeHull</b>
     /// </remarks>
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakeOffsetPolygon")]
-    [PublicAPI]
     public static extern Polygon MakeOffsetPolygon(in Hull hull, Vec2 position, Rotation rotation);
     
     /// <summary>
     /// Make an offset convex polygon from a set of points. This will create a hull and assert if it is not valid.
     /// </summary>
-    [PublicAPI]
     public static  Polygon MakeOffsetPolygon(Span<Vec2> points, Vec2 position, Rotation rotation)
     {
-        if (points.Length > B2_MAX_POLYGON_VERTICES)
-            throw new ArgumentOutOfRangeException(nameof(points), $"Count must be less than {B2_MAX_POLYGON_VERTICES}");
+        if (points.Length > MAX_POLYGON_VERTICES)
+            throw new ArgumentOutOfRangeException(nameof(points), $"Count must be less than {MAX_POLYGON_VERTICES}");
         var hull = Hull.Compute(points);
         return MakeOffsetPolygon(hull, position, rotation);
     }
@@ -119,17 +123,15 @@ public unsafe struct Polygon
     /// <b>Warning: Do not manually fill in the hull data, it must come directly from b2ComputeHull</b>
     /// </remarks>
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakeOffsetRoundedPolygon")]
-    [PublicAPI]
     public static extern Polygon MakeOffsetRoundedPolygon(in Hull hull, Vec2 position, Rotation rotation, float radius);
 
     /// <summary>
     /// Make an offset convex polygon from a set of points. This will create a hull and assert if it is not valid.
     /// </summary>
-    [PublicAPI]
     public static  Polygon MakeOffsetRoundedPolygon(Span<Vec2> points, Vec2 position, Rotation rotation, float radius)
     {
-        if (points.Length > B2_MAX_POLYGON_VERTICES)
-            throw new ArgumentOutOfRangeException(nameof(points), $"Count must be less than {B2_MAX_POLYGON_VERTICES}");
+        if (points.Length > MAX_POLYGON_VERTICES)
+            throw new ArgumentOutOfRangeException(nameof(points), $"Count must be less than {MAX_POLYGON_VERTICES}");
         var hull = Hull.Compute(points);
         return MakeOffsetRoundedPolygon(hull, position, rotation, radius);
     }
@@ -139,7 +141,6 @@ public unsafe struct Polygon
     /// </summary>
     /// <param name="halfWidth">the half-width</param>
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakeSquare")]
-    [PublicAPI]
     public static extern Polygon MakeSquare(float halfWidth);
 
     /// <summary>
@@ -148,7 +149,6 @@ public unsafe struct Polygon
     /// <param name="halfWidth">the half-width (x-axis)</param>
     /// <param name="halfHeight">the half-height (y-axis)</param>
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakeBox")]
-    [PublicAPI]
     public static extern Polygon MakeBox(float halfWidth, float halfHeight);
 
     /// <summary>
@@ -158,7 +158,6 @@ public unsafe struct Polygon
     /// <param name="halfHeight">the half-height (y-axis)</param>
     /// <param name="radius">the radius of the rounded extension</param>
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakeRoundedBox")]
-    [PublicAPI]
     public static extern Polygon MakeRoundedBox(float halfWidth, float halfHeight, float radius);
 
     /// <summary>
@@ -169,7 +168,6 @@ public unsafe struct Polygon
     /// <param name="center">the local center of the box</param>
     /// <param name="rotation">the local rotation of the box</param>
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakeOffsetBox")]
-    [PublicAPI]
     public static extern Polygon MakeOffsetBox(float halfWidth, float halfHeight, Vec2 center, Rotation rotation);
 
     /// <summary>
@@ -181,14 +179,12 @@ public unsafe struct Polygon
     /// <param name="rotation">the local rotation of the box</param>
     /// <param name="radius">the radius of the rounded extension</param>
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakeOffsetRoundedBox")]
-    [PublicAPI]
     public static extern Polygon MakeOffsetRoundedBox(float halfWidth, float halfHeight, Vec2 center, Rotation rotation, float radius);
 
     /// <summary>
     /// Transform a polygon. This is useful for transferring a shape from one body to another.
     /// </summary>
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2TransformPolygon")]
-    [PublicAPI]
     public static extern Polygon TransformPolygon(Transform transform, in Polygon polygon);
     
     /// <summary>
@@ -200,7 +196,6 @@ public unsafe struct Polygon
     /// <summary>
     /// Compute mass properties of this polygon
     /// </summary>
-    [PublicAPI]
     public MassData ComputeMass(float density) => ComputePolygonMass(in this, density);
 
     /// <summary>
@@ -224,7 +219,6 @@ public unsafe struct Polygon
     /// <summary>
     /// Test this point for overlap with a convex polygon in local space
     /// </summary>
-    [PublicAPI]
     public bool TestPoint(in Vec2 point) => PointInPolygon(point, in this);
     
     /// <summary>
@@ -236,7 +230,6 @@ public unsafe struct Polygon
     /// <summary>
     /// Ray cast versus this polygon shape in local space. Initial overlap is treated as a miss.
     /// </summary>
-    [PublicAPI]
     public CastOutput RayCast(in RayCastInput input) => RayCastPolygon(in input, in this);
 
     /// <summary>
@@ -248,7 +241,6 @@ public unsafe struct Polygon
     /// <summary>
     /// Shape cast versus this convex polygon. Initial overlap is treated as a miss.
     /// </summary>
-    [PublicAPI]
     public CastOutput ShapeCast(in ShapeCastInput input) => ShapeCastPolygon(in input, in this);
 
 }

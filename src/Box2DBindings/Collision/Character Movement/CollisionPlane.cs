@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Runtime.InteropServices;
 
 namespace Box2D.Character_Movement;
@@ -6,7 +7,8 @@ namespace Box2D.Character_Movement;
 /// These are collision planes that can be fed to b2SolvePlanes. Normally
 /// this is assembled by the user from plane results in b2PlaneResult.
 /// </summary>
-[StructLayout(LayoutKind.Sequential, Pack = 4)]
+[StructLayout(LayoutKind.Sequential)]
+[PublicAPI]
 public struct CollisionPlane
 {
     /// <summary>

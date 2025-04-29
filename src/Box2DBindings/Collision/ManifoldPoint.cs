@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Runtime.InteropServices;
 
 namespace Box2D;
@@ -9,7 +10,8 @@ namespace Box2D;
 /// You may use the maxNormalImpulse to determine if there was an interaction during
 /// the time step.
 /// </summary>
-[StructLayout(LayoutKind.Sequential, Pack = 4)]
+[StructLayout(LayoutKind.Sequential)]
+[PublicAPI]
 public struct ManifoldPoint
 {
     /// <summary>

@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Runtime.InteropServices;
 
 namespace Box2D;
@@ -8,6 +9,7 @@ namespace Box2D;
 /// position.
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
+[PublicAPI]
 public struct Sweep
 {
     /// <summary>
@@ -41,6 +43,9 @@ public struct Sweep
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2GetSweepTransform")]
     private static extern Transform GetSweepTransform(in Sweep sweep, float time);
     
-    public Transform GetTransform(float beta) => GetSweepTransform(this, beta);
+    /// <summary>
+    /// Get the transform at a specific time.
+    /// </summary>
+    public Transform GetTransform(float time) => GetSweepTransform(this, time);
 
 }

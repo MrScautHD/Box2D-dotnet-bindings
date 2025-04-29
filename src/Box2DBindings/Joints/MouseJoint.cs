@@ -7,6 +7,7 @@ namespace Box2D;
 /// The mouse joint is designed for use in the samples application, but you may find it useful in applications where
 /// the user moves a rigid body with a cursor.
 /// </summary>
+[PublicAPI]
 public class MouseJoint:Joint
 {
     internal MouseJoint(JointId id) : base(id)
@@ -18,7 +19,9 @@ public class MouseJoint:Joint
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MouseJoint_GetTarget")]
     private static extern Vec2 b2MouseJoint_GetTarget(JointId jointId);
     
-    [PublicAPI]
+    /// <summary>
+    /// The target point on this mouse joint
+    /// </summary>
     public Vec2 Target
     {
         get => b2MouseJoint_GetTarget(id);
@@ -31,7 +34,9 @@ public class MouseJoint:Joint
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MouseJoint_GetSpringHertz")]
     private static extern float b2MouseJoint_GetSpringHertz(JointId jointId);
     
-    [PublicAPI]
+    /// <summary>
+    /// The spring frequency on this mouse joint
+    /// </summary>
     public float SpringHertz
     {
         get => b2MouseJoint_GetSpringHertz(id);
@@ -44,7 +49,9 @@ public class MouseJoint:Joint
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MouseJoint_GetSpringDampingRatio")]
     private static extern float b2MouseJoint_GetSpringDampingRatio(JointId jointId);
     
-    [PublicAPI]
+    /// <summary>
+    /// The spring damping ratio on this mouse joint
+    /// </summary>
     public float SpringDampingRatio
     {
         get => b2MouseJoint_GetSpringDampingRatio(id);
@@ -57,7 +64,9 @@ public class MouseJoint:Joint
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MouseJoint_GetMaxForce")]
     private static extern float b2MouseJoint_GetMaxForce(JointId jointId);
     
-    [PublicAPI]
+    /// <summary>
+    /// The maximum force on this mouse joint
+    /// </summary>
     public float MaxForce
     {
         get => b2MouseJoint_GetMaxForce(id);

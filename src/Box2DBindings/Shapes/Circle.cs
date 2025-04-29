@@ -19,6 +19,9 @@ public struct Circle
     /// </summary>
     public float Radius;
 
+    /// <summary>
+    /// Construct a circle shape with a center and radius
+    /// </summary>
     [PublicAPI]
     public Circle(Vec2 center, float radius)
     {

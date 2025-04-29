@@ -9,7 +9,7 @@ namespace Box2D;
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
 [PublicAPI]
-public partial struct ExplosionDef
+public struct ExplosionDef
 {
     /// <summary>
     /// Mask bits to filter shapes

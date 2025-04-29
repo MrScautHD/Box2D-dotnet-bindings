@@ -8,7 +8,8 @@ namespace Box2D;
 /// cloud wrap with a radius. For example, a circle is a single point with a non-zero radius.
 /// A capsule is two points with a non-zero radius. A box is four points with a zero radius.
 /// </summary>
-[StructLayout(LayoutKind.Sequential, Pack = 4)]
+[StructLayout(LayoutKind.Sequential)]
+[PublicAPI]
 public struct ShapeCastInput
 {
     /// <summary>

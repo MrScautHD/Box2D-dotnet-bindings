@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Runtime.InteropServices;
 
 namespace Box2D;
@@ -6,6 +7,7 @@ namespace Box2D;
 /// This holds the mass data computed for a shape.
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
+[PublicAPI]
 public struct MassData
 {
     /// <summary>
@@ -23,6 +25,9 @@ public struct MassData
     /// </summary>
     public readonly float RotationalInertia;
     
+    /// <summary>
+    /// Returns a string representation of the mass data.
+    /// </summary>
     public override string ToString()
     {
         return $"MassData(Mass={Mass}, Center={Center}, RotationalInertia={RotationalInertia})";

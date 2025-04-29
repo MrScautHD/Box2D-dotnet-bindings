@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Runtime.InteropServices;
 
 namespace Box2D;
@@ -6,6 +7,7 @@ namespace Box2D;
 /// Surface materials allow chain shapes to have per segment surface properties.
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
+[PublicAPI]
 public struct SurfaceMaterial
 {
     /// <summary>
@@ -44,8 +46,11 @@ public struct SurfaceMaterial
     /// The default surface material settings.
     /// </summary>
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultSurfaceMaterial")]
-    public static extern SurfaceMaterial DefaultSurfaceMaterial();
+    private static extern SurfaceMaterial DefaultSurfaceMaterial();
     
+    /// <summary>
+    /// Construct a surface material with the default values.
+    /// </summary>
     public SurfaceMaterial()
     {
         this = DefaultSurfaceMaterial();

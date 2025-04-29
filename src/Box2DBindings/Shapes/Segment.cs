@@ -8,6 +8,7 @@ namespace Box2D;
 /// A line segment with two-sided collision.
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
+[PublicAPI]
 public struct Segment : IEquatable<Segment>
 {
     /// <summary>
@@ -20,13 +21,18 @@ public struct Segment : IEquatable<Segment>
     /// </summary>
     public Vec2 Point2;
 
-    [PublicAPI]
+    /// <summary>
+    /// Construct a segment shape with two points
+    /// </summary>
     public Segment(Vec2 point1, Vec2 point2)
     {
         Point1 = point1;
         Point2 = point2;
     }
     
+    /// <summary>
+    /// Implicitly convert a segment to an array of two points
+    /// </summary>
     public static implicit operator Vec2[](Segment segment) => [segment.Point1, segment.Point2];
     
     /// <summary>
@@ -38,7 +44,6 @@ public struct Segment : IEquatable<Segment>
     /// <summary>
     /// Compute the bounding box of this transformed line segment
     /// </summary>
-    [PublicAPI]
     public AABB ComputeAABB(in Transform transform) => ComputeSegmentAABB(in this, transform);
 
     /// <summary>
@@ -52,7 +57,6 @@ public struct Segment : IEquatable<Segment>
     /// Ray cast versus this segment shape in local space. Optionally treat the segment as one-sided with hits from
     /// the left side being treated as a miss.
     /// </summary>
-    [PublicAPI]
     public CastOutput RayCast(in RayCastInput input, bool oneSided) => RayCastSegment(in input, in this, oneSided);
 
     /// <summary>
@@ -64,7 +68,6 @@ public struct Segment : IEquatable<Segment>
     /// <summary>
     /// Shape cast versus this line segment. Initial overlap is treated as a miss.
     /// </summary>
-    [PublicAPI]
     public CastOutput ShapeCast(in ShapeCastInput input) => ShapeCastSegment(in input, in this);
  
     /// <summary>
@@ -76,16 +79,21 @@ public struct Segment : IEquatable<Segment>
     /// <summary>
     /// Compute the distance between this line segment and another line segment, clamping at the end points if needed.
     /// </summary>
-    [PublicAPI]
-    public SegmentDistanceResult SegmentDistance(in Segment segmentB) =>
-        SegmentDistance(Point1, Point2, segmentB.Point1, segmentB.Point2);
+    public SegmentDistanceResult SegmentDistance(in Segment segmentB) => SegmentDistance(Point1, Point2, segmentB.Point1, segmentB.Point2);
     
-    public bool Equals(Segment other) =>
-        Point1.Equals(other.Point1) && Point2.Equals(other.Point2);
+    // Equals:
+    /// <summary>
+    /// Check if two segments are equal.
+    /// </summary>
+    public bool Equals(Segment other) => Point1.Equals(other.Point1) && Point2.Equals(other.Point2);
     
-    public override bool Equals(object? obj) =>
-        obj is Segment other && Equals(other);
+    /// <summary>
+    /// Check if an object is equal to this segment.
+    /// </summary>
+    public override bool Equals(object? obj) => obj is Segment other && Equals(other);
     
-    public override int GetHashCode() =>
-        HashCode.Combine(Point1, Point2);
+    /// <summary>
+    /// Returns a hash code for this segment.
+    /// </summary>
+    public override int GetHashCode() => HashCode.Combine(Point1, Point2);
 }

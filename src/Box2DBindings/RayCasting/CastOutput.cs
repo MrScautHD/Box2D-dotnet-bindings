@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Runtime.InteropServices;
 
 namespace Box2D;
@@ -5,7 +6,8 @@ namespace Box2D;
 /// <summary>
 /// Low level ray cast or shape-cast output data
 /// </summary>
-[StructLayout(LayoutKind.Sequential, Pack = 4)]
+[StructLayout(LayoutKind.Sequential)]
+[PublicAPI]
 public struct CastOutput
 {
     /// <summary>

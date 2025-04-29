@@ -1,7 +1,5 @@
-using Box2D.Character_Movement;
 using JetBrains.Annotations;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
@@ -15,6 +13,11 @@ struct WorldId
     [FieldOffset(2)]
     internal ushort generation;
 }
+
+/// <summary>
+/// A Box2D World, the container for all bodies, shapes, and constraints.
+/// </summary>
+[PublicAPI]
 public sealed partial class World
 {
     private WorldId id;
@@ -41,7 +44,6 @@ public sealed partial class World
     /// <summary>
     /// Destroy this world
     /// </summary>
-    [PublicAPI]
     public void Destroy()
     {
         foreach (var body in bodies.Values)
@@ -64,7 +66,6 @@ public sealed partial class World
     /// World id validation. Provides validation for up to 64K allocations.
     /// </summary>
     /// <returns>True if the world id is valid</returns>
-    [PublicAPI]
     public bool Valid => b2World_IsValid(id);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_Step")]
@@ -75,8 +76,7 @@ public sealed partial class World
     /// </summary>
     /// <param name="timeStep">The amount of time to simulate, this should be a fixed number. Usually 1/60.</param>
     /// <param name="subStepCount">The number of sub-steps, increasing the sub-step count can increase accuracy. Usually 4.</param>
-    [PublicAPI]
-    public void Step(float timeStep, int subStepCount) => b2World_Step(id, timeStep, subStepCount);
+    public void Step(float timeStep = 0.016666668f, int subStepCount = 4) => b2World_Step(id, timeStep, subStepCount);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_Draw")]
     private static extern void b2World_Draw(WorldId worldId, ref DebugDrawInternal draw);
@@ -85,8 +85,10 @@ public sealed partial class World
     /// Call this to draw shapes and other debug draw data
     /// </summary>
     /// <param name="draw">The debug draw implementation</param>
-    [PublicAPI]
-    public void Draw(in DebugDraw draw) => b2World_Draw(id, ref draw._internal);
+    public void Draw(DebugDraw draw)
+    {
+        b2World_Draw(id, ref draw.Internal);
+    }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetBodyEvents")]
     private static extern BodyEvents b2World_GetBodyEvents(WorldId worldId);
@@ -95,7 +97,6 @@ public sealed partial class World
     /// Get the body events for the current time step. The event data is transient. Do not store a reference to this data.
     /// </summary>
     /// <returns>The body events</returns>
-    [PublicAPI]
     public BodyEvents BodyEvents => Valid ? b2World_GetBodyEvents(id) : throw new InvalidOperationException("World is not valid");
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetSensorEvents")]
@@ -105,7 +106,6 @@ public sealed partial class World
     /// Get sensor events for the current time step. The event data is transient. Do not store a reference to this data.
     /// </summary>
     /// <returns>The sensor events</returns>
-    [PublicAPI]
     public SensorEvents SensorEvents => Valid ? b2World_GetSensorEvents(id) : throw new InvalidOperationException("World is not valid");
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetContactEvents")]
@@ -115,7 +115,6 @@ public sealed partial class World
     /// Get the contact events for the current time step. The event data is transient. Do not store a reference to this data.
     /// </summary>
     /// <returns>The contact events</returns>
-    [PublicAPI]
     public ContactEvents ContactEvents => Valid ? b2World_GetContactEvents(id) : throw new InvalidOperationException("World is not valid");
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_EnableSleeping")]
@@ -127,7 +126,6 @@ public sealed partial class World
     /// <summary>
     /// Gets or sets the sleeping enabled status of the world. If your application does not need sleeping, you can gain some performance by disabling sleep completely at the world level.
     /// </summary>
-    [PublicAPI]
     public bool SleepingEnabled
     {
         get => Valid ? b2World_IsSleepingEnabled(id) : throw new InvalidOperationException("World is not valid");
@@ -149,7 +147,6 @@ public sealed partial class World
     /// Gets or sets the continuous collision enabled state of the world.
     /// </summary>
     /// <remarks>Generally you should keep continuous collision enabled to prevent fast moving objects from going through static objects. The performance gain from disabling continuous collision is minor</remarks>
-    [PublicAPI]
     public bool ContinuousEnabled
     {
         get => Valid ? b2World_IsContinuousEnabled(id) : throw new InvalidOperationException("World is not valid");
@@ -170,7 +167,6 @@ public sealed partial class World
     /// <summary>
     /// The restitution speed threshold.
     /// </summary>
-    [PublicAPI]
     public float RestitutionThreshold
     {
         get => Valid ? b2World_GetRestitutionThreshold(id) : throw new InvalidOperationException("World is not valid");
@@ -191,7 +187,6 @@ public sealed partial class World
     /// <summary>
     /// The hit event threshold in meters per second.
     /// </summary>
-    [PublicAPI]
     public float HitEventThreshold
     {
         get => Valid ? b2World_GetHitEventThreshold(id) : throw new InvalidOperationException("World is not valid");
@@ -236,7 +231,6 @@ public sealed partial class World
     /// </summary>
     /// <param name="callback">The custom filter callback function</param>
     /// <param name="context">The context to be passed to the callback</param>
-    [PublicAPI]
     public unsafe void SetCustomFilterCallback<TContext>(CustomFilterCallback<TContext> callback, TContext context) where TContext : class
     {
         nint* contextBuffer = stackalloc nint[2];
@@ -258,7 +252,6 @@ public sealed partial class World
     /// </summary>
     /// <param name="callback">The custom filter callback function</param>
     /// <param name="context">The context to be passed to the callback</param>
-    [PublicAPI]
     public unsafe void SetCustomFilterCallback<TContext>(CustomFilterRefCallback<TContext> callback, ref TContext context) where TContext : unmanaged
     {
         fixed (TContext* contextPtr = &context)
@@ -277,19 +270,17 @@ public sealed partial class World
         }
     }
 
-
     /// <summary>
     /// Register the custom filter callback. This is optional.
     /// </summary>
     /// <param name="callback">The custom filter callback function</param>
     /// <param name="context">The context to be passed to the callback</param>
-    [PublicAPI]
     public void SetCustomFilterCallback(CustomFilterNintCallback callback, nint context)
     {
         b2World_SetCustomFilterCallback(id, callback, context);
     }
 
-    private static unsafe bool CustomFilterThunk(Shape shapeA, Shape shapeB, nint context)
+    private static bool CustomFilterThunk(Shape shapeA, Shape shapeB, nint context)
     {
         var callback = (CustomFilterCallback)GCHandle.FromIntPtr(context).Target!;
         return callback(shapeA, shapeB);
@@ -299,7 +290,6 @@ public sealed partial class World
     /// Register the custom filter callback. This is optional.
     /// </summary>
     /// <param name="nintCallback">The custom filter callback function</param>
-    [PublicAPI]
     public void SetCustomFilterCallback(CustomFilterCallback nintCallback)
     {
         nint context = GCHandle.ToIntPtr(GCHandle.Alloc(nintCallback));
@@ -337,7 +327,6 @@ public sealed partial class World
     /// </summary>
     /// <param name="callback">The pre-solve callback function</param>
     /// <param name="context">The context</param>
-    [PublicAPI]
     public unsafe void SetPreSolveCallback<TContext>(PreSolveCallback<TContext> callback, TContext context) where TContext : class
     {
         nint* contextBuffer = stackalloc nint[2];
@@ -359,7 +348,6 @@ public sealed partial class World
     /// </summary>
     /// <param name="callback">The pre-solve callback function</param>
     /// <param name="context">The context</param>
-    [PublicAPI]
     public unsafe void SetPreSolveCallback<TContext>(PreSolveRefCallback<TContext> callback, ref TContext context) where TContext : unmanaged
     {
         fixed (TContext* contextPtr = &context)
@@ -388,7 +376,6 @@ public sealed partial class World
     /// Register the pre-solve callback. This is optional.
     /// </summary>
     /// <param name="callback">The pre-solve callback function</param>
-    [PublicAPI]
     public void SetPreSolveCallback(PreSolveCallback callback)
     {
         nint context = GCHandle.ToIntPtr(GCHandle.Alloc(callback));
@@ -407,7 +394,6 @@ public sealed partial class World
     /// </summary>
     /// <param name="callback">The pre-solve callback function</param>
     /// <param name="context">The context</param>
-    [PublicAPI]
     public void SetPreSolveCallback(PreSolveNintCallback callback, nint context)
     {
         b2World_SetPreSolveCallback(id, callback, context);
@@ -422,7 +408,6 @@ public sealed partial class World
     /// <summary>
     /// The gravity vector
     /// </summary>
-    [PublicAPI]
     public Vec2 Gravity
     {
         get => Valid ? b2World_GetGravity(id) : throw new InvalidOperationException("World is not valid");
@@ -442,7 +427,6 @@ public sealed partial class World
     /// </summary>
     /// <param name="explosionDef">The explosion definition</param>
     /// <remarks>Explosions are modeled as a force, not as a collision event</remarks>
-    [PublicAPI]
     public void Explode(in ExplosionDef explosionDef) => b2World_Explode(id, explosionDef);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetContactTuning")]
@@ -455,7 +439,6 @@ public sealed partial class World
     /// <param name="dampingRatio">The contact bounciness with 1 being critical damping (non-dimensional)</param>
     /// <param name="pushSpeed">The maximum contact constraint push out speed (meters per second)</param>
     /// <remarks><i>Note: Advanced feature</i></remarks>
-    [PublicAPI]
     public void SetContactTuning(float hertz, float dampingRatio, float pushSpeed) =>
         b2World_SetContactTuning(id, hertz, dampingRatio, pushSpeed);
 
@@ -468,7 +451,6 @@ public sealed partial class World
     /// <param name="hertz">The contact stiffness (cycles per second)</param>
     /// <param name="dampingRatio">The contact bounciness with 1 being critical damping (non-dimensional)</param>
     /// <remarks>Advanced feature</remarks>
-    [PublicAPI]
     public void SetJointTuning(float hertz, float dampingRatio) => b2World_SetJointTuning(id, hertz, dampingRatio);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetMaximumLinearSpeed")]
@@ -480,7 +462,6 @@ public sealed partial class World
     /// <summary>
     /// The maximum linear speed.
     /// </summary>
-    [PublicAPI]
     public float MaximumLinearSpeed
     {
         get => Valid ? b2World_GetMaximumLinearSpeed(id) : throw new InvalidOperationException("World is not valid");
@@ -502,7 +483,6 @@ public sealed partial class World
     /// <summary>
     /// Enable/disable constraint warm starting. Advanced feature for testing. Disabling warm starting greatly reduces stability and provides no performance gain.
     /// </summary>
-    [PublicAPI]
     public bool WarmStartingEnabled
     {
         get => Valid ? b2World_IsWarmStartingEnabled(id) : throw new InvalidOperationException("World is not valid");
@@ -521,7 +501,6 @@ public sealed partial class World
     /// Get the number of awake bodies.
     /// </summary>
     /// <returns>The number of awake bodies</returns>
-    [PublicAPI]
     public int AwakeBodyCount => Valid ? b2World_GetAwakeBodyCount(id) : throw new InvalidOperationException("World is not valid");
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetProfile")]
@@ -531,7 +510,6 @@ public sealed partial class World
     /// Get the current world performance profile
     /// </summary>
     /// <returns>The world performance profile</returns>
-    [PublicAPI]
     public Profile Profile => Valid ? b2World_GetProfile(id) : throw new InvalidOperationException("World is not valid");
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetCounters")]
@@ -541,7 +519,6 @@ public sealed partial class World
     /// Get world counters and sizes
     /// </summary>
     /// <returns>The world counters and sizes</returns>
-    [PublicAPI]
     public Counters Counters => b2World_GetCounters(id);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetUserData")]
@@ -573,7 +550,6 @@ public sealed partial class World
     /// </summary>
     /// <param name="callback">The friction callback</param>
     /// <remarks>Passing NULL resets to default</remarks>
-    [PublicAPI]
     public void SetFrictionCallback(FrictionCallback callback) => b2World_SetFrictionCallback(id, callback);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetRestitutionCallback")]
@@ -584,7 +560,6 @@ public sealed partial class World
     /// </summary>
     /// <param name="callback">The restitution callback</param>
     /// <remarks>Passing NULL resets to default</remarks>
-    [PublicAPI]
     public void SetRestitutionCallback(RestitutionCallback callback) => b2World_SetRestitutionCallback(id, callback);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_DumpMemoryStats")]
@@ -594,7 +569,6 @@ public sealed partial class World
     /// Dumps memory stats to box2d_memory.txt
     /// </summary>
     /// <remarks>Memory stats are dumped to box2d_memory.txt</remarks>
-    [PublicAPI]
     public void DumpMemoryStats() => b2World_DumpMemoryStats(id);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateBody")]
@@ -605,7 +579,6 @@ public sealed partial class World
     /// </summary>
     /// <param name="def">The body definition</param>
     /// <returns>The body</returns>
-    [PublicAPI]
     public Body CreateBody(BodyDef def)
     {
         Body body = b2CreateBody(id, def._internal);
@@ -621,7 +594,6 @@ public sealed partial class World
     /// </summary>
     /// <param name="def">The distance joint definition</param>
     /// <returns>The distance joint</returns>
-    [PublicAPI]
     public DistanceJoint CreateJoint(DistanceJointDef def) => new(b2CreateDistanceJoint(id, def._internal));
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateMotorJoint")]
@@ -632,7 +604,6 @@ public sealed partial class World
     /// </summary>
     /// <param name="def">The motor joint definition</param>
     /// <returns>The motor joint</returns>
-    [PublicAPI]
     public MotorJoint CreateJoint(MotorJointDef def) => new(b2CreateMotorJoint(id, def._internal));
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateMouseJoint")]
@@ -643,7 +614,6 @@ public sealed partial class World
     /// </summary>
     /// <param name="def">The mouse joint definition</param>
     /// <returns>The mouse joint</returns>
-    [PublicAPI]
     public MouseJoint CreateJoint(MouseJointDef def) => new(b2CreateMouseJoint(id, def._internal));
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateFilterJoint")]
@@ -655,7 +625,6 @@ public sealed partial class World
     /// <param name="def">The filter joint definition</param>
     /// <returns>The filter joint</returns>
     /// <remarks>The filter joint is used to disable collision between two bodies. As a side effect of being a joint, it also keeps the two bodies in the same simulation island.</remarks>
-    [PublicAPI]
     public Joint CreateJoint(FilterJointDef def) => new(b2CreateFilterJoint(id, def._internal));
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreatePrismaticJoint")]
@@ -666,7 +635,6 @@ public sealed partial class World
     /// </summary>
     /// <param name="def">The prismatic joint definition</param>
     /// <returns>The prismatic joint</returns>
-    [PublicAPI]
     public PrismaticJoint CreateJoint(PrismaticJointDef def) => new(b2CreatePrismaticJoint(id, def._internal));
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateRevoluteJoint")]
@@ -677,7 +645,6 @@ public sealed partial class World
     /// </summary>
     /// <param name="def">The <see cref="RevoluteJointDef"/></param>
     /// <returns>The revolute joint</returns>
-    [PublicAPI]
     public RevoluteJoint CreateJoint(RevoluteJointDef def) => new(b2CreateRevoluteJoint(id, def._internal));
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateWeldJoint")]
@@ -688,7 +655,6 @@ public sealed partial class World
     /// </summary>
     /// <param name="def">The <see cref="WeldJointDef"/></param>
     /// <returns>The weld joint</returns>
-    [PublicAPI]
     public WeldJoint CreateJoint(WeldJointDef def) => new(b2CreateWeldJoint(id, def._internal));
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateWheelJoint")]
@@ -699,14 +665,15 @@ public sealed partial class World
     /// </summary>
     /// <param name="def">The wheel joint definition</param>
     /// <returns>The wheel joint</returns>
-    [PublicAPI]
     public WheelJoint CreateJoint(WheelJointDef def) => new(b2CreateWheelJoint(id, def._internal));
 
+    /// <summary>
+    /// Returns a string representation of this world
+    /// </summary>
     public override string ToString() => $"World: {id.index1}:{id.generation}";
 
     /// <summary>
     /// Gets the bodies in this world
     /// </summary>
-    [PublicAPI]
     public IEnumerable<Body> Bodies => Valid ? bodies.Values : throw new InvalidOperationException("World is not valid");
 }

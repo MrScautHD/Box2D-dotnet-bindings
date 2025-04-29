@@ -25,6 +25,15 @@ public struct Capsule
     /// </summary>
     public float Radius;
 
+    /// <summary>
+    /// Returns the total length of the capsule, which is the distance between
+    /// the two centers plus twice the radius.
+    /// </summary>
+    public float Length => (Vec2.Distance(Center1, Center2) + 2 * Radius);
+    
+    /// <summary>
+    /// Construct a capsule shape with two centers and a radius
+    /// </summary>
     public Capsule(Vec2 center1, Vec2 center2, float radius)
     {
         Center1 = center1;

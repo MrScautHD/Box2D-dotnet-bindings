@@ -3,6 +3,13 @@ using System.Runtime.InteropServices;
 
 namespace Box2D;
 
+/// <summary>
+/// A distance joint definition.<br/>
+/// This requires defining an anchor point on both
+/// bodies and the non-zero distance of the distance joint. The definition uses
+/// local anchor points so that the initial configuration can violate the
+/// constraint slightly. This helps when saving and loading a game.
+/// </summary>
 public class DistanceJoint : Joint
 {
     internal DistanceJoint(JointId id) : base(id)
@@ -162,6 +169,9 @@ public class DistanceJoint : Joint
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_GetMotorSpeed")]
     private static extern float b2DistanceJoint_GetMotorSpeed(JointId jointId);
 
+    /// <summary>
+    /// The desired motor speed, usually in meters per second
+    /// </summary>
     [PublicAPI]
     public float MotorSpeed
     {

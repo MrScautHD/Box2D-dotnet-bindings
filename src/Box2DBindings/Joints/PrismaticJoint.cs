@@ -9,6 +9,7 @@ namespace Box2D;
 /// The prismatic joint is useful for things like pistons and moving platforms, where you want a body to translate
 /// along an axis and have no rotation. Also called a <i>slider</i> joint.
 /// </summary>
+[PublicAPI]
 public class PrismaticJoint : Joint
 {
     internal PrismaticJoint(JointId id) : base(id)
@@ -24,7 +25,6 @@ public class PrismaticJoint : Joint
     /// Gets or sets the prismatic joint spring enabled state
     /// </summary>
     /// <returns>True if the prismatic joint spring is enabled</returns>
-    [PublicAPI]
     public bool SpringEnabled
     {
         get => b2PrismaticJoint_IsSpringEnabled(id);
@@ -37,7 +37,9 @@ public class PrismaticJoint : Joint
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_GetSpringHertz")]
     private static extern float b2PrismaticJoint_GetSpringHertz(JointId jointId);
 
-    [PublicAPI]
+    /// <summary>
+    /// The spring frequency in Hertz on this prismatic joint
+    /// </summary>
     public float SpringHertz
     {
         get => b2PrismaticJoint_GetSpringHertz(id);
@@ -50,7 +52,9 @@ public class PrismaticJoint : Joint
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_GetSpringDampingRatio")]
     private static extern float b2PrismaticJoint_GetSpringDampingRatio(JointId jointId);
 
-    [PublicAPI]
+    /// <summary>
+    /// The spring damping ratio on this prismatic joint
+    /// </summary>
     public float SpringDampingRatio
     {
         get => b2PrismaticJoint_GetSpringDampingRatio(id);
@@ -63,7 +67,9 @@ public class PrismaticJoint : Joint
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_IsLimitEnabled")]
     private static extern bool b2PrismaticJoint_IsLimitEnabled(JointId jointId);
 
-    [PublicAPI]
+    /// <summary>
+    /// The limit enabled state of this prismatic joint
+    /// </summary>
     public bool LimitEnabled
     {
         get => b2PrismaticJoint_IsLimitEnabled(id);
@@ -90,13 +96,11 @@ public class PrismaticJoint : Joint
     /// <summary>
     /// The lower joint limit of this prismatic joint
     /// </summary>
-    [PublicAPI]
     public float LowerLimit => b2PrismaticJoint_GetLowerLimit(id);
     
     /// <summary>
     /// The upper joint limit of this prismatic joint
     /// </summary>
-    [PublicAPI]
     public float UpperLimit => b2PrismaticJoint_GetUpperLimit(id);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_EnableMotor")]
@@ -108,7 +112,6 @@ public class PrismaticJoint : Joint
     /// <summary>
     /// The prismatic joint motor enabled state
     /// </summary>
-    [PublicAPI]
     public bool MotorEnabled
     {
         get => b2PrismaticJoint_IsMotorEnabled(id);
@@ -124,7 +127,6 @@ public class PrismaticJoint : Joint
     /// <summary>
     /// The prismatic joint motor speed
     /// </summary>
-    [PublicAPI]
     public float MotorSpeed
     {
         get => b2PrismaticJoint_GetMotorSpeed(id);
@@ -140,7 +142,6 @@ public class PrismaticJoint : Joint
     /// <summary>
     /// The prismatic joint maximum motor force
     /// </summary>
-    [PublicAPI]
     public float MaxMotorForce
     {
         get => b2PrismaticJoint_GetMaxMotorForce(id);
@@ -153,7 +154,6 @@ public class PrismaticJoint : Joint
     /// <summary>
     /// The prismatic joint current motor force
     /// </summary>
-    [PublicAPI]
     public float MotorForce => b2PrismaticJoint_GetMotorForce(id);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_GetTranslation")]
@@ -162,7 +162,6 @@ public class PrismaticJoint : Joint
     /// <summary>
     /// The current joint translation
     /// </summary>
-    [PublicAPI]
     public float Translation =>  b2PrismaticJoint_GetTranslation(id);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_GetSpeed")]
@@ -171,6 +170,5 @@ public class PrismaticJoint : Joint
     /// <summary>
     /// The current joint translation speed
     /// </summary>
-    [PublicAPI]
     public float Speed => b2PrismaticJoint_GetSpeed(id);
 }

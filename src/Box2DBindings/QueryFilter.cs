@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Runtime.InteropServices;
 
 namespace Box2D;
@@ -8,6 +9,7 @@ namespace Box2D;
 /// but not debris.
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
+[PublicAPI]
 public struct QueryFilter
 {
     /// <summary>
@@ -21,6 +23,9 @@ public struct QueryFilter
     /// </summary>
     public ulong MaskBits;
 
+    /// <summary>
+    /// Constructor for the query filter.
+    /// </summary>
     public QueryFilter(ulong categoryBits, ulong maskBits)
     {
         CategoryBits = categoryBits;
@@ -31,8 +36,11 @@ public struct QueryFilter
     /// The default query filter settings.
     /// </summary>
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultQueryFilter")]
-    public static extern QueryFilter DefaultQueryFilter();
+    private static extern QueryFilter DefaultQueryFilter();
 
+    /// <summary>
+    /// Default constructor for the query filter. This will set the filter to the default settings.
+    /// </summary>
     public QueryFilter()
     {
         this = DefaultQueryFilter();

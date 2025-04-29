@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Runtime.InteropServices;
 
 namespace Box2D;
@@ -5,7 +6,8 @@ namespace Box2D;
 /// <summary>
 /// Input parameters for ShapeCast
 /// </summary>
-[StructLayout(LayoutKind.Sequential, Pack = 4)]
+[StructLayout(LayoutKind.Sequential)]
+[PublicAPI]
 public struct ShapeCastPairInput
 {
     /// <summary>

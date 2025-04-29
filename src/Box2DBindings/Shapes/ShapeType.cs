@@ -3,7 +3,7 @@ namespace Box2D;
 /// <summary>
 /// Shape type
 /// </summary>
-public enum ShapeType : int
+public enum ShapeType
 {
     /// <summary>
     /// A circle with an offset

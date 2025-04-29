@@ -21,6 +21,7 @@ namespace Box2D;
 /// https://en.wikipedia.org/wiki/Polygonal_chain<br/>
 /// <b>Warning: Do not use chain shapes unless you understand the limitations. This is an advanced feature.</b>
 /// </summary>
+[PublicAPI]
 public class ChainDef
 {
     internal ChainDefInternal _internal;
@@ -33,6 +34,9 @@ public class ChainDef
         _internal = new ChainDefInternal();
     }
 
+    /// <summary>
+    /// Destructor for ChainDef.
+    /// </summary>
     unsafe ~ChainDef()
     {
         // Free the points and materials if they were allocated
@@ -53,7 +57,6 @@ public class ChainDef
     /// <summary>
     /// Use this to store application specific shape data.
     /// </summary>
-    [PublicAPI]
     public object? UserData
     {
         get => GetObjectAtPointer(_internal.UserData);
@@ -63,7 +66,6 @@ public class ChainDef
     /// <summary>
     /// An array of at least 4 points. These are cloned and may be temporary.
     /// </summary> 
-    [PublicAPI]
     public unsafe Span<Vec2> Points
     {
         get
@@ -90,12 +92,11 @@ public class ChainDef
         }
     }
 
-    private bool materialsAllocated = false;
+    private bool materialsAllocated;
     
     /// <summary>
     /// Surface materials for each segment. These are cloned.
     /// </summary>
-    [PublicAPI]
     public unsafe Span<SurfaceMaterial> Materials
     {
         get
@@ -126,18 +127,15 @@ public class ChainDef
     /// <summary>
     /// Contact filtering data.
     /// </summary>
-    [PublicAPI]
     public ref Filter Filter => ref _internal.Filter;
 
     /// <summary>
     /// Indicates a closed chain formed by connecting the first and last points
     /// </summary>
-    [PublicAPI]
     public ref bool IsLoop => ref _internal.IsLoop;
 
     /// <summary>
     /// Enable sensors to detect this chain. False by default.
     /// </summary>
-    [PublicAPI]
     public ref bool EnableSensorEvents => ref _internal.EnableSensorEvents;
 }

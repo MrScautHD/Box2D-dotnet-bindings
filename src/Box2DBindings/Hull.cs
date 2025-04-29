@@ -8,16 +8,26 @@ namespace Box2D;
 /// A convex hull. Used to create convex polygons.
 /// </summary>
 /// <remarks>
-/// <b>Warning: Do not modify these values directly, instead use <see cref="Hull.Compute(Span{Vec2})"/></b>
+/// <b>Warning: Do not modify these values directly, instead use <see cref="Hull.Compute(System.Span{System.Numerics.Vector2})"/></b>
 /// </remarks>
 [StructLayout(LayoutKind.Sequential)]
 [PublicAPI]
-public partial struct Hull
+public struct Hull
 {
-    private unsafe fixed float points[B2_MAX_POLYGON_VERTICES * 2];
+    private unsafe fixed float points[MAX_POLYGON_VERTICES * 2];
 
     private int count;
     
+    /// <summary>
+    /// Computes a hull from a set of points. This is a copy constructor.
+    /// </summary>
+    /// <param name="points">
+    /// The points to compute the hull from
+    /// </param>
+    /// <remarks>
+    /// This is a copy constructor. The hull will be computed and stored in this instance.
+    /// </remarks>
+    [PublicAPI]
     public Hull(Span<Vec2> points)
     {
         this = Compute(points);
@@ -32,8 +42,8 @@ public partial struct Hull
         {
             fixed (float* ptr = points)
             {
-                if (count > B2_MAX_POLYGON_VERTICES)
-                    throw new ArgumentOutOfRangeException(nameof(count), $"Count cannot be greater than {B2_MAX_POLYGON_VERTICES}");
+                if (count > MAX_POLYGON_VERTICES)
+                    throw new ArgumentOutOfRangeException(nameof(count), $"Count cannot be greater than {MAX_POLYGON_VERTICES}");
                 
                 return new ReadOnlySpan<Vec2>(ptr, count);
             }
@@ -59,8 +69,8 @@ public partial struct Hull
     /// </remarks>
     public static unsafe Hull Compute(Span<Vec2> points)
     {
-        if (points.Length > B2_MAX_POLYGON_VERTICES)
-            throw new ArgumentException($"Hull can only contain up to {B2_MAX_POLYGON_VERTICES} points");
+        if (points.Length > MAX_POLYGON_VERTICES)
+            throw new ArgumentException($"Hull can only contain up to {MAX_POLYGON_VERTICES} points");
         
         fixed (Vec2* pointsPtr = points)
             return Compute(pointsPtr, points.Length);

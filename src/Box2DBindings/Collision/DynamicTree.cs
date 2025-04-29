@@ -4,6 +4,9 @@ using System.Runtime.InteropServices;
 
 namespace Box2D;
 
+/// <summary>
+/// Dynamic tree for broad-phase collision detection.
+/// </summary>
 [StructLayout(LayoutKind.Sequential)]
 public unsafe struct DynamicTree
 {
@@ -20,10 +23,29 @@ public unsafe struct DynamicTree
     private int* binIndices;
     private int rebuildCapacity;
 
+    /// <summary>
+    /// The nodes in the tree. This is a read-only span of the nodes.
+    /// </summary>
     public ReadOnlySpan<TreeNode> Nodes => new(nodes, nodeCapacity);
+    
+    /// <summary>
+    /// The indices of the leaves in the tree. This is a read-only span of the leaf indices.
+    /// </summary>
     public ReadOnlySpan<int> LeafIndices => new(leafIndices, rebuildCapacity);
+    
+    /// <summary>
+    /// The bounding boxes of the leaves in the tree. This is a read-only span of the leaf boxes.
+    /// </summary>
     public ReadOnlySpan<AABB> LeafBoxes => new(leafBoxes, rebuildCapacity);
+    
+    /// <summary>
+    /// The centers of the leaves in the tree. This is a read-only span of the leaf centers.
+    /// </summary>
     public ReadOnlySpan<Vec2> LeafCenters => new(leafCenters, rebuildCapacity);
+    
+    /// <summary>
+    /// The bin indices of the leaves in the tree. This is a read-only span of the bin indices.
+    /// </summary>
     public ReadOnlySpan<int> BinIndices => new(binIndices, rebuildCapacity);
     
     /// <summary>
@@ -294,7 +316,7 @@ public unsafe struct DynamicTree
         }
     }
     
-    private unsafe static float TreeRayCastCallbackThunk(in RayCastInput input, int proxyId, uint64_t userData, nint context)
+    private static float TreeRayCastCallbackThunk(in RayCastInput input, int proxyId, uint64_t userData, nint context)
     {
         var callback = (TreeRayCastCallback)GCHandle.FromIntPtr(context).Target!;
         return callback(input, proxyId, userData);
@@ -464,6 +486,7 @@ public unsafe struct DynamicTree
     /// <param name="input">The ray cast input data. The ray extends from p1 to p1 + maxFraction * (p2 - p1).</param>
     /// <param name="maskBits">Filter bits: `bool accept = (maskBits &amp; node-&gt;categoryBits) != 0;`</param>
     /// <param name="callback">A callback class that is called for each proxy that is hit by the shape</param>
+    /// <param name="context">User context that is passed to the callback</param>
     /// <returns>Performance data</returns>
     [PublicAPI]
     public TreeStats ShapeCast(in ShapeCastInput input, uint64_t maskBits, TreeShapeCastNintCallback callback, nint context)

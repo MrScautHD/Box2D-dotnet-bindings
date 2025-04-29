@@ -1,4 +1,5 @@
 using Box2D.Delegates.Safe;
+using JetBrains.Annotations;
 using System;
 using System.Runtime.InteropServices;
 
@@ -7,9 +8,11 @@ namespace Box2D;
 /// <summary>
 /// This class holds callbacks you can implement to draw a Box2D world.
 /// </summary>
-public class DebugDrawSimple:DebugDraw
+[PublicAPI]
+public sealed class DebugDrawSimple : DebugDraw
 {
-    
+    internal override ref DebugDrawInternal Internal => ref @internal;
+
     /// <summary>
     /// Callback function to draw a closed polygon provided in CCW order.
     /// </summary>
@@ -19,8 +22,8 @@ public class DebugDrawSimple:DebugDraw
         {
             var del = value;
             void Wrapper(Vec2* vertices, int vertexCount, HexColor color, nint _) =>
-                del(new ReadOnlySpan<Vec2>(vertices,vertexCount), color);
-            _internal.DrawPolygon = Wrapper;
+                del(new ReadOnlySpan<Vec2>(vertices, vertexCount), color);
+            @internal.DrawPolygon = Wrapper;
         }
     }
 
@@ -34,7 +37,7 @@ public class DebugDrawSimple:DebugDraw
             var del = value;
             void Wrapper(Transform transform, Vec2* vertices, int vertexCount, float radius, HexColor color, nint _) =>
                 del(transform, new ReadOnlySpan<Vec2>(vertices, vertexCount), radius, color);
-            _internal.DrawSolidPolygon = Wrapper;
+            @internal.DrawSolidPolygon = Wrapper;
         }
     }
 
@@ -48,10 +51,10 @@ public class DebugDrawSimple:DebugDraw
             var del = value;
             void Wrapper(Vec2 center, float radius, HexColor color, nint _) =>
                 del(center, radius, color);
-            _internal.DrawCircle = Wrapper;
+            @internal.DrawCircle = Wrapper;
         }
     }
-    
+
     /// <summary>
     /// Callback function to draw a solid circle.
     /// </summary>
@@ -62,10 +65,10 @@ public class DebugDrawSimple:DebugDraw
             var del = value;
             void Wrapper(Transform transform, float radius, HexColor color, nint _) =>
                 del(transform, radius, color);
-            _internal.DrawSolidCircle = Wrapper;
+            @internal.DrawSolidCircle = Wrapper;
         }
     }
-    
+
     /// <summary>
     /// Callback function to draw a solid capsule.
     /// </summary>
@@ -76,10 +79,10 @@ public class DebugDrawSimple:DebugDraw
             var del = value;
             void Wrapper(Vec2 p1, Vec2 p2, float radius, HexColor color, nint _) =>
                 del(p1, p2, radius, color);
-            _internal.DrawSolidCapsule = Wrapper;
+            @internal.DrawSolidCapsule = Wrapper;
         }
     }
-    
+
     /// <summary>
     /// Callback function to draw a line segment.
     /// </summary>
@@ -90,10 +93,10 @@ public class DebugDrawSimple:DebugDraw
             var del = value;
             void Wrapper(Vec2 p1, Vec2 p2, HexColor color, nint _) =>
                 del(p1, p2, color);
-            _internal.DrawSegment = Wrapper;
+            @internal.DrawSegment = Wrapper;
         }
     }
-    
+
     /// <summary>
     /// Callback function to draw a transform. Choose your own length scale.
     /// </summary>
@@ -104,10 +107,10 @@ public class DebugDrawSimple:DebugDraw
             var del = value;
             void Wrapper(Transform transform, nint _) =>
                 del(transform);
-            _internal.DrawTransform = Wrapper;
+            @internal.DrawTransform = Wrapper;
         }
     }
-   
+
     /// <summary>
     /// Callback function to draw a point.
     /// </summary>
@@ -118,10 +121,10 @@ public class DebugDrawSimple:DebugDraw
             var del = value;
             void Wrapper(Vec2 p, float size, HexColor color, nint _) =>
                 del(p, size, color);
-            _internal.DrawPoint = Wrapper;
+            @internal.DrawPoint = Wrapper;
         }
     }
-    
+
     /// <summary>
     /// Callback function to draw a string in world space
     /// </summary>
@@ -135,9 +138,7 @@ public class DebugDrawSimple:DebugDraw
                 string? str = Marshal.PtrToStringUTF8(s);
                 del(p, str, color);
             }
-            _internal.DrawString = Wrapper;
+            @internal.DrawString = Wrapper;
         }
     }
-    
-    
 }

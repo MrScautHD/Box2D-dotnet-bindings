@@ -25,7 +25,6 @@ public delegate bool PlaneResultRefCallback<TContext>(Shape shapeId, in PlaneRes
 /// </summary>
 /// <param name="shapeId">The shape ID</param>
 /// <param name="plane">The plane</param>
-/// <param name="context">The user context</param>
 /// <returns>True to continue gathering planes</returns>
 public delegate bool PlaneResultCallback(Shape shapeId, in PlaneResult plane);
 

@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Runtime.InteropServices;
 
 namespace Box2D.Character_Movement;
@@ -5,7 +6,8 @@ namespace Box2D.Character_Movement;
 /// <summary>
 /// Result returned by b2SolvePlanes.
 /// </summary>
-[StructLayout(LayoutKind.Sequential, Pack = 4)]
+[StructLayout(LayoutKind.Sequential)]
+[PublicAPI]
 public struct PlaneSolverResult
 {
     /// <summary>

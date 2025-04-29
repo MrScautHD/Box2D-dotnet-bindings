@@ -1,23 +1,32 @@
 ﻿global using static Box2D.Core;
 using JetBrains.Annotations;
 using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 [assembly:InternalsVisibleTo("UnitTests")]
 
 namespace Box2D;
 
+/// <summary>
+/// Core Box2D functions that don't fit into other categories.
+/// </summary>
 public static class Core
 {
     internal const string libraryName = "box2d";
 
+    /// <summary>
+    /// Multiply and subtract two vectors.
+    /// </summary>
     public static Vec2 MultiplySubtract(this Vec2 a, float s, Vec2 b)
     {
         return new Vec2(a.X - s * b.X, a.Y - s * b.Y);
     }
     
-    public static Vec2 TransformPoint( Transform t, in Vec2 p )
+    /// <summary>
+    /// Transform a point by a transform. The transform rotates the point about the origin.
+    /// </summary>
+    public static Vec2 TransformPoint(Transform t, in Vec2 p)
     {
         float x = ( t.Rotation.Cos * p.X - t.Rotation.Sin * p.Y ) + t.Position.X;
         float y = ( t.Rotation.Sin * p.X + t.Rotation.Cos * p.Y ) + t.Position.Y;
@@ -218,6 +227,9 @@ public static class Core
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2SetAssertFcn")]
     public static extern void SetAssertFunction(AssertFunction assertFcn);
     
+    /// <summary>
+    /// Assert function. This is called when an assertion fails.
+    /// </summary>
     public delegate int AssertFunction(string condition, string fileName, int lineNumber);
     
     internal static object? GetObjectAtPointer(nint ptr)

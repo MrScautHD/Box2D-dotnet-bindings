@@ -1,5 +1,4 @@
 using JetBrains.Annotations;
-using System;
 
 namespace Box2D;
 
@@ -12,10 +11,14 @@ namespace Box2D;
 /// 1. you might not know where the center of mass will be<br/>
 /// 2. if you add/remove shapes from a body and recompute the mass, the joints will be broken
 /// </summary>
+[PublicAPI]
 public class RevoluteJointDef
 {
     internal RevoluteJointDefInternal _internal;
     
+    /// <summary>
+    /// Creates a revolute joint definition with the default values.
+    /// </summary>
     public RevoluteJointDef()
     {
         _internal = new RevoluteJointDefInternal();
@@ -24,104 +27,87 @@ public class RevoluteJointDef
     /// <summary>
     /// The first attached body
     /// </summary>
-    [PublicAPI]
     public ref Body BodyA => ref _internal.BodyA;
 
     /// <summary>
     /// The second attached body
     /// </summary>
-    [PublicAPI]
     public ref Body BodyB => ref _internal.BodyB;
 
     /// <summary>
     /// The local anchor point relative to bodyA's origin
     /// </summary>
-    [PublicAPI]
     public ref Vec2 LocalAnchorA => ref _internal.LocalAnchorA;
 
     /// <summary>
     /// The local anchor point relative to bodyB's origin
     /// </summary>
-    [PublicAPI]
     public ref Vec2 LocalAnchorB => ref _internal.LocalAnchorB;
 
     /// <summary>
     /// The bodyB angle minus bodyA angle in the reference state (radians).
     /// This defines the zero angle for the joint limit.
     /// </summary>
-    [PublicAPI]
     public ref float ReferenceAngle => ref _internal.ReferenceAngle;
 
     /// <summary>
     /// Enable a rotational spring on the revolute hinge axis
     /// </summary>
-    [PublicAPI]
     public ref bool EnableSpring => ref _internal.EnableSpring;
 
     /// <summary>
     /// The spring stiffness Hertz, cycles per second
     /// </summary>
-    [PublicAPI]
     public ref float Hertz => ref _internal.Hertz;
 
     /// <summary>
     /// The spring damping ratio, non-dimensional
     /// </summary>
-    [PublicAPI]
     public ref float DampingRatio => ref _internal.DampingRatio;
 
     /// <summary>
     /// A flag to enable joint limits
     /// </summary>
-    [PublicAPI]
     public ref bool EnableLimit => ref _internal.EnableLimit;
 
     /// <summary>
     /// The lower angle for the joint limit in radians. Minimum of -0.95*pi radians.
     /// </summary>
-    [PublicAPI]
     public ref float LowerAngle => ref _internal.LowerAngle;
 
     /// <summary>
     /// The upper angle for the joint limit in radians. Maximum of 0.95*pi radians.
     /// </summary>
-    [PublicAPI]
     public ref float UpperAngle => ref _internal.UpperAngle;
 
     /// <summary>
     /// A flag to enable the joint motor
     /// </summary>
-    [PublicAPI]
     public ref bool EnableMotor => ref _internal.EnableMotor;
 
     /// <summary>
     /// The maximum motor torque, typically in newton-meters
     /// </summary>
-    [PublicAPI]
     public ref float MaxMotorTorque => ref _internal.MaxMotorTorque;
 
     /// <summary>
     /// The desired motor speed in radians per second
     /// </summary>
-    [PublicAPI]
     public ref float MotorSpeed => ref _internal.MotorSpeed;
 
     /// <summary>
     /// Scale the debug draw
     /// </summary>
-    [PublicAPI]
     public ref float DrawSize => ref _internal.DrawSize;
 
     /// <summary>
     /// Set this flag to true if the attached bodies should collide
     /// </summary>
-    [PublicAPI]
     public ref bool CollideConnected => ref _internal.CollideConnected;
 
     /// <summary>
     /// User data
     /// </summary>
-    [PublicAPI]
     public object? UserData
     {
         get => GetObjectAtPointer(_internal.UserData);

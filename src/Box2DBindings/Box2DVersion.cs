@@ -1,5 +1,7 @@
 using System.Runtime.InteropServices;
-
+/// <summary>
+/// Box2D version information.
+/// </summary>
 [StructLayout(LayoutKind.Sequential)]
 public struct Box2DVersion
 {

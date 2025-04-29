@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System;
 using System.Runtime.InteropServices;
 
@@ -6,6 +7,7 @@ namespace Box2D;
 /// <summary>
 /// Joints allow you to connect rigid bodies together while allowing various forms of relative motions.
 /// </summary>
+[PublicAPI]
 public class Joint
 {
     internal JointId id;
@@ -126,6 +128,9 @@ public class Joint
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetCollideConnected")]
     private static extern bool b2Joint_GetCollideConnected(JointId jointId);
 
+    /// <summary>
+    /// Set this flag to true if the attached bodies should collide
+    /// </summary>
     public bool CollideConnected
     {
         get => Valid ? b2Joint_GetCollideConnected(id) : throw new InvalidOperationException("Joint is not valid");

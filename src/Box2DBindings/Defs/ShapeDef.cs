@@ -1,5 +1,4 @@
 using JetBrains.Annotations;
-using System;
 
 namespace Box2D;
 
@@ -8,10 +7,14 @@ namespace Box2D;
 /// This is a temporary object used to bundle shape creation parameters. You may use
 /// the same shape definition to create multiple shapes.
 /// </summary>
+[PublicAPI]
 public class ShapeDef
 {
     internal ShapeDefInternal _internal;
  
+    /// <summary>
+    /// Creates a shape definition with the default values.
+    /// </summary>
     public ShapeDef()
     {
         _internal = ShapeDefInternal.Default;
@@ -20,7 +23,6 @@ public class ShapeDef
     /// <summary>
     /// Use this to store application specific shape data.
     /// </summary>
-    [PublicAPI]
     public object? UserData
     {
         get => GetObjectAtPointer(_internal.UserData);
@@ -31,19 +33,16 @@ public class ShapeDef
     /// User material identifier. This is passed with query results and to friction and restitution
     /// combining functions. It is not used internally.
     /// </summary>
-    [PublicAPI]
     public ref SurfaceMaterial Material => ref _internal.Material;
 
     /// <summary>
     /// The density, usually in kg/m².
     /// </summary>
-    [PublicAPI]
     public ref float Density => ref _internal.Density;
 
     /// <summary>
     /// Collision filtering data.
     /// </summary>
-    [PublicAPI]
     public ref Filter Filter => ref _internal.Filter;
 
     /// <summary>
@@ -51,32 +50,27 @@ public class ShapeDef
     /// Sensors do not have continuous collision. Instead, use a ray or shape cast for those scenarios.
     /// <i>Note: Sensor events are disabled by default.</i>
     /// </summary>
-    [PublicAPI]
     public ref bool IsSensor => ref _internal.IsSensor;
 
     /// <summary>
     /// Enable sensor events for this shape. This applies to sensors and non-sensors. False by default, even for sensors.
     /// </summary>
-    [PublicAPI]
     public ref bool EnableSensorEvents => ref _internal.EnableSensorEvents;
 
     /// <summary>
     /// Enable contact events for this shape. Only applies to kinematic and dynamic bodies. Ignored for sensors. False by default.
     /// </summary>
-    [PublicAPI]
     public ref bool EnableContactEvents => ref _internal.EnableContactEvents;
 
     /// <summary>
     /// Enable hit events for this shape. Only applies to kinematic and dynamic bodies. Ignored for sensors. False by default.
     /// </summary>
-    [PublicAPI]
     public ref bool EnableHitEvents => ref _internal.EnableHitEvents;
 
     /// <summary>
     /// Enable pre-solve contact events for this shape. Only applies to dynamic bodies. These are expensive
     /// and must be carefully handled due to threading. Ignored for sensors.
     /// </summary>
-    [PublicAPI]
     public ref bool EnablePreSolveEvents => ref _internal.EnablePreSolveEvents;
 
     /// <summary>
@@ -85,12 +79,10 @@ public class ShapeDef
     /// when there are many static shapes.
     /// This is implicitly always true for sensors, dynamic bodies, and kinematic bodies.
     /// </summary>
-    [PublicAPI]
     public ref bool InvokeContactCreation => ref _internal.InvokeContactCreation;
 
     /// <summary>
     /// Should the body update the mass properties when this shape is created. Default is true.
     /// </summary>
-    [PublicAPI]
     public ref bool UpdateBodyMass => ref _internal.UpdateBodyMass;
 }

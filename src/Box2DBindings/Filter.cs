@@ -50,8 +50,11 @@ public struct Filter
     /// The default filter settings.
     /// </summary>
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultFilter")]
-    public static extern Filter DefaultFilter();
+    private static extern Filter DefaultFilter();
 
+    /// <summary>
+    /// Creates a filter with the default values.
+    /// </summary>
     public Filter()
     {
         this = DefaultFilter();
