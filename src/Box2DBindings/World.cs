@@ -27,6 +27,8 @@ public sealed partial class World
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateWorld")]
     private static extern WorldId b2CreateWorld(in WorldDefInternal def);
 
+    private static bool initialized;
+    
     /// <summary>
     /// Create a world for rigid body simulation. A world contains bodies, shapes, and constraints. You make create up to 128 worlds. Each world is completely independent and may be simulated in parallel.
     /// </summary>
@@ -34,9 +36,34 @@ public sealed partial class World
     /// <returns>The world</returns>
     public static World CreateWorld(WorldDef def)
     {
+        if (!initialized)
+        {
+            initialized = true;
+            Core.SetAssertFunction(Core.Assert);
+        }
+        
         var world = b2CreateWorld(def._internal);
         return GetWorld(world);
     }
+
+    /// <summary>
+    /// Create a world for rigid body simulation. A world contains bodies, shapes, and constraints. You make create up to 128 worlds. Each world is completely independent and may be simulated in parallel.
+    /// </summary>
+    /// <param name="def">The world definition</param>
+    public World(WorldDef def)
+    {
+        if (!initialized)
+        {
+            initialized = true;
+            Core.SetAssertFunction(Core.Assert);
+        }
+        
+        id = b2CreateWorld(def._internal);
+        worlds.Add(id.index1, this);
+    }
+    
+    private World()
+    { }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DestroyWorld")]
     private static extern void b2DestroyWorld(WorldId worldId);
@@ -48,6 +75,7 @@ public sealed partial class World
     {
         foreach (var body in bodies.Values)
             body.Destroy();
+        bodies.Clear();
 
         // dealloc user data
         nint userDataPtr = b2World_GetUserData(id);
@@ -56,7 +84,6 @@ public sealed partial class World
         b2World_SetUserData(id, 0);
 
         b2DestroyWorld(id);
-        bodies.Remove(id.index1);
     }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_IsValid")]

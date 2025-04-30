@@ -18,6 +18,50 @@ public struct Shape : IEquatable<Shape>
     private ushort generation;
 
     /// <summary>
+    /// Create a shape on the specified body with the specified definition.
+    /// </summary>
+    /// <param name="body">The body on which to create the shape</param>
+    /// <param name="def">The shape definition</param>
+    /// <param name="circle">The shape to create</param>
+    public Shape(Body body, in ShapeDef def, in Circle circle)
+    {
+        this = body.CreateShape(def, circle);
+    }
+    
+    /// <summary>
+    /// Create a shape on the specified body with the specified definition.
+    /// </summary>
+    /// <param name="body">The body on which to create the shape</param>
+    /// <param name="def">The shape definition</param>
+    /// <param name="segment">The shape to create</param>
+    public Shape(Body body, in ShapeDef def, in Segment segment)
+    {
+        this = body.CreateShape(def, segment);
+    }
+    
+    /// <summary>
+    /// Create a shape on the specified body with the specified definition.
+    /// </summary>
+    /// <param name="body">The body on which to create the shape</param>
+    /// <param name="def">The shape definition</param>
+    /// <param name="capsule">The shape to create</param>
+    public Shape(Body body, in ShapeDef def, in Capsule capsule)
+    {
+        this = body.CreateShape(def, capsule);
+    }
+    
+    /// <summary>
+    /// Create a shape on the specified body with the specified definition.
+    /// </summary>
+    /// <param name="body">The body on which to create the shape</param>
+    /// <param name="def">The shape definition</param>
+    /// <param name="polygon">The shape to create</param>
+    public Shape(Body body, in ShapeDef def, in Polygon polygon)
+    {
+        this = body.CreateShape(def, polygon);
+    }
+    
+    /// <summary>
     /// Default comparer for Shape instances. This is used for sorting and
     /// comparing shapes. Using the default comparer is recommended
     /// to avoid boxing and unboxing overhead.

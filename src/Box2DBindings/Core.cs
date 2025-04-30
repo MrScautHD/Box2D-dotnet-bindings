@@ -289,4 +289,11 @@ public static class Core
         userDataPtr = GCHandle.ToIntPtr(handle);
         setFunc(param, userDataPtr);
     }
+    
+    internal static int Assert(string condition, string fileName, int lineNumber)
+    {
+        throw new InvalidOperationException($"Assertion failed: {condition} in {fileName} at line {lineNumber}");
+    }
 }
+
+ 

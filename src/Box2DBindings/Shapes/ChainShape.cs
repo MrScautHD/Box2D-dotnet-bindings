@@ -15,6 +15,16 @@ public struct ChainShape
     private ushort world0;
     private ushort generation;
     
+    /// <summary>
+    /// Create a ChainShape on the specified body with the specified definition.
+    /// </summary>
+    /// <param name="body">The body on which to create the shape</param>
+    /// <param name="def">The ChainDef definition</param>
+    public ChainShape(Body body, ChainDef def)
+    {
+        this = body.CreateChain(def);
+    }
+    
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DestroyChain")]
     private static extern void b2DestroyChain(ChainShape chainId);
     

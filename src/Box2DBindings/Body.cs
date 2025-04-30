@@ -19,6 +19,16 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     private ushort generation;
 
     /// <summary>
+    /// Create a body in the supplied world using the suppled BodyDef
+    /// </summary>
+    /// <param name="world">The world in which to create the body</param>
+    /// <param name="def">The BodyDef to use to create the body</param>
+    public Body(World world, BodyDef def)
+    {
+        this = world.CreateBody(def);
+    }
+    
+    /// <summary>
     /// Default comparer for Body instances. This is used for sorting and
     /// comparing Body instances. Using the default comparer is recommended
     /// to avoid boxing and unboxing overhead.
