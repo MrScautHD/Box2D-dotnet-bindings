@@ -27,9 +27,14 @@ public struct CollisionPlane
     /// </summary>
     public float Push;
 
+    private byte clipVelocity;
+    
     /// <summary>
     /// Indicates if b2ClipVector should clip against this plane. Should be false for soft collision.
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
-    public bool ClipVelocity;
+    public bool ClipVelocity
+    {
+        get => clipVelocity != 0;
+        set => clipVelocity = value ? (byte)1 : (byte)0;
+    }
 }

@@ -21,9 +21,9 @@ namespace Box2D;
 public abstract class DebugDraw
 {
     internal DebugDrawInternal @internal = new();
-        
+
     internal abstract ref DebugDrawInternal Internal { get; }
-    
+
     /// <summary>
     /// Drawing bounds for the debug draw.
     /// </summary>
@@ -32,70 +32,126 @@ public abstract class DebugDraw
     /// <summary>
     /// Option to restrict drawing to a rectangular region. May suffer from unstable depth sorting.
     /// </summary>
-    public ref bool UseDrawingBounds => ref @internal.UseDrawingBounds;
+    public bool UseDrawingBounds
+    {
+        get => @internal.UseDrawingBounds != 0;
+        set => @internal.UseDrawingBounds = (byte)(value ? 1 : 0);
+    }
 
     /// <summary>
     /// Option to draw shapes
     /// </summary>
-    public ref bool DrawShapes => ref @internal.DrawShapes;
+    public bool DrawShapes
+    {
+        get => @internal.DrawShapes != 0;
+        set => @internal.DrawShapes = (byte)(value ? 1 : 0);
+    }
 
     /// <summary>
     /// Option to draw joints
     /// </summary>
-    public ref bool DrawJoints => ref @internal.DrawJoints;
+    public bool DrawJoints
+    {
+        get => @internal.DrawJoints != 0;
+        set => @internal.DrawJoints = (byte)(value ? 1 : 0);
+    }
 
     /// <summary>
     /// Option to draw additional information for joints
     /// </summary>
-    public ref bool DrawJointExtras => ref @internal.DrawJointExtras;
+    public bool DrawJointExtras
+    {
+        get => @internal.DrawJointExtras != 0;
+        set => @internal.DrawJointExtras = (byte)(value ? 1 : 0);
+    }
 
     /// <summary>
     /// Option to draw the bounding boxes for shapes
     /// </summary>
-    public ref bool DrawBounds => ref @internal.DrawBounds;
+    public bool DrawBounds
+    {
+        get => @internal.DrawBounds != 0;
+        set => @internal.DrawBounds = (byte)(value ? 1 : 0);
+    }
 
     /// <summary>
     /// Option to draw the mass and center of mass of dynamic bodies
     /// </summary>
-    public ref bool DrawMass => ref @internal.DrawMass;
+    public bool DrawMass
+    {
+        get => @internal.DrawMass != 0;
+        set => @internal.DrawMass = (byte)(value ? 1 : 0);
+    }
 
     /// <summary>
     /// Option to draw body names
     /// </summary>
-    public ref bool DrawBodyNames => ref @internal.DrawBodyNames;
+    public bool DrawBodyNames
+    {
+        get => @internal.DrawBodyNames != 0;
+        set => @internal.DrawBodyNames = (byte)(value ? 1 : 0);
+    }
 
     /// <summary>
     /// Option to draw contact points
     /// </summary>
-    public ref bool DrawContacts => ref @internal.DrawContacts;
+    public bool DrawContacts
+    {
+        get => @internal.DrawContacts != 0;
+        set => @internal.DrawContacts = (byte)(value ? 1 : 0);
+    }
 
     /// <summary>
     /// Option to visualize the graph coloring used for contacts and joints
     /// </summary>
-    public ref bool DrawGraphColors => ref @internal.DrawGraphColors;
+    public bool DrawGraphColors
+    {
+        get => @internal.DrawGraphColors != 0;
+        set => @internal.DrawGraphColors = (byte)(value ? 1 : 0);
+    }
 
     /// <summary>
     /// Option to draw contact normals
     /// </summary>
-    public ref bool DrawContactNormals => ref @internal.DrawContactNormals;
+    public bool DrawContactNormals
+    {
+        get => @internal.DrawContactNormals != 0;
+        set => @internal.DrawContactNormals = (byte)(value ? 1 : 0);
+    }
 
     /// <summary>
     /// Option to draw contact normal impulses
     /// </summary>
-    public ref bool DrawContactImpulses => ref @internal.DrawContactImpulses;
+    public bool DrawContactImpulses
+    {
+        get => @internal.DrawContactImpulses != 0;
+        set => @internal.DrawContactImpulses = (byte)(value ? 1 : 0);
+    }
 
     /// <summary>
     /// Option to draw contact friction impulses
     /// </summary>
-    public ref bool DrawFrictionImpulses => ref @internal.DrawFrictionImpulses;
+    public bool DrawFrictionImpulses
+    {
+        get => @internal.DrawFrictionImpulses != 0;
+        set => @internal.DrawFrictionImpulses = (byte)(value ? 1 : 0);
+    }
 
     /// <summary>
     /// Option to draw contact feature ids
     /// </summary>
-    public ref bool DrawContactFeatures => ref @internal.DrawContactFeatures;
+    public bool DrawContactFeatures
+    {
+        get => @internal.DrawContactFeatures != 0;
+        set => @internal.DrawContactFeatures = (byte)(value ? 1 : 0);
+    }
 
     /// <summary>
     /// Option to draw contact friction impulses
     /// </summary>
-    public ref bool DrawIslands => ref @internal.DrawIslands;
+    public bool DrawIslands
+    {
+        get => @internal.DrawIslands != 0;
+        set => @internal.DrawIslands = (byte)(value ? 1 : 0);
+    }
 }

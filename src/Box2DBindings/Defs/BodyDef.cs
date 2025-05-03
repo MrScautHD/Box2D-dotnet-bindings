@@ -13,7 +13,7 @@ namespace Box2D;
 public class BodyDef
 {
     internal BodyDefInternal _internal;
-    
+
     /// <summary>
     /// Constructor for BodyDef.
     /// </summary>
@@ -21,7 +21,7 @@ public class BodyDef
     {
         _internal = new BodyDefInternal();
     }
-    
+
     /// <summary>
     /// Destructor for BodyDef.
     /// </summary>
@@ -109,7 +109,7 @@ public class BodyDef
             }
         }
     }
-    
+
     /// <summary>
     /// Use this to store application specific body data.
     /// </summary>
@@ -122,17 +122,29 @@ public class BodyDef
     /// <summary>
     /// Set this flag to false if this body should never fall asleep.
     /// </summary>
-    public ref bool EnableSleep => ref _internal.EnableSleep;
+    public bool EnableSleep
+    {
+        get => _internal.EnableSleep != 0;
+        set => _internal.EnableSleep = value ? (byte)1 : (byte)0;
+    }
 
     /// <summary>
     /// Is this body initially awake or sleeping?
     /// </summary>
-    public ref bool IsAwake => ref _internal.IsAwake;
+    public bool IsAwake
+    {
+        get => _internal.IsAwake != 0;
+        set => _internal.IsAwake = value ? (byte)1 : (byte)0;
+    }
 
     /// <summary>
     /// Should this body be prevented from rotating? Useful for characters.
     /// </summary>
-    public ref bool FixedRotation => ref _internal.FixedRotation;
+    public bool FixedRotation
+    {
+        get => _internal.FixedRotation != 0;
+        set => _internal.FixedRotation = value ? (byte)1 : (byte)0;
+    }
 
     /// <summary>
     /// Treat this body as high speed object that performs continuous collision detection
@@ -140,16 +152,29 @@ public class BodyDef
     /// <b>Warning: Bullets should be used sparingly. They are not a solution for general dynamic-versus-dynamic</b>
     /// continuous collision. They may interfere with joint constraints.
     /// </summary>
-    public ref bool IsBullet => ref _internal.IsBullet;
+    public bool IsBullet
+    {
+        get => _internal.IsBullet != 0;
+        set => _internal.IsBullet = value ? (byte)1 : (byte)0;
+    }
 
     /// <summary>
     /// Used to disable a body. A disabled body does not move or collide.
     /// </summary>
-    public ref bool IsEnabled => ref _internal.IsEnabled;
+    public bool IsEnabled
+    {
+        get => _internal.IsEnabled != 0;
+        set => _internal.IsEnabled = value ? (byte)1 : (byte)0;
+    }
 
     /// <summary>
     /// This allows this body to bypass rotational speed limits. Should only be used
     /// for circular objects, like wheels.
     /// </summary>
-    public ref bool AllowFastRotation => ref _internal.AllowFastRotation;
+    public bool AllowFastRotation
+    {
+        get => _internal.AllowFastRotation != 0;
+        set => _internal.AllowFastRotation = value ? (byte)1 : (byte)0;
+    }
+
 }

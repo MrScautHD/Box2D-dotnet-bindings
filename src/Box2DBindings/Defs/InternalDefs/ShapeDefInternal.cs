@@ -7,31 +7,27 @@ namespace Box2D;
 /// This is a temporary object used to bundle shape creation parameters. You may use
 /// the same shape definition to create multiple shapes.
 /// </summary>
-[StructLayout(LayoutKind.Explicit)]
+[StructLayout(LayoutKind.Explicit, Size = 80)]
 struct ShapeDefInternal
 {
- /// <summary>
+    /// <summary>
     /// Use this to store application specific shape data.
     /// </summary>
-    [FieldOffset(0)]
-    internal nint UserData;
+    [FieldOffset( 0)] internal nint UserData;
     
-    [FieldOffset(8)]
-    internal SurfaceMaterial Material;
+    [FieldOffset( 8)]internal SurfaceMaterial Material;
     
     /// <summary>
     /// The density, usually in kg/m².
     /// This is not part of the surface material because this is for the interior, which may have
     /// other considerations, such as being hollow. For example a wood barrel may be hollow or full of water.
     /// </summary>
-    [FieldOffset(32)]
-    internal float Density;
+    [FieldOffset(32)]internal float Density;
 
     /// <summary>
     /// Collision filtering data.
     /// </summary>
-    [FieldOffset(40)]
-    internal Filter Filter; // 20 bytes
+    [FieldOffset(40)]internal Filter Filter; // 20 bytes
     
     /// <summary>
     /// A sensor shape generates overlap events but never generates a collision response.
@@ -42,38 +38,33 @@ struct ShapeDefInternal
     /// <i>Note: Sensor events are disabled by default.</i><br/>
     /// See <see cref="EnableSensorEvents"/>
     /// </remarks>
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(64)]
-    internal bool IsSensor;
+    internal byte IsSensor;
 
     /// <summary>
     /// Enable sensor events for this shape. This applies to sensors and non-sensors. False by default, even for sensors.
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(65)]
-    internal bool EnableSensorEvents;
+    internal byte EnableSensorEvents;
     
     /// <summary>
     /// Enable contact events for this shape. Only applies to kinematic and dynamic bodies. Ignored for sensors.
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(66)]
-    internal bool EnableContactEvents;
+    internal byte EnableContactEvents;
 
     /// <summary>
     /// Enable hit events for this shape. Only applies to kinematic and dynamic bodies. Ignored for sensors.
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(67)]
-    internal bool EnableHitEvents;
+    internal byte EnableHitEvents;
 
     /// <summary>
     /// Enable pre-solve contact events for this shape. Only applies to dynamic bodies. These are expensive
     /// and must be carefully handled due to threading. Ignored for sensors.
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(68)]
-    internal bool EnablePreSolveEvents;
+    internal byte EnablePreSolveEvents;
 
     /// <summary>
     /// Normally shapes on static bodies don't invoke contact creation when they are added to the world. This overrides
@@ -81,22 +72,20 @@ struct ShapeDefInternal
     /// when there are many static shapes.
     /// This is implicitly always true for sensors, dynamic bodies, and kinematic bodies.
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(69)]
-    internal bool InvokeContactCreation;
+    internal byte InvokeContactCreation;
 
     /// <summary>
     /// Should the body update the mass properties when this shape is created. Default is true.
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(70)]
-    internal bool UpdateBodyMass = true;
+    internal byte UpdateBodyMass;
 
     /// <summary>
     /// Used internally to detect a valid definition. DO NOT SET.
     /// </summary>
     [FieldOffset(72)]
-    private readonly int internalValue;
+    internal readonly int internalValue;
     
     /// <summary>
     /// The default shape definition.

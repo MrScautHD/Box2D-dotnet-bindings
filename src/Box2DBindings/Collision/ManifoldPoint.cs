@@ -61,9 +61,10 @@ public struct ManifoldPoint
     /// </summary>
     public readonly ushort Id;
 
+    private readonly byte persisted;
+    
     /// <summary>
     /// Did this contact point exist the previous step?
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
-    public readonly bool Persisted;
+    public bool Persisted => persisted != 0;
 }

@@ -2,7 +2,7 @@ using System.Runtime.InteropServices;
 
 namespace Box2D;
 
-[StructLayout(LayoutKind.Explicit)] // LayoutKind.Explicit is required here to align fields appearing after bools, which must be marshalled as U1
+[StructLayout(LayoutKind.Explicit)]
 struct MotorJointDefInternal
 {
     /// <summary>
@@ -50,9 +50,8 @@ struct MotorJointDefInternal
     /// <summary>
     /// Set this flag to true if the attached bodies should collide
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(40)]
-    internal bool CollideConnected;
+    internal byte CollideConnected;
 
     /// <summary>
     /// User data pointer

@@ -15,20 +15,19 @@ public abstract class DebugDrawUnsafeBase : DebugDraw
     /// </summary>
     protected DebugDrawUnsafeBase()
     { 
-        @internal.DrawBodyNames = true;
-        @internal.DrawBounds = true;
-        @internal.DrawShapes = true;
-        @internal.DrawJoints = true;
-        @internal.DrawContactFeatures = true;
-        @internal.DrawContactImpulses = true;
-        @internal.DrawContactNormals = true;
-        @internal.DrawContacts = true;
-        @internal.DrawGraphColors = true;
-        @internal.DrawFrictionImpulses = true;
-        @internal.DrawIslands = true;
-        @internal.DrawJointExtras = true;
-        @internal.DrawMass = true;
-        
+        DrawBodyNames = true;
+        DrawBounds = true;
+        DrawShapes = true;
+        DrawJoints = true;
+        DrawContactFeatures = true;
+        DrawContactImpulses = true;
+        DrawContactNormals = true;
+        DrawContacts = true;
+        DrawGraphColors = true;
+        DrawFrictionImpulses = true;
+        DrawIslands = true;
+        DrawJointExtras = true;
+        DrawMass = true;
     }
 
     internal override unsafe ref DebugDrawInternal Internal

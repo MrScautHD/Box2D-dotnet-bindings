@@ -15,9 +15,10 @@ public struct PlaneResult
     /// </summary>
     public readonly Plane Plane;
 
+    private readonly byte hit;
+
     /// <summary>
     /// Did the collision register a hit? If not this plane should be ignored.
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
-    public readonly bool Hit;
+    public bool Hit => hit != 0;
 }

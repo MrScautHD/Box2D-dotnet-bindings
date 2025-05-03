@@ -26,10 +26,15 @@ public struct ShapeCastInput
     /// The maximum fraction of the translation to consider, typically 1
     /// </summary>
     public float MaxFraction;
-
+    
+    private byte canEncroach;
+    
     /// <summary>
     /// Allow shape cast to encroach when initially touching. This only works if the radius is greater than zero.
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
-    public bool CanEncroach;
+    public bool CanEncroach
+    {
+        get => canEncroach != 0;
+        set => canEncroach = value ? (byte)1 : (byte)0;
+    }
 }

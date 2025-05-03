@@ -52,9 +52,8 @@ struct PrismaticJointDefInternal
     /// <summary>
     /// Enable a linear spring along the prismatic joint axis
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(44)]
-    internal bool EnableSpring;
+    internal byte EnableSpring;
 
     /// <summary>
     /// The spring stiffness Hertz, cycles per second
@@ -71,9 +70,8 @@ struct PrismaticJointDefInternal
     /// <summary>
     /// Enable/disable the joint limit
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(56)]
-    internal bool EnableLimit;
+    internal byte EnableLimit;
 
     /// <summary>
     /// The lower translation limit
@@ -90,9 +88,8 @@ struct PrismaticJointDefInternal
     /// <summary>
     /// Enable/disable the joint motor
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(68)]
-    internal bool EnableMotor;
+    internal byte EnableMotor;
 
     /// <summary>
     /// The maximum motor force, typically in newtons
@@ -109,9 +106,8 @@ struct PrismaticJointDefInternal
     /// <summary>
     /// Set this flag to true if the attached bodies should collide
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(80)]
-    internal bool CollideConnected;
+    internal byte CollideConnected;
 
     /// <summary>
     /// User data pointer

@@ -132,10 +132,18 @@ public class ChainDef
     /// <summary>
     /// Indicates a closed chain formed by connecting the first and last points
     /// </summary>
-    public ref bool IsLoop => ref _internal.IsLoop;
-
+    public bool IsLoop
+    {
+        get => _internal.IsLoop != 0;
+        set => _internal.IsLoop = value ? (byte)1 : (byte)0;
+    }
+    
     /// <summary>
     /// Enable sensors to detect this chain. False by default.
     /// </summary>
-    public ref bool EnableSensorEvents => ref _internal.EnableSensorEvents;
+    public bool EnableSensorEvents 
+    {
+        get => _internal.EnableSensorEvents != 0;
+        set => _internal.EnableSensorEvents = value ? (byte)1 : (byte)0;
+    }
 }

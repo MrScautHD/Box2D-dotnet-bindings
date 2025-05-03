@@ -28,9 +28,14 @@ public struct DistanceInput
     /// </summary>
     public Transform TransformB;
 
+    private byte useRadii;
+    
     /// <summary>
     /// Should the proxy radius be considered?
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
-    public bool UseRadii;
+    public bool UseRadii
+    {
+        get => useRadii != 0;
+        set => useRadii = value ? (byte)1 : (byte)0;
+    }
 }

@@ -73,100 +73,86 @@ struct DebugDrawInternal
     /// <summary>
     /// Option to restrict drawing to a rectangular region. May suffer from unstable depth sorting.
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(88)]
-    internal bool UseDrawingBounds;
+    internal byte UseDrawingBounds;
 
     /// <summary>
     /// Option to draw shapes
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(89)]
-    internal bool DrawShapes;
+    internal byte DrawShapes;
 
     /// <summary>
     /// Option to draw joints
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(90)]
-    internal bool DrawJoints;
+    internal byte DrawJoints;
 
     /// <summary>
     /// Option to draw additional information for joints
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(91)]
-    internal bool DrawJointExtras;
+    internal byte DrawJointExtras;
 
     /// <summary>
     /// Option to draw the bounding boxes for shapes
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(92)]
-    internal bool DrawBounds;
+    internal byte DrawBounds;
 
     /// <summary>
     /// Option to draw the mass and center of mass of dynamic bodies
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(93)]
-    internal bool DrawMass;
+    internal byte DrawMass;
 
     /// <summary>
     /// Option to draw body names
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(94)]
-    internal bool DrawBodyNames;
+    internal byte DrawBodyNames;
 
     /// <summary>
     /// Option to draw contact points
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(95)]
-    internal bool DrawContacts;
+    internal byte DrawContacts;
 
     /// <summary>
     /// Option to visualize the graph coloring used for contacts and joints
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(96)]
-    internal bool DrawGraphColors;
+    internal byte DrawGraphColors;
 
     /// <summary>
     /// Option to draw contact normals
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(97)]
-    internal bool DrawContactNormals;
+    internal byte DrawContactNormals;
 
     /// <summary>
     /// Option to draw contact normal impulses
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(98)]
-    internal bool DrawContactImpulses;
+    internal byte DrawContactImpulses;
     
     /// <summary>
     /// Option to draw contact friction impulses
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(99)]
-    internal bool DrawFrictionImpulses;
+    internal byte DrawFrictionImpulses;
 
     /// <summary>
     /// Option to draw contact feature ids
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(100)]
-    internal bool DrawContactFeatures;
+    internal byte DrawContactFeatures;
     
     /// <summary>
     /// Option to draw contact friction impulses
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(101)]
-    internal bool DrawIslands;
+    internal byte DrawIslands;
     
     /// <summary>
     /// User context that is passed as an argument to drawing callback functions

@@ -52,9 +52,8 @@ struct RevoluteJointDefInternal
     /// <summary>
     /// Enable a rotational spring on the revolute hinge axis
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(36)]
-    internal bool EnableSpring;
+    internal byte EnableSpring;
 
     /// <summary>
     /// The spring stiffness Hertz, cycles per second
@@ -71,9 +70,8 @@ struct RevoluteJointDefInternal
     /// <summary>
     /// A flag to enable joint limits
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(48)]
-    internal bool EnableLimit;
+    internal byte EnableLimit;
 
     /// <summary>
     /// The lower angle for the joint limit in radians
@@ -90,9 +88,8 @@ struct RevoluteJointDefInternal
     /// <summary>
     /// A flag to enable the joint motor
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(60)]
-    internal bool EnableMotor;
+    internal byte EnableMotor;
 
     /// <summary>
     /// The maximum motor torque, typically in newton-meters
@@ -115,9 +112,8 @@ struct RevoluteJointDefInternal
     /// <summary>
     /// Set this flag to true if the attached bodies should collide
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(76)]
-    internal bool CollideConnected;
+    internal byte CollideConnected;
 
     /// <summary>
     /// User data pointer

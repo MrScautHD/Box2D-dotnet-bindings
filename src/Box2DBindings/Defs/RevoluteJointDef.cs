@@ -53,8 +53,12 @@ public class RevoluteJointDef
     /// <summary>
     /// Enable a rotational spring on the revolute hinge axis
     /// </summary>
-    public ref bool EnableSpring => ref _internal.EnableSpring;
-
+    public bool EnableSpring
+    {
+        get => _internal.EnableSpring != 0;
+        set => _internal.EnableSpring = value ? (byte)1 : (byte)0;
+    }
+    
     /// <summary>
     /// The spring stiffness Hertz, cycles per second
     /// </summary>
@@ -68,7 +72,11 @@ public class RevoluteJointDef
     /// <summary>
     /// A flag to enable joint limits
     /// </summary>
-    public ref bool EnableLimit => ref _internal.EnableLimit;
+    public bool EnableLimit
+    {
+        get => _internal.EnableLimit != 0;
+        set => _internal.EnableLimit = value ? (byte)1 : (byte)0;
+    }
 
     /// <summary>
     /// The lower angle for the joint limit in radians. Minimum of -0.95*pi radians.
@@ -83,7 +91,11 @@ public class RevoluteJointDef
     /// <summary>
     /// A flag to enable the joint motor
     /// </summary>
-    public ref bool EnableMotor => ref _internal.EnableMotor;
+    public bool EnableMotor
+    {
+        get => _internal.EnableMotor != 0;
+        set => _internal.EnableMotor = value ? (byte)1 : (byte)0;
+    }
 
     /// <summary>
     /// The maximum motor torque, typically in newton-meters
@@ -103,8 +115,12 @@ public class RevoluteJointDef
     /// <summary>
     /// Set this flag to true if the attached bodies should collide
     /// </summary>
-    public ref bool CollideConnected => ref _internal.CollideConnected;
-
+    public bool CollideConnected
+    {
+        get => _internal.CollideConnected != 0;
+        set => _internal.CollideConnected = value ? (byte)1 : (byte)0;
+    }
+    
     /// <summary>
     /// User data
     /// </summary>

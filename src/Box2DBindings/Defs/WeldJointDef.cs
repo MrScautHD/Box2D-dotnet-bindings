@@ -70,7 +70,11 @@ public class WeldJointDef
     /// <summary>
     /// Set this flag to true if the attached bodies should collide
     /// </summary>
-    public ref bool CollideConnected => ref _internal.CollideConnected;
+    public bool CollideConnected
+    {
+        get => _internal.CollideConnected != 0;
+        set => _internal.CollideConnected = (byte)(value ? 1 : 0);
+    }
 
     /// <summary>
     /// User data

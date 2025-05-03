@@ -15,8 +15,8 @@ namespace Box2D;
 /// and it is only populated with bodies that have moved.
 /// <i>Note: If sleeping is disabled all dynamic and kinematic bodies will trigger move events.</i>
 /// </summary>
-[StructLayout(LayoutKind.Sequential)]
 [PublicAPI]
+[StructLayout(LayoutKind.Sequential)]
 public struct BodyMoveEvent
 {
     /// <summary>
@@ -40,6 +40,10 @@ public struct BodyMoveEvent
     /// <summary>
     /// The body went to sleep
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
-    public readonly bool FellAsleep;
+    private readonly byte fellAsleep;
+    
+    /// <summary>
+    /// The body went to sleep
+    /// </summary>
+    public bool FellAsleep => fellAsleep != 0;
 }

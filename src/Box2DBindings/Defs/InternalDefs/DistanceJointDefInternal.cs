@@ -2,7 +2,7 @@ using System.Runtime.InteropServices;
 
 namespace Box2D;
 
-[StructLayout(LayoutKind.Explicit)] // LayoutKind.Explicit is required here to align fields appearing after bools, which must be marshalled as U1
+[StructLayout(LayoutKind.Explicit)]
 struct DistanceJointDefInternal
 {
     /// <summary>
@@ -39,9 +39,8 @@ struct DistanceJointDefInternal
     /// Enable the distance constraint to behave like a spring. If false
     /// then the distance joint will be rigid, overriding the limit and motor.
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(36)]
-    internal bool EnableSpring;
+    internal byte EnableSpring;
 
     /// <summary>
     /// The spring linear stiffness Hertz, cycles per second
@@ -58,9 +57,8 @@ struct DistanceJointDefInternal
     /// <summary>
     /// Enable/disable the joint limit
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(48)]
-    internal bool EnableLimit;
+    internal byte EnableLimit;
 
     /// <summary>
     /// Minimum length. Clamped to a stable minimum value.
@@ -77,9 +75,8 @@ struct DistanceJointDefInternal
     /// <summary>
     /// Enable/disable the joint motor
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(60)]
-    internal bool EnableMotor;
+    internal byte EnableMotor;
 
     /// <summary>
     /// The maximum motor force, usually in newtons
@@ -96,9 +93,8 @@ struct DistanceJointDefInternal
     /// <summary>
     /// Set this flag to true if the attached bodies should collide
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(72)]
-    internal bool CollideConnected;
+    internal byte CollideConnected;
     
     /// <summary>
     /// User data pointer

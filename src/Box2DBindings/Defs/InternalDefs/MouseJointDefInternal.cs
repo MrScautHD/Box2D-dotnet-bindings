@@ -8,7 +8,7 @@ namespace Box2D;
 /// This a soft constraint and allows the constraint to stretch without
 /// applying huge forces. This also applies rotation constraint heuristic to improve control.
 /// </summary>
-[StructLayout(LayoutKind.Explicit)] // LayoutKind.Explicit is required here to align fields appearing after bools, which must be marshalled as U1
+[StructLayout(LayoutKind.Explicit)]
 struct MouseJointDefInternal
 {
     /// <summary>
@@ -50,9 +50,8 @@ struct MouseJointDefInternal
     /// <summary>
     /// Set this flag to true if the attached bodies should collide.
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(36)]
-    internal bool CollideConnected;
+    internal byte CollideConnected;
 
     /// <summary>
     /// User data pointer

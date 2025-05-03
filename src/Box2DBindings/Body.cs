@@ -832,7 +832,8 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <param name="segment">The segment</param>
     /// <returns>The shape</returns>
     /// <remarks>The shape definition and geometry are fully cloned. Contacts are not created until the next time step</remarks>
-    public Shape CreateShape(in ShapeDef def, in Segment segment) => b2CreateSegmentShape(this, in def._internal, segment);
+    public Shape CreateShape(in ShapeDef def, in Segment segment) =>
+        b2CreateSegmentShape(this, in def._internal, segment);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateCapsuleShape")]
     private static extern Shape b2CreateCapsuleShape(Body bodyId, in ShapeDefInternal def, in Capsule capsule);
@@ -844,7 +845,8 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <param name="capsule">The capsule</param>
     /// <returns>The shape</returns>
     /// <remarks>The shape definition and geometry are fully cloned. Contacts are not created until the next time step</remarks>
-    public Shape CreateShape(in ShapeDef def, in Capsule capsule) => b2CreateCapsuleShape(this, in def._internal, capsule);
+    public Shape CreateShape(in ShapeDef def, in Capsule capsule) =>
+        b2CreateCapsuleShape(this, in def._internal, capsule);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreatePolygonShape")]
     private static extern Shape b2CreatePolygonShape(Body bodyId, in ShapeDefInternal def, in Polygon polygon);

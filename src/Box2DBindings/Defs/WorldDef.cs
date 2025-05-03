@@ -85,12 +85,20 @@ public class WorldDef
     /// <summary>
     /// Can bodies go to sleep to improve performance
     /// </summary>
-    public ref bool EnableSleep => ref _internal.EnableSleep;
+    public bool EnableSleep
+    {
+        get => _internal.EnableSleep != 0;
+        set => _internal.EnableSleep = value ? (byte)1 : (byte)0;
+    }
 
     /// <summary>
     /// Enable continuous collision
     /// </summary>
-    public ref bool EnableContinuous => ref _internal.EnableContinuous;
+    public bool EnableContinuous
+    {
+        get => _internal.EnableContinuous != 0;
+        set => _internal.EnableContinuous = value ? (byte)1 : (byte)0;
+    }
 
     /// <summary>
     /// Number of workers to use with the provided task system. Box2D performs best when using only

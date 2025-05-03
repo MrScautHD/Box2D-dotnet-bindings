@@ -85,23 +85,20 @@ struct BodyDefInternal
     /// <summary>
     /// Set this flag to false if this body should never fall asleep.
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(64)]
-    internal bool EnableSleep;
+    internal byte EnableSleep;
 
     /// <summary>
     /// Is this body initially awake or sleeping?
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(65)]
-    internal bool IsAwake;
+    internal byte IsAwake;
 
     /// <summary>
     /// Should this body be prevented from rotating? Useful for characters.
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(66)]
-    internal bool FixedRotation;
+    internal byte FixedRotation;
 
     /// <summary>
     /// Treat this body as high speed object that performs continuous collision detection
@@ -109,24 +106,21 @@ struct BodyDefInternal
     /// <b>Warning: Bullets should be used sparingly. They are not a solution for general dynamic-versus-dynamic</b>
     /// continuous collision. They may interfere with joint constraints.
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(67)]
-    internal bool IsBullet;
+    internal byte IsBullet;
 
     /// <summary>
     /// Used to disable a body. A disabled body does not move or collide.
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(68)]
-    internal bool IsEnabled;
+    internal byte IsEnabled;
 
     /// <summary>
     /// This allows this body to bypass rotational speed limits. Should only be used
     /// for circular objects, like wheels.
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(69)]
-    internal bool AllowFastRotation;
+    internal byte AllowFastRotation;
 
     /// <summary>
     /// Used internally to detect a valid definition. DO NOT SET.

@@ -46,9 +46,8 @@ struct WheelJointDefInternal
     /// <summary>
     /// Enable a linear spring along the local axis
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(40)]
-    internal bool EnableSpring;
+    internal byte EnableSpring;
 
     /// <summary>
     /// Spring stiffness in Hertz
@@ -65,9 +64,8 @@ struct WheelJointDefInternal
     /// <summary>
     /// Enable/disable the joint linear limit
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(52)]
-    internal bool EnableLimit;
+    internal byte EnableLimit;
 
     /// <summary>
     /// The lower translation limit
@@ -84,9 +82,8 @@ struct WheelJointDefInternal
     /// <summary>
     /// Enable/disable the joint rotational motor
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(64)]
-    internal bool EnableMotor;
+    internal byte EnableMotor;
 
     /// <summary>
     /// The maximum motor torque, typically in newton-meters
@@ -103,9 +100,8 @@ struct WheelJointDefInternal
     /// <summary>
     /// Set this flag to true if the attached bodies should collide
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(76)]
-    internal bool CollideConnected;
+    internal byte CollideConnected;
 
     /// <summary>
     /// User data pointer

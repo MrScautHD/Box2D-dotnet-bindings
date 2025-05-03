@@ -40,9 +40,14 @@ public struct ShapeCastPairInput
     /// </summary>
     public float MaxFraction;
     
+    private byte canEncroach;
+    
     /// <summary>
     /// Allows shapes with a radius to move slightly closer if already touching
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
-    public bool CanEncroach;
+    public bool CanEncroach
+    {
+        get => canEncroach != 0;
+        set => canEncroach = value ? (byte)1 : (byte)0;
+    }
 }

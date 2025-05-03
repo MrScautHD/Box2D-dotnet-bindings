@@ -30,13 +30,11 @@ unsafe struct ChainDefInternal
     [FieldOffset(32)]
     internal Filter Filter; // 20 bytes
 
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(64)]
-    internal bool IsLoop;
+    internal byte IsLoop;
 
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(65)]
-    internal bool EnableSensorEvents;
+    internal byte EnableSensorEvents;
     
     /// <summary>
     /// Used internally to detect a valid definition. DO NOT SET.

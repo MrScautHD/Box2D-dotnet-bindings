@@ -56,7 +56,11 @@ public class PrismaticJointDef
     /// <summary>
     /// Enable a linear spring along the prismatic joint axis
     /// </summary>
-    public ref bool EnableSpring => ref _internal.EnableSpring;
+    public bool EnableSpring
+    {
+        get => _internal.EnableSpring != 0;
+        set => _internal.EnableSpring = (byte)(value ? 1 : 0);
+    }
 
     /// <summary>
     /// The spring stiffness Hertz, cycles per second
@@ -71,7 +75,11 @@ public class PrismaticJointDef
     /// <summary>
     /// Enable/disable the joint limit
     /// </summary>
-    public ref bool EnableLimit => ref _internal.EnableLimit;
+    public bool EnableLimit
+    {
+        get => _internal.EnableLimit != 0;
+        set => _internal.EnableLimit = (byte)(value ? 1 : 0);
+    }
 
     /// <summary>
     /// The lower translation limit
@@ -86,7 +94,11 @@ public class PrismaticJointDef
     /// <summary>
     /// Enable/disable the joint motor
     /// </summary>
-    public ref bool EnableMotor => ref _internal.EnableMotor;
+    public bool EnableMotor
+    {
+        get => _internal.EnableMotor != 0;
+        set => _internal.EnableMotor = (byte)(value ? 1 : 0);
+    }
 
     /// <summary>
     /// The maximum motor force, typically in newtons
@@ -101,7 +113,11 @@ public class PrismaticJointDef
     /// <summary>
     /// Set this flag to true if the attached bodies should collide
     /// </summary>
-    public ref bool CollideConnected => ref _internal.CollideConnected;
+    public bool CollideConnected
+    {
+        get => _internal.CollideConnected != 0;
+        set => _internal.CollideConnected = (byte)(value ? 1 : 0);
+    }
 
     /// <summary>
     /// User data

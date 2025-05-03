@@ -81,16 +81,14 @@ struct WorldDefInternal
     /// <summary>
     /// Can bodies go to sleep to improve performance
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(56)]
-    internal bool EnableSleep;
+    internal byte EnableSleep;
 
     /// <summary>
     /// Enable continuous collision
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
     [FieldOffset(57)]
-    internal bool EnableContinuous;
+    internal byte EnableContinuous;
 
     /// <summary>
     /// Number of workers to use with the provided task system. Box2D performs best when using only

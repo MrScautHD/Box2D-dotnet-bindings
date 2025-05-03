@@ -30,9 +30,10 @@ public struct CastOutput
     /// </summary>
     public readonly int Iterations;
 
+    private readonly byte hit;
+    
     /// <summary>
     /// Did the cast hit?
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
-    public readonly bool Hit;
+    public bool Hit => hit != 0;
 }

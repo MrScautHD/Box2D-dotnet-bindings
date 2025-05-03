@@ -38,9 +38,10 @@ public struct RayResult
     /// </summary>
     public readonly int LeafVisits;
     
+    private readonly byte hit;
+    
     /// <summary>
     /// True if the ray intersects a shape.
     /// </summary>
-    [MarshalAs(UnmanagedType.U1)]
-    public readonly bool Hit;
+    public bool Hit => hit != 0;
 }
