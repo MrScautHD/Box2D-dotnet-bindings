@@ -95,7 +95,7 @@ jobs:
           cd box2d-src
           mkdir build
           cd build
-          cmake ${{ matrix.cmake_flags }} ..
+          cmake ${{ matrix.cmake_flags }} -DCMAKE_C_FLAGS="-Wno-error=maybe-uninitialized" -DCMAKE_CXX_FLAGS="-Wno-error=maybe-uninitialized" ..
           cmake --build . --config Release
 
       - name: Post-build adjustments
@@ -190,5 +190,3 @@ jobs:
 
       - name: Build and pack
         run: dotnet pack src/Box2DBindings --configuration Release --output ./artefacts
-
-      # Skip NuGet publishing (as requested)
