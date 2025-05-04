@@ -36,15 +36,6 @@ jobs:
             cmake_build_dir: "box2d-src/build"
             post_build_cmd: "echo 'Windows ARM build complete'"
 
-          # Linux x64
-          - os: ubuntu-latest
-            artifact_name: box2d-linux
-            artifact_path: box2d-src/build/bin/libbox2d.so
-            cmake_flags: '-DBUILD_SHARED_LIBS=ON -DBOX2D_UNIT_TESTS=OFF -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin'
-            cmake_build_dir: "box2d-src/build"
-            post_build_cmd: |
-              mv box2d-src/build/bin/libbox2d.so.3.1.0 box2d-src/build/bin/libbox2d.so
-
           # macOS x64
           - os: macos-latest
             artifact_name: box2d-macos
@@ -120,13 +111,6 @@ jobs:
         with:
           name: box2d-windows-arm
           path: src/Box2DBindings/native/win-arm
-
-      # Linux artifacts
-      - name: Get Linux x64 artefacts
-        uses: actions/download-artifact@v4
-        with:
-          name: box2d-linux
-          path: src/Box2DBindings/native/linux-x64
 
       # macOS artifacts
       - name: Get macOS x64 artefacts (if exists)
