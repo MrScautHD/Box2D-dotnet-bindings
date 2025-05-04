@@ -95,10 +95,10 @@ jobs:
           cd box2d-src
           mkdir build
           cd build
-          # Apply changes to disable the maybe-uninitialized flag (updated for macOS)
+          # Apply changes to disable the maybe-uninitialized flag
           if [[ "$RUNNER_OS" == "macOS" ]]; then
             echo "Disabling -Werror=maybe-uninitialized for macOS"
-            sed -i '' 's/-Werror=maybe-uninitialized/-Werror=uninitialized/g' ../CMakeLists.txt
+            sed -i '' 's/-Werror=maybe-uninitialized//g' ../CMakeLists.txt
           fi
           cmake ${{ matrix.cmake_flags }} -DCMAKE_C_FLAGS="-Wno-error=maybe-uninitialized" -DCMAKE_CXX_FLAGS="-Wno-error=maybe-uninitialized" ..
           cmake --build . --config Release
