@@ -45,15 +45,6 @@ jobs:
             post_build_cmd: |
               mv box2d-src/build/bin/libbox2d.so.3.1.0 box2d-src/build/bin/libbox2d.so
 
-          # Linux ARM
-          - os: ubuntu-latest
-            artifact_name: box2d-linux-arm
-            artifact_path: box2d-src/build/bin/libbox2d.so
-            cmake_flags: '-DCMAKE_SYSTEM_PROCESSOR=arm -DBUILD_SHARED_LIBS=ON -DBOX2D_UNIT_TESTS=OFF -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin'
-            cmake_build_dir: "box2d-src/build"
-            post_build_cmd: |
-              mv box2d-src/build/bin/libbox2d.so.3.1.0 box2d-src/build/bin/libbox2d.so
-
           # Linux x86 (optional)
           - os: ubuntu-latest
             artifact_name: box2d-linux-x86
