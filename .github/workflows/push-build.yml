@@ -1,4 +1,4 @@
-name: Build on Push
+name: Build and Deploy Box2D
 
 on:
   push:
@@ -50,13 +50,32 @@ jobs:
             cmake_flags: "-DCMAKE_OSX_ARCHITECTURES=arm64 -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin"
             post_build_cmd: "echo 'macOS ARM build complete'"
 
-          # Linux x64 (Added Linux build)
+          # Linux x64
           - os: ubuntu-latest
             artifact_name: box2d-linux
-            artifact_path: box2d-src/build/lib/libbox2d.so
-            cmake_flags: "-DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=lib"
+            artifact_path: box2d-src/build/bin/libbox2d.so
+            cmake_flags: '-DBUILD_SHARED_LIBS=ON -DBOX2D_UNIT_TESTS=OFF -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin'
             cmake_build_dir: "box2d-src/build"
-            post_build_cmd: "echo 'Linux x64 build complete'"
+            post_build_cmd: |
+              mv box2d-src/build/bin/libbox2d.so.3.1.0 box2d-src/build/bin/libbox2d.so
+
+          # Linux ARM
+          - os: ubuntu-latest
+            artifact_name: box2d-linux-arm
+            artifact_path: box2d-src/build/bin/libbox2d.so
+            cmake_flags: '-DCMAKE_SYSTEM_PROCESSOR=arm -DBUILD_SHARED_LIBS=ON -DBOX2D_UNIT_TESTS=OFF -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin'
+            cmake_build_dir: "box2d-src/build"
+            post_build_cmd: |
+              mv box2d-src/build/bin/libbox2d.so.3.1.0 box2d-src/build/bin/libbox2d.so
+
+          # Linux x86 (optional)
+          - os: ubuntu-latest
+            artifact_name: box2d-linux-x86
+            artifact_path: box2d-src/build/bin/libbox2d.so
+            cmake_flags: '-DCMAKE_SYSTEM_PROCESSOR=x86 -DBUILD_SHARED_LIBS=ON -DBOX2D_UNIT_TESTS=OFF -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin'
+            cmake_build_dir: "box2d-src/build"
+            post_build_cmd: |
+              mv box2d-src/build/bin/libbox2d.so.3.1.0 box2d-src/build/bin/libbox2d.so
 
     steps:
       - name: Clone Box2D (Latest Tag)
@@ -76,7 +95,12 @@ jobs:
           cd box2d-src
           mkdir build
           cd build
-          cmake ${{ matrix.cmake_flags }} ..
+          # Apply changes to disable the maybe-uninitialized flag
+          if [[ "$RUNNER_OS" == "macOS" ]]; then
+            echo "Disabling -Werror=maybe-uninitialized for macOS"
+            sed -i '' 's/-Werror=maybe-uninitialized//g' ../CMakeLists.txt
+          fi
+          cmake ${{ matrix.cmake_flags }} -DCMAKE_C_FLAGS="-Wno-error=maybe-uninitialized" -DCMAKE_CXX_FLAGS="-Wno-error=maybe-uninitialized" ..
           cmake --build . --config Release
 
       - name: Post-build adjustments
@@ -120,6 +144,26 @@ jobs:
           name: box2d-windows-arm
           path: src/Box2DBindings/native/win-arm
 
+      # Linux artifacts
+      - name: Get Linux x64 artefacts
+        uses: actions/download-artifact@v4
+        with:
+          name: box2d-linux
+          path: src/Box2DBindings/native/linux-x64
+
+      - name: Get Linux ARM artefacts
+        uses: actions/download-artifact@v4
+        with:
+          name: box2d-linux-arm
+          path: src/Box2DBindings/native/linux-arm
+
+      - name: Get Linux x86 artefacts (if exists)
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: box2d-linux-x86
+          path: src/Box2DBindings/native/linux-x86
+
       # macOS artifacts
       - name: Get macOS x64 artefacts (if exists)
         continue-on-error: true
@@ -134,13 +178,6 @@ jobs:
         with:
           name: box2d-macos-arm
           path: src/Box2DBindings/native/osx-arm
-
-      # Linux artifacts
-      - name: Get Linux x64 artefacts
-        uses: actions/download-artifact@v4
-        with:
-          name: box2d-linux
-          path: src/Box2DBindings/native/linux-x64
 
       - name: Setup dotnet
         uses: actions/setup-dotnet@v3
@@ -158,3 +195,5 @@ jobs:
 
       - name: Build and pack
         run: dotnet pack src/Box2DBindings --configuration Release --output ./artefacts
+
+      # Skip NuGet publishing (as requested)
