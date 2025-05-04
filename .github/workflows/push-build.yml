@@ -7,18 +7,109 @@ on:
       - LibraryImport
 
 jobs:
-  trigger:
+  build-box2d:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            artifact_name: box2d-windows
+            artifact_path: box2d-src/build/bin/Release/box2d.dll
+            cmake_flags: "-DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF"
+            cmake_build_dir: "box2d-src/build"
+            post_build_cmd: echo 'Windows x64 build complete'
+
+          - os: ubuntu-latest
+            artifact_name: box2d-linux
+            artifact_path: box2d-src/build/bin/libbox2d.so
+            cmake_flags: '-DBUILD_SHARED_LIBS=ON -DBOX2D_UNIT_TESTS=OFF -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS="-Wno-error=maybe-uninitialized"'
+            cmake_build_dir: "box2d-src/build"
+            post_build_cmd: |
+              rm box2d-src/build/bin/libbox2d.so
+              mv box2d-src/build/bin/libbox2d.so.3.1.0 box2d-src/build/bin/libbox2d.so
+
+          - os: macos-latest
+            artifact_name: box2d-macos
+            artifact_path: box2d-src/build/bin/libbox2d.dylib
+            cmake_flags: "-DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin"
+            post_build_cmd: echo 'macOS x64 build complete'
+
+    steps:
+      - name: Clone Box2D (Latest Tag)
+        shell: bash
+        run: |
+          latest_tag=$(git ls-remote --tags --sort=-v:refname https://github.com/erincatto/box2d.git | awk -F/ '{print $NF}' | grep -E '^[vV]?[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)
+          echo "Latest tag: $latest_tag"
+          git clone --depth 1 --branch $latest_tag https://github.com/erincatto/box2d.git box2d-src
+
+      - name: Setup CMake
+        uses: jwlawson/actions-setup-cmake@v2
+        with:
+          cmake-version: 3.22.x
+
+      - name: Build Box2D
+        run: |
+          cd box2d-src
+          mkdir build
+          cd build
+          cmake ${{ matrix.cmake_flags }} ..
+          cmake --build . --config Release
+
+      - name: Post-build adjustments
+        run: ${{ matrix.post_build_cmd }}
+
+      - name: Upload to artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: ${{ matrix.artifact_path }}
+          if-no-files-found: error
+
+    continue-on-error: ${{ matrix.os == 'macos-latest' }}
+
+  build-and-deploy-bindings:
+    needs: build-box2d
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger the publish pipeline
-        run: |
-            curl -X POST \
-                 -H "Accept: application/vnd.github+json" \
-                 -H "Authorization: token ${{ secrets.PAT }}" \
-                 https://api.github.com/repos/HughPH/Box2D-dotnet-bindings/dispatches \
-                 -d "$(jq -nc \
-                       --arg et "publish" \
-                       --arg ref "$GITHUB_REF" \
-                       --arg sha "$GITHUB_SHA" \
-                       --argjson skip_nuget true \
-                       '{event_type:$et,client_payload:{ref:$ref,sha:$sha,skip_nuget:$skip_nuget}}')"
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Get Windows artefacts
+        uses: actions/download-artifact@v4
+        with:
+          name: box2d-windows
+          path: src/Box2DBindings/native/win-x64
+
+      - name: Get Linux artefacts
+        uses: actions/download-artifact@v4
+        with:
+          name: box2d-linux
+          path: src/Box2DBindings/native/linux-x64
+
+      - name: Get macOS artefacts
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: box2d-macos
+          path: src/Box2DBindings/native/osx-x64
+
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Build UnitTests project
+        run: dotnet build src/UnitTests --configuration Release
+
+      - name: Copy Linux shared library to UnitTests output
+        run: cp src/Box2DBindings/native/linux-x64/libbox2d.so src/UnitTests/bin/Release/net9.0/
+
+      - name: Run UnitTests
+        run: dotnet test src/UnitTests --configuration Release --no-build --logger trx --results-directory TestResults
+
+      - name: Build and pack
+        run: dotnet pack src/Box2DBindings --configuration Release --output ./artefacts
+
+      # NOTE: NuGet publishing step has been intentionally removed for push builds
