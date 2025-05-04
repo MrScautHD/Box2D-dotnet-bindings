@@ -87,13 +87,13 @@ public sealed partial class World
     }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_IsValid")]
-    private static extern bool b2World_IsValid(WorldId worldId);
+    private static extern byte b2World_IsValid(WorldId worldId);
 
     /// <summary>
     /// World id validation. Provides validation for up to 64K allocations.
     /// </summary>
     /// <returns>True if the world id is valid</returns>
-    public bool Valid => b2World_IsValid(id);
+    public bool Valid => b2World_IsValid(id) != 0;
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_Step")]
     private static extern void b2World_Step(WorldId worldId, float timeStep, int subStepCount);
@@ -145,30 +145,30 @@ public sealed partial class World
     public ContactEvents ContactEvents => Valid ? b2World_GetContactEvents(id) : throw new InvalidOperationException("World is not valid");
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_EnableSleeping")]
-    private static extern void b2World_EnableSleeping(WorldId worldId, bool flag);
+    private static extern void b2World_EnableSleeping(WorldId worldId, byte flag);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_IsSleepingEnabled")]
-    private static extern bool b2World_IsSleepingEnabled(WorldId worldId);
+    private static extern byte b2World_IsSleepingEnabled(WorldId worldId);
 
     /// <summary>
     /// Gets or sets the sleeping enabled status of the world. If your application does not need sleeping, you can gain some performance by disabling sleep completely at the world level.
     /// </summary>
     public bool SleepingEnabled
     {
-        get => Valid ? b2World_IsSleepingEnabled(id) : throw new InvalidOperationException("World is not valid");
+        get => Valid ? b2World_IsSleepingEnabled(id) != 0 : throw new InvalidOperationException("World is not valid");
         set
         {
             if (!Valid)
                 throw new InvalidOperationException("World is not valid");
-            b2World_EnableSleeping(id, value);
+            b2World_EnableSleeping(id, value ? (byte)1 : (byte)0);
         }
     }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_EnableContinuous")]
-    private static extern void b2World_EnableContinuous(WorldId worldId, bool flag);
+    private static extern void b2World_EnableContinuous(WorldId worldId, byte flag);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_IsContinuousEnabled")]
-    private static extern bool b2World_IsContinuousEnabled(WorldId worldId);
+    private static extern byte b2World_IsContinuousEnabled(WorldId worldId);
 
     /// <summary>
     /// Gets or sets the continuous collision enabled state of the world.
@@ -176,12 +176,12 @@ public sealed partial class World
     /// <remarks>Generally you should keep continuous collision enabled to prevent fast moving objects from going through static objects. The performance gain from disabling continuous collision is minor</remarks>
     public bool ContinuousEnabled
     {
-        get => Valid ? b2World_IsContinuousEnabled(id) : throw new InvalidOperationException("World is not valid");
+        get => Valid ? b2World_IsContinuousEnabled(id) != 0 : throw new InvalidOperationException("World is not valid");
         set
         {
             if (!Valid)
                 throw new InvalidOperationException("World is not valid");
-            b2World_EnableContinuous(id, value);
+            b2World_EnableContinuous(id, value ? (byte)1 : (byte)0);
         }
     }
 
@@ -502,22 +502,22 @@ public sealed partial class World
 
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_EnableWarmStarting")]
-    private static extern void b2World_EnableWarmStarting(WorldId worldId, bool flag);
+    private static extern void b2World_EnableWarmStarting(WorldId worldId, byte flag);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_IsWarmStartingEnabled")]
-    private static extern bool b2World_IsWarmStartingEnabled(WorldId worldId);
+    private static extern byte b2World_IsWarmStartingEnabled(WorldId worldId);
 
     /// <summary>
     /// Enable/disable constraint warm starting. Advanced feature for testing. Disabling warm starting greatly reduces stability and provides no performance gain.
     /// </summary>
     public bool WarmStartingEnabled
     {
-        get => Valid ? b2World_IsWarmStartingEnabled(id) : throw new InvalidOperationException("World is not valid");
+        get => Valid ? b2World_IsWarmStartingEnabled(id) != 0 : throw new InvalidOperationException("World is not valid");
         set
         {
             if (!Valid)
                 throw new InvalidOperationException("World is not valid");
-            b2World_EnableWarmStarting(id, value);
+            b2World_EnableWarmStarting(id, value ? (byte)1 : (byte)0);
         }
     }
 

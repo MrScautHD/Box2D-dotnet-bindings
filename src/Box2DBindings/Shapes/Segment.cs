@@ -51,13 +51,13 @@ public struct Segment : IEquatable<Segment>
     /// the left side being treated as a miss.
     /// </summary>
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2RayCastSegment")]
-    private static extern CastOutput RayCastSegment(in RayCastInput input, in Segment shape, bool oneSided);
+    private static extern CastOutput RayCastSegment(in RayCastInput input, in Segment shape, byte oneSided);
     
     /// <summary>
     /// Ray cast versus this segment shape in local space. Optionally treat the segment as one-sided with hits from
     /// the left side being treated as a miss.
     /// </summary>
-    public CastOutput RayCast(in RayCastInput input, bool oneSided) => RayCastSegment(in input, in this, oneSided);
+    public CastOutput RayCast(in RayCastInput input, bool oneSided) => RayCastSegment(in input, in this, oneSided ? (byte)1 : (byte)0);
 
     /// <summary>
     /// Shape cast versus a line segment. Initial overlap is treated as a miss.

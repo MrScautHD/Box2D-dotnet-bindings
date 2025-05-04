@@ -20,21 +20,6 @@ public class ShapeDef
     public ShapeDef()
     {
         _internal = ShapeDefInternal.Default;
-
-        int size = Marshal.SizeOf<ShapeDefInternal>();
-        var ptr = Marshal.AllocHGlobal(size);
-        try
-        {
-            Marshal.StructureToPtr(_internal, ptr, false);
-            var raw = new byte[size];
-            Marshal.Copy(ptr, raw, 0, size);
-            for (int i = 0; i < size; i++)
-                Console.WriteLine($"{i,2}: {raw[i]:X2}");
-        }
-        finally
-        {
-            Marshal.FreeHGlobal(ptr);
-        }
     }
 
     /// <summary>

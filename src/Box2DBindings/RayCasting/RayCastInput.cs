@@ -23,17 +23,16 @@ public struct RayCastInput
     /// The maximum fraction of the translation to consider, typically 1
     /// </summary>
     public float MaxFraction;
-    
+
     /// <summary>
     /// Validate ray cast input data (NaN, etc)
     /// </summary>
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2IsValidRay")]
-    private static extern bool IsValidRay(in RayCastInput input);
-    
+    private static extern byte IsValidRay(in RayCastInput input);
+
     /// <summary>
     /// Validate this ray cast input data (NaN, etc)
     /// </summary>
     [PublicAPI]
-    public bool Valid => IsValidRay(this);
-
+    public bool Valid => IsValidRay(this) != 0;
 }

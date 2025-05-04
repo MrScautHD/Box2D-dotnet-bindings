@@ -85,7 +85,7 @@ public struct Hull
     /// This is expensive and should not be called at runtime.
     /// </summary>
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ValidateHull")]
-    private static extern bool Validate(in Hull hull);
+    private static extern byte Validate(in Hull hull);
     
     /// <summary>
     /// Determines if this hull is valid. Checks for:
@@ -95,5 +95,5 @@ public struct Hull
     /// </ul>
     /// This is expensive and should not be called at runtime.
     /// </summary>
-    public bool Valid => Validate(in this);
+    public bool Valid => Validate(in this) != 0;
 }

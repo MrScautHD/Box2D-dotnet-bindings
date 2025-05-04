@@ -16,10 +16,10 @@ public class PrismaticJoint : Joint
     { }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_EnableSpring")]
-    private static extern void b2PrismaticJoint_EnableSpring(JointId jointId, bool enableSpring);
+    private static extern void b2PrismaticJoint_EnableSpring(JointId jointId, byte enableSpring);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_IsSpringEnabled")]
-    private static extern bool b2PrismaticJoint_IsSpringEnabled(JointId jointId);
+    private static extern byte b2PrismaticJoint_IsSpringEnabled(JointId jointId);
 
     /// <summary>
     /// Gets or sets the prismatic joint spring enabled state
@@ -27,8 +27,8 @@ public class PrismaticJoint : Joint
     /// <returns>True if the prismatic joint spring is enabled</returns>
     public bool SpringEnabled
     {
-        get => b2PrismaticJoint_IsSpringEnabled(id);
-        set => b2PrismaticJoint_EnableSpring(id, value);
+        get => b2PrismaticJoint_IsSpringEnabled(id) != 0;
+        set => b2PrismaticJoint_EnableSpring(id, value ? (byte)1 : (byte)0);
     }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_SetSpringHertz")]
@@ -62,18 +62,18 @@ public class PrismaticJoint : Joint
     }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_EnableLimit")]
-    private static extern void b2PrismaticJoint_EnableLimit(JointId jointId, bool enableLimit);
+    private static extern void b2PrismaticJoint_EnableLimit(JointId jointId, byte enableLimit);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_IsLimitEnabled")]
-    private static extern bool b2PrismaticJoint_IsLimitEnabled(JointId jointId);
+    private static extern byte b2PrismaticJoint_IsLimitEnabled(JointId jointId);
 
     /// <summary>
     /// The limit enabled state of this prismatic joint
     /// </summary>
     public bool LimitEnabled
     {
-        get => b2PrismaticJoint_IsLimitEnabled(id);
-        set => b2PrismaticJoint_EnableLimit(id, value);
+        get => b2PrismaticJoint_IsLimitEnabled(id) != 0;
+        set => b2PrismaticJoint_EnableLimit(id, value ? (byte)1 : (byte)0);
     }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_SetLimits")]
@@ -104,18 +104,18 @@ public class PrismaticJoint : Joint
     public float UpperLimit => b2PrismaticJoint_GetUpperLimit(id);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_EnableMotor")]
-    private static extern void b2PrismaticJoint_EnableMotor(JointId jointId, bool enableMotor);
+    private static extern void b2PrismaticJoint_EnableMotor(JointId jointId, byte enableMotor);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_IsMotorEnabled")]
-    private static extern bool b2PrismaticJoint_IsMotorEnabled(JointId jointId);
+    private static extern byte b2PrismaticJoint_IsMotorEnabled(JointId jointId);
 
     /// <summary>
     /// The prismatic joint motor enabled state
     /// </summary>
     public bool MotorEnabled
     {
-        get => b2PrismaticJoint_IsMotorEnabled(id);
-        set => b2PrismaticJoint_EnableMotor(id, value);
+        get => b2PrismaticJoint_IsMotorEnabled(id) != 0;
+        set => b2PrismaticJoint_EnableMotor(id, value ? (byte)1 : (byte)0);
     }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_SetMotorSpeed")]

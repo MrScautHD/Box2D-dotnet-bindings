@@ -69,13 +69,13 @@ public struct Capsule
     /// Test a point for overlap with a capsule in local space
     /// </summary>
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PointInCapsule")]
-    private static extern bool PointInCapsule(Vec2 point, in Capsule shape);
+    private static extern byte PointInCapsule(Vec2 point, in Capsule shape);
     
     /// <summary>
     /// Test a point for overlap with this capsule in local space
     /// </summary>
     [PublicAPI]
-    public bool TestPoint(in Vec2 point) => PointInCapsule(point, in this);
+    public bool TestPoint(in Vec2 point) => PointInCapsule(point, in this) != 0;
     
     /// <summary>
     /// Ray cast versus capsule shape in local space. Initial overlap is treated as a miss.

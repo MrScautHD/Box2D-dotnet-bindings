@@ -60,14 +60,14 @@ public class Joint
     }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_IsValid")]
-    private static extern bool b2Joint_IsValid(JointId jointId);
+    private static extern byte b2Joint_IsValid(JointId jointId);
 
     /// <summary>
     /// Checks if this joint is valid
     /// </summary>
     /// <returns>true if this joint is valid</returns>
     /// <remarks>Provides validation for up to 64K allocations</remarks>
-    public bool Valid => b2Joint_IsValid(id);
+    public bool Valid => b2Joint_IsValid(id) != 0;
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetType")]
     private static extern JointType b2Joint_GetType(JointId jointId);
@@ -123,22 +123,22 @@ public class Joint
     public Vec2 LocalAnchorB => Valid ? b2Joint_GetLocalAnchorB(id) : throw new InvalidOperationException("Joint is not valid");
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_SetCollideConnected")]
-    private static extern void b2Joint_SetCollideConnected(JointId jointId, bool shouldCollide);
+    private static extern void b2Joint_SetCollideConnected(JointId jointId, byte shouldCollide);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetCollideConnected")]
-    private static extern bool b2Joint_GetCollideConnected(JointId jointId);
+    private static extern byte b2Joint_GetCollideConnected(JointId jointId);
 
     /// <summary>
     /// Set this flag to true if the attached bodies should collide
     /// </summary>
     public bool CollideConnected
     {
-        get => Valid ? b2Joint_GetCollideConnected(id) : throw new InvalidOperationException("Joint is not valid");
+        get => Valid ? b2Joint_GetCollideConnected(id) != 0 : throw new InvalidOperationException("Joint is not valid");
         set
         {
             if (!Valid)
                 throw new InvalidOperationException("Joint is not valid");
-            b2Joint_SetCollideConnected(id, value);
+            b2Joint_SetCollideConnected(id, value ? (byte)1 : (byte)0);
         }
     }
 

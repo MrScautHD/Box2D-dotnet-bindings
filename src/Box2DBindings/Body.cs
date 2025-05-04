@@ -125,14 +125,14 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_IsValid")]
-    private static extern bool b2Body_IsValid(Body bodyId);
+    private static extern byte b2Body_IsValid(Body bodyId);
 
     /// <summary>
     /// Body identifier validation.
     /// </summary>
     /// <returns>True if the body id is valid</returns>
     /// <remarks>Can be used to detect orphaned ids. Provides validation for up to 64K allocations</remarks>
-    public bool Valid => b2Body_IsValid(this);
+    public bool Valid => b2Body_IsValid(this) != 0;
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetType")]
     private static extern BodyType b2Body_GetType(Body bodyId);
@@ -350,7 +350,7 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     public Vec2 GetWorldPointVelocity(Vec2 worldPoint) => b2Body_GetWorldPointVelocity(this, worldPoint);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ApplyForce")]
-    private static extern void b2Body_ApplyForce(Body bodyId, Vec2 force, Vec2 point, bool wake);
+    private static extern void b2Body_ApplyForce(Body bodyId, Vec2 force, Vec2 point, byte wake);
 
     /// <summary>
     /// Apply a force at a world point
@@ -359,10 +359,10 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <param name="point">The world position of the point of application</param>
     /// <param name="wake">Option to wake up the body</param>
     /// <remarks>If the force is not applied at the center of mass, it will generate a torque and affect the angular velocity. The force is ignored if the body is not awake</remarks>
-    public void ApplyForce(Vec2 force, Vec2 point, bool wake) => b2Body_ApplyForce(this, force, point, wake);
+    public void ApplyForce(Vec2 force, Vec2 point, bool wake) => b2Body_ApplyForce(this, force, point, wake ? (byte)1 : (byte)0);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ApplyForceToCenter")]
-    private static extern void b2Body_ApplyForceToCenter(Body bodyId, Vec2 force, bool wake);
+    private static extern void b2Body_ApplyForceToCenter(Body bodyId, Vec2 force, byte wake);
 
     /// <summary>
     /// Apply a force to the center of mass
@@ -371,10 +371,10 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <param name="wake">Option to wake up the body</param>
     /// <remarks>This wakes up the body</remarks>
     /// <remarks>If the force is not applied at the center of mass, it will generate a torque and affect the angular velocity. The force is ignored if the body is not awake</remarks>
-    public void ApplyForceToCenter(Vec2 force, bool wake) => b2Body_ApplyForceToCenter(this, force, wake);
+    public void ApplyForceToCenter(Vec2 force, bool wake) => b2Body_ApplyForceToCenter(this, force, wake ? (byte)1 : (byte)0);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ApplyTorque")]
-    private static extern void b2Body_ApplyTorque(Body bodyId, float torque, bool wake);
+    private static extern void b2Body_ApplyTorque(Body bodyId, float torque, byte wake);
 
     /// <summary>
     /// Apply a torque
@@ -382,10 +382,10 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <param name="torque">The torque about the z-axis (out of the screen), usually in N*m</param>
     /// <param name="wake">Option to wake up the body</param>
     /// <remarks>This affects the angular velocity without affecting the linear velocity. The torque is ignored if the body is not awake</remarks>
-    public void ApplyTorque(float torque, bool wake) => b2Body_ApplyTorque(this, torque, wake);
+    public void ApplyTorque(float torque, bool wake) => b2Body_ApplyTorque(this, torque, wake ? (byte)1 : (byte)0);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ApplyLinearImpulse")]
-    private static extern void b2Body_ApplyLinearImpulse(Body bodyId, Vec2 impulse, Vec2 point, bool wake);
+    private static extern void b2Body_ApplyLinearImpulse(Body bodyId, Vec2 impulse, Vec2 point, byte wake);
 
     /// <summary>
     /// Apply an impulse at a point
@@ -395,10 +395,10 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <param name="wake">Option to wake up the body</param>
     /// <remarks>This immediately modifies the velocity. It also modifies the angular velocity if the point of application is not at the center of mass. The impulse is ignored if the body is not awake
     /// <br/><br/><b>Warning: This should be used for one-shot impulses. If you need a steady force, use a force instead, which will work better with the sub-stepping solver</b></remarks>
-    public void ApplyLinearImpulse(Vec2 impulse, Vec2 point, bool wake) => b2Body_ApplyLinearImpulse(this, impulse, point, wake);
+    public void ApplyLinearImpulse(Vec2 impulse, Vec2 point, bool wake) => b2Body_ApplyLinearImpulse(this, impulse, point, wake ? (byte)1 : (byte)0);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ApplyLinearImpulseToCenter")]
-    private static extern void b2Body_ApplyLinearImpulseToCenter(Body bodyId, Vec2 impulse, bool wake);
+    private static extern void b2Body_ApplyLinearImpulseToCenter(Body bodyId, Vec2 impulse, byte wake);
 
     /// <summary>
     /// Apply an impulse to the center of mass
@@ -407,10 +407,10 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <param name="wake">Option to wake up the body</param>
     /// <remarks>This immediately modifies the velocity. The impulse is ignored if the body is not awake
     /// <br/><br/><b>Warning: This should be used for one-shot impulses. If you need a steady force, use a force instead, which will work better with the sub-stepping solver</b></remarks>
-    public void ApplyLinearImpulseToCenter(Vec2 impulse, bool wake) => b2Body_ApplyLinearImpulseToCenter(this, impulse, wake);
+    public void ApplyLinearImpulseToCenter(Vec2 impulse, bool wake) => b2Body_ApplyLinearImpulseToCenter(this, impulse, wake ? (byte)1 : (byte)0);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ApplyAngularImpulse")]
-    private static extern void b2Body_ApplyAngularImpulse(Body bodyId, float impulse, bool wake);
+    private static extern void b2Body_ApplyAngularImpulse(Body bodyId, float impulse, byte wake);
 
     /// <summary>
     /// Apply an angular impulse
@@ -419,7 +419,7 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <param name="wake">Option to wake up the body</param>
     /// <remarks>The impulse is ignored if the body is not awake
     /// <br/><br/><b>Warning: This should be used for one-shot impulses. If you need a steady force, use a force instead, which will work better with the sub-stepping solver</b></remarks>
-    public void ApplyAngularImpulse(float impulse, bool wake) => b2Body_ApplyAngularImpulse(this, impulse, wake);
+    public void ApplyAngularImpulse(float impulse, bool wake) => b2Body_ApplyAngularImpulse(this, impulse, wake ? (byte)1 : (byte)0);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetMass")]
     private static extern float b2Body_GetMass(Body bodyId);
@@ -548,10 +548,10 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_IsAwake")]
-    private static extern bool b2Body_IsAwake(Body bodyId);
+    private static extern byte b2Body_IsAwake(Body bodyId);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetAwake")]
-    private static extern void b2Body_SetAwake(Body bodyId, bool awake);
+    private static extern void b2Body_SetAwake(Body bodyId, byte awake);
 
     /// <summary>
     /// The body awake state.
@@ -562,20 +562,20 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// </remarks>
     public bool Awake
     {
-        get => Valid ? b2Body_IsAwake(this) : throw new InvalidOperationException("Body is not valid");
+        get => Valid ? b2Body_IsAwake(this) != 0 : throw new InvalidOperationException("Body is not valid");
         set
         {
             if (!Valid)
                 throw new InvalidOperationException("Body is not valid");
-            b2Body_SetAwake(this, value);
+            b2Body_SetAwake(this, value ? (byte)1 : (byte)0);
         }
     }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_EnableSleep")]
-    private static extern void b2Body_EnableSleep(Body bodyId, bool enableSleep);
+    private static extern void b2Body_EnableSleep(Body bodyId, byte enableSleep);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_IsSleepEnabled")]
-    private static extern bool b2Body_IsSleepEnabled(Body bodyId);
+    private static extern byte b2Body_IsSleepEnabled(Body bodyId);
 
     /// <summary>
     /// Option to enable or disable sleeping for this body.
@@ -583,12 +583,12 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <remarks>If sleeping is disabled the body will wake</remarks>
     public bool SleepEnabled
     {
-        get => Valid ? b2Body_IsSleepEnabled(this) : throw new InvalidOperationException("Body is not valid");
+        get => Valid ? b2Body_IsSleepEnabled(this) != 0 : throw new InvalidOperationException("Body is not valid");
         set
         {
             if (!Valid)
                 throw new InvalidOperationException("Body is not valid");
-            b2Body_EnableSleep(this, value);
+            b2Body_EnableSleep(this, value ? (byte)1 : (byte)0);
         }
     }
 
@@ -613,7 +613,7 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_IsEnabled")]
-    private static extern bool b2Body_IsEnabled(Body bodyId);
+    private static extern byte b2Body_IsEnabled(Body bodyId);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_Disable")]
     private static extern void b2Body_Disable(Body bodyId);
@@ -626,7 +626,7 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// </summary>
     public bool Enabled
     {
-        get => Valid ? b2Body_IsEnabled(this) : throw new InvalidOperationException("Body is not valid");
+        get => Valid ? b2Body_IsEnabled(this) != 0 : throw new InvalidOperationException("Body is not valid");
         set
         {
             if (!Valid)
@@ -639,10 +639,10 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     }
     
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetFixedRotation")]
-    private static extern void b2Body_SetFixedRotation(Body bodyId, bool flag);
+    private static extern void b2Body_SetFixedRotation(Body bodyId, byte flag);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_IsFixedRotation")]
-    private static extern bool b2Body_IsFixedRotation(Body bodyId);
+    private static extern byte b2Body_IsFixedRotation(Body bodyId);
 
     /// <summary>
     /// The fixed rotation flag of the body.
@@ -650,20 +650,20 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <remarks>Setting this causes the mass to be reset in all cases</remarks>
     public bool FixedRotation
     {
-        get => Valid ? b2Body_IsFixedRotation(this) : throw new InvalidOperationException("Body is not valid");
+        get => Valid ? b2Body_IsFixedRotation(this) != 0 : throw new InvalidOperationException("Body is not valid");
         set
         {
             if (!Valid)
                 throw new InvalidOperationException("Body is not valid");
-            b2Body_SetFixedRotation(this, value);
+            b2Body_SetFixedRotation(this, value ? (byte)1 : (byte)0);
         }
     }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetBullet")]
-    private static extern void b2Body_SetBullet(Body bodyId, bool flag);
+    private static extern void b2Body_SetBullet(Body bodyId, byte flag);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_IsBullet")]
-    private static extern bool b2Body_IsBullet(Body bodyId);
+    private static extern byte b2Body_IsBullet(Body bodyId);
 
     /// <summary>
     /// The bullet flag of the body.
@@ -671,33 +671,33 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <remarks>A bullet does continuous collision detection against dynamic bodies (but not other bullets)</remarks>
     public bool Bullet
     {
-        get => Valid ? b2Body_IsBullet(this) : throw new InvalidOperationException("Body is not valid");
+        get => Valid ? b2Body_IsBullet(this) != 0 : throw new InvalidOperationException("Body is not valid");
         set
         {
             if (!Valid)
                 throw new InvalidOperationException("Body is not valid");
-            b2Body_SetBullet(this, value);
+            b2Body_SetBullet(this, value ? (byte)1 : (byte)0);
         }
     }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_EnableContactEvents")]
-    private static extern void b2Body_EnableContactEvents(Body bodyId, bool flag);
+    private static extern void b2Body_EnableContactEvents(Body bodyId, byte flag);
 
     /// <summary>
     /// Enable/disable contact events on all shapes
     /// </summary>
     /// <param name="flag">Option to enable or disable contact events on all shapes</param>
     /// <remarks><b>Warning: Changing this at runtime may cause mismatched begin/end touch events.</b></remarks>
-    public void EnableContactEvents(bool flag) => b2Body_EnableContactEvents(this, flag);
+    public void EnableContactEvents(bool flag) => b2Body_EnableContactEvents(this, flag ? (byte)1 : (byte)0);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_EnableHitEvents")]
-    private static extern void b2Body_EnableHitEvents(Body bodyId, bool flag);
+    private static extern void b2Body_EnableHitEvents(Body bodyId, byte flag);
 
     /// <summary>
     /// Enable/disable hit events on all shapes
     /// </summary>
     /// <param name="flag">Option to enable or disable hit events on all shapes</param>
-    public void EnableHitEvents(bool flag) => b2Body_EnableHitEvents(this, flag);
+    public void EnableHitEvents(bool flag) => b2Body_EnableHitEvents(this, flag ? (byte)1 : (byte)0);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetWorld")]
     private static extern WorldId b2Body_GetWorld(Body bodyId);

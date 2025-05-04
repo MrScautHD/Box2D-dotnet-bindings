@@ -531,7 +531,7 @@ public unsafe struct DynamicTree
     public int ProxyCount => GetProxyCount(in this);
         
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DynamicTree_Rebuild")]
-    private static extern int Rebuild(ref DynamicTree tree, bool fullBuild);
+    private static extern int Rebuild(ref DynamicTree tree, byte fullBuild);
         
     /// <summary>
     /// Rebuild the tree while retaining subtrees that haven't changed. Returns the number of boxes sorted.
@@ -541,7 +541,7 @@ public unsafe struct DynamicTree
     [PublicAPI]
     public int Rebuild(bool fullBuild)
     {
-        return Rebuild(ref this, fullBuild);
+        return Rebuild(ref this, fullBuild ? (byte)1 : (byte)0);
     }
         
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DynamicTree_GetByteCount")]

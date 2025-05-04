@@ -16,23 +16,23 @@ public class RevoluteJoint : Joint
     { }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2RevoluteJoint_EnableSpring")]
-    private static extern void b2RevoluteJoint_EnableSpring(JointId jointId, bool enableSpring);
+    private static extern void b2RevoluteJoint_EnableSpring(JointId jointId, byte enableSpring);
 
     /// <summary>
     /// Enables/disables the revolute joint spring
     /// </summary>
     /// <param name="enableSpring">True to enable the spring, false to disable the spring</param>
-    public void EnableSpring(bool enableSpring) => b2RevoluteJoint_EnableSpring(id, enableSpring);
+    public void EnableSpring(bool enableSpring) => b2RevoluteJoint_EnableSpring(id, enableSpring ? (byte)1 : (byte)0);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2RevoluteJoint_IsSpringEnabled")]
-    private static extern bool b2RevoluteJoint_IsSpringEnabled(JointId jointId);
+    private static extern byte b2RevoluteJoint_IsSpringEnabled(JointId jointId);
 
     /// <summary>
     /// The revolute joint spring enabled state
     /// </summary>
     public bool SpringEnabled
     {
-        get => b2RevoluteJoint_IsSpringEnabled(id);
+        get => b2RevoluteJoint_IsSpringEnabled(id) != 0;
         set => EnableSpring(value);
     }
 
@@ -75,18 +75,18 @@ public class RevoluteJoint : Joint
     public float Angle => b2RevoluteJoint_GetAngle(id);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2RevoluteJoint_EnableLimit")]
-    private static extern void b2RevoluteJoint_EnableLimit(JointId jointId, bool enableLimit);
+    private static extern void b2RevoluteJoint_EnableLimit(JointId jointId, byte enableLimit);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2RevoluteJoint_IsLimitEnabled")]
-    private static extern bool b2RevoluteJoint_IsLimitEnabled(JointId jointId);
+    private static extern byte b2RevoluteJoint_IsLimitEnabled(JointId jointId);
 
     /// <summary>
     /// The revolute joint limit enabled state
     /// </summary>
     public bool LimitEnabled
     {
-        get => b2RevoluteJoint_IsLimitEnabled(id);
-        set => b2RevoluteJoint_EnableLimit(id, value);
+        get => b2RevoluteJoint_IsLimitEnabled(id) != 0;
+        set => b2RevoluteJoint_EnableLimit(id, value ? (byte)1 : (byte)0);
     }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2RevoluteJoint_SetLimits")]
@@ -116,18 +116,18 @@ public class RevoluteJoint : Joint
     public float UpperLimit => b2RevoluteJoint_GetUpperLimit(id);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2RevoluteJoint_EnableMotor")]
-    private static extern void b2RevoluteJoint_EnableMotor(JointId jointId, bool enableMotor);
+    private static extern void b2RevoluteJoint_EnableMotor(JointId jointId, byte enableMotor);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2RevoluteJoint_IsMotorEnabled")]
-    private static extern bool b2RevoluteJoint_IsMotorEnabled(JointId jointId);
+    private static extern byte b2RevoluteJoint_IsMotorEnabled(JointId jointId);
 
     /// <summary>
     /// The revolute joint motor enabled state
     /// </summary>
     public bool MotorEnabled
     {
-        get => b2RevoluteJoint_IsMotorEnabled(id);
-        set => b2RevoluteJoint_EnableMotor(id, value);
+        get => b2RevoluteJoint_IsMotorEnabled(id) != 0;
+        set => b2RevoluteJoint_EnableMotor(id, value ? (byte)1 : (byte)0);
     }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2RevoluteJoint_SetMotorSpeed")]

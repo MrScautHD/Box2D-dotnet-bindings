@@ -214,12 +214,12 @@ public unsafe struct Polygon
     /// Test a point for overlap with a convex polygon in local space
     /// </summary>
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PointInPolygon")]
-    private static extern bool PointInPolygon(Vec2 point, in Polygon shape);
+    private static extern byte PointInPolygon(Vec2 point, in Polygon shape);
 
     /// <summary>
     /// Test this point for overlap with a convex polygon in local space
     /// </summary>
-    public bool TestPoint(in Vec2 point) => PointInPolygon(point, in this);
+    public bool TestPoint(in Vec2 point) => PointInPolygon(point, in this) != 0;
     
     /// <summary>
     /// Ray cast versus polygon shape in local space. Initial overlap is treated as a miss.

@@ -1,3 +1,5 @@
+using System.Runtime.InteropServices;
+
 namespace Box2D;
 
 /// <summary>
@@ -18,6 +20,7 @@ namespace Box2D;
 /// <param name="shapeB">The second shape</param>
 /// <param name="context">The user context</param>
 /// <returns>true if the collision should be enabled, false otherwise</returns>
+[return:MarshalAs(UnmanagedType.I1)]
 public delegate bool CustomFilterCallback<in TContext>(Shape shapeA, Shape shapeB, TContext context) where TContext : class;
 
 /// <summary>
@@ -38,6 +41,7 @@ public delegate bool CustomFilterCallback<in TContext>(Shape shapeA, Shape shape
 /// <param name="shapeB">The second shape</param>
 /// <param name="context">The user context</param>
 /// <returns>true if the collision should be enabled, false otherwise</returns>
+[return:MarshalAs(UnmanagedType.I1)]
 public delegate bool CustomFilterRefCallback<TContext>(Shape shapeA, Shape shapeB, ref TContext context) where TContext : unmanaged;
 
 /// <summary>
@@ -57,6 +61,7 @@ public delegate bool CustomFilterRefCallback<TContext>(Shape shapeA, Shape shape
 /// <param name="shapeA">The first shape</param>
 /// <param name="shapeB">The second shape</param>
 /// <returns>true if the collision should be enabled, false otherwise</returns>
+[return:MarshalAs(UnmanagedType.I1)]
 public delegate bool CustomFilterCallback(Shape shapeA, Shape shapeB);
 
 /// <summary>
@@ -77,4 +82,5 @@ public delegate bool CustomFilterCallback(Shape shapeA, Shape shapeB);
 /// <param name="shapeB">The second shape</param>
 /// <param name="context">The user context</param>
 /// <returns>true if the collision should be enabled, false otherwise</returns>
+[return:MarshalAs(UnmanagedType.I1)]
 public delegate bool CustomFilterNintCallback(Shape shapeA, Shape shapeB, nint context);

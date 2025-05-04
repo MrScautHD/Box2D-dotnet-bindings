@@ -57,13 +57,13 @@ public struct Circle
     /// Test a point for overlap with a circle in local space
     /// </summary>
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PointInCircle")]
-    private static extern bool PointInCircle(in Vec2 point, in Circle shape);
+    private static extern byte PointInCircle(in Vec2 point, in Circle shape);
     
     /// <summary>
     /// Test a point for overlap with this circle in local space
     /// </summary>
     [PublicAPI]
-    public bool TestPoint(in Vec2 point) => PointInCircle(point, this);
+    public bool TestPoint(in Vec2 point) => PointInCircle(point, this) != 0;
 
     /// <summary>
     /// Ray cast versus circle shape in local space. Initial overlap is treated as a miss.

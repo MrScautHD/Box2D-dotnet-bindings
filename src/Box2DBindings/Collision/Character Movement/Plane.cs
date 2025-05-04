@@ -20,7 +20,7 @@ public struct Plane
     public float Offset;
     
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2IsValidPlane")]
-    private static extern bool IsValidPlane(Plane a);
+    private static extern byte IsValidPlane(Plane a);
     
     /// <summary>
     /// Checks if the plane is valid.
@@ -30,5 +30,5 @@ public struct Plane
     /// A plane is valid if its normal is a unit vector and it is not NaN or infinity.
     /// </remarks>
     [PublicAPI]
-    public bool Valid => IsValidPlane(this);
+    public bool Valid => IsValidPlane(this) != 0;
 }

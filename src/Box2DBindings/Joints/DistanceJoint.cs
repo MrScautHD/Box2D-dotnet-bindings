@@ -32,7 +32,7 @@ public class DistanceJoint : Joint
     }
     
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_EnableSpring")]
-    private static extern void b2DistanceJoint_EnableSpring(JointId jointId, bool enableSpring);
+    private static extern void b2DistanceJoint_EnableSpring(JointId jointId, byte enableSpring);
     
     /// <summary>
     /// Enables/disables the spring on this distance joint
@@ -41,11 +41,11 @@ public class DistanceJoint : Joint
     [PublicAPI]
     public void EnableSpring(bool enableSpring)
     {
-        b2DistanceJoint_EnableSpring(id, enableSpring);
+        b2DistanceJoint_EnableSpring(id, enableSpring ? (byte)1 : (byte)0);
     }
     
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_IsSpringEnabled")]
-    private static extern bool b2DistanceJoint_IsSpringEnabled(JointId jointId);
+    private static extern byte b2DistanceJoint_IsSpringEnabled(JointId jointId);
     
     /// <summary>
     /// Gets or sets the spring enabled state on this distance joint
@@ -54,7 +54,7 @@ public class DistanceJoint : Joint
     [PublicAPI]
     public bool SpringEnabled
     {
-        get => b2DistanceJoint_IsSpringEnabled(id);
+        get => b2DistanceJoint_IsSpringEnabled(id) != 0;
         set => EnableSpring(value);
     }
 
@@ -91,10 +91,10 @@ public class DistanceJoint : Joint
     }
     
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_EnableLimit")]
-    private static extern void b2DistanceJoint_EnableLimit(JointId jointId, bool enableLimit);
+    private static extern void b2DistanceJoint_EnableLimit(JointId jointId, byte enableLimit);
     
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_IsLimitEnabled")]
-    private static extern bool b2DistanceJoint_IsLimitEnabled(JointId jointId);
+    private static extern byte b2DistanceJoint_IsLimitEnabled(JointId jointId);
     
     /// <summary>
     /// The limit enabled state of this distance joint
@@ -103,8 +103,8 @@ public class DistanceJoint : Joint
     [PublicAPI]
     public bool LimitEnabled
     {
-        get => b2DistanceJoint_IsLimitEnabled(id);
-        set => b2DistanceJoint_EnableLimit(id, value);
+        get => b2DistanceJoint_IsLimitEnabled(id) != 0;
+        set => b2DistanceJoint_EnableLimit(id, value ? (byte)1 : (byte)0);
     }
     
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_SetLengthRange")]
@@ -148,10 +148,10 @@ public class DistanceJoint : Joint
     public float CurrentLength => b2DistanceJoint_GetCurrentLength(id);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_EnableMotor")]
-    private static extern void b2DistanceJoint_EnableMotor(JointId jointId, bool enableMotor);
+    private static extern void b2DistanceJoint_EnableMotor(JointId jointId, byte enableMotor);
     
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_IsMotorEnabled")]
-    private static extern bool b2DistanceJoint_IsMotorEnabled(JointId jointId);
+    private static extern byte b2DistanceJoint_IsMotorEnabled(JointId jointId);
 
     /// <summary>
     /// The motor enabled state of this distance joint
@@ -159,8 +159,8 @@ public class DistanceJoint : Joint
     [PublicAPI]
     public bool MotorEnabled
     {
-        get => b2DistanceJoint_IsMotorEnabled(id);
-        set => b2DistanceJoint_EnableMotor(id, value);
+        get => b2DistanceJoint_IsMotorEnabled(id) != 0;
+        set => b2DistanceJoint_EnableMotor(id, value ? (byte)1 : (byte)0);
     }
     
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DistanceJoint_SetMotorSpeed")]
