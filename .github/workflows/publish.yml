@@ -192,4 +192,5 @@ jobs:
         run: dotnet pack src/Box2DBindings --configuration Release --output ./artefacts
 
       - name: Publish to NuGet
+        if: ${{ inputs.skip_nuget != true }}
         run: dotnet nuget push artefacts/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
